@@ -50,3 +50,11 @@ def test_all_excluded_cases_receive_both_party_records():
     assert len(records)==2 and summary["remaining_excluded_districts"]==1
     assert summary["candidate_party_code_potential_matches"]==1
     assert summary["no_automatic_reallocation"]
+
+def test_no_composite_party_candidate_does_not_remove_columns():
+    df=fixture()
+    df=df[df["PARTY"]!="D/IP/WF"]
+    rows,evidence=mod.examine(df,2022,"OR","01")
+    d=next(x for x in rows if x["party"]=="D")
+    assert d["status"]=="no_multiparty_candidate_match"
+    assert evidence==[]
