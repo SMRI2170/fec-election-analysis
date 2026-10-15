@@ -89,13 +89,27 @@ def normalize_house(frame: pd.DataFrame, year: int, source_file: str, source_she
                     break
                 known_primary = [numeric_vote(v) for v in candidates["PRIMARY VOTES"]]
                 known_primary_sum = sum(v for v in known_primary if v is not None)
+                # FEC denotes party-affiliated primary write-ins as W(R)/W(D).
+                # Their votes enter the corresponding Party Votes subtotal,
+                # but these are NOT votes for a named R/D candidate.
+                affiliated = group[group["_party"].eq(f"W({party})")]
+                affiliated_values = [numeric_vote(v) for v in affiliated["PRIMARY VOTES"]]
+                if any(pd.notna(v) and n is None for v,n in zip(affiliated["PRIMARY VOTES"],affiliated_values)):
+                    reason = "ambiguous-affiliated-writein"
+                    break
+                affiliated_sum = sum(v for v in affiliated_values if v is not None)
                 if len(party_totals) == 1:
                     reported_primary = numeric_vote(party_totals.iloc[0]["PRIMARY VOTES"])
-                    if reported_primary is None or reported_primary != known_primary_sum:
+                    if reported_primary is None or reported_primary != known_primary_sum + affiliated_sum:
                         reason = "primary-subtotal-mismatch"
                         break
                     primary_total = reported_primary
                 else:
+                    # Never infer a party total when FEC has affiliated write-ins
+                    # but no source subtotal to reconcile against.
+                    if affiliated_sum:
+                        reason = "missing-primary-party-subtotal"
+                        break
                     primary_total = known_primary_sum
                 general_values = [numeric_vote(v) for v in candidates["GENERAL VOTES"]]
                 general_total = sum(v for v in general_values if v is not None)
