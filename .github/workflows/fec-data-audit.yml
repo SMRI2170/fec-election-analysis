@@ -32,9 +32,9 @@ jobs:
       - name: Download 2020 and 2022 primary source workbooks
         run: python scripts/download_fec.py --years 2016 2018 2020 2022
       - name: Inventory 2016 workbook sheets
-        run: python scripts/audit_fec_workbook.py data/raw/federalelections2016.xlsx --max-sheets 1 --rows 3 --output data/raw/fec2016-audit.json
+        run: python scripts/audit_fec_workbook.py data/raw/federalelections2016.xlsx --max-sheets 1 --rows 12 --sheet-contains "House Results" --output data/raw/fec2016-audit.json
       - name: Inventory 2018 workbook sheets
-        run: python scripts/audit_fec_workbook.py data/raw/federalelections2018.xlsx --max-sheets 1 --rows 3 --output data/raw/fec2018-audit.json
+        run: python scripts/audit_fec_workbook.py data/raw/federalelections2018.xlsx --max-sheets 1 --rows 12 --sheet-contains "House Results" --output data/raw/fec2018-audit.json
       - name: Inspect 2020 first sheets
         run: python scripts/audit_fec_workbook.py data/raw/federalelections2020.xlsx --max-sheets 2 --rows 18 --sheet-contains "House Results" --output data/raw/fec2020-audit.json
       - name: Inspect 2022 first sheets
