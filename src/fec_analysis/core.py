@@ -15,7 +15,7 @@ VOTE_COLUMNS = REQUIRED_COLUMNS[4:]
 
 
 def prepare_elections(df: pd.DataFrame) -> pd.DataFrame:
-    """Validate normalized rows and derive two-party ratios and winner labels."""
+    """Validate observations and compute TWO-PARTY vote-share leads, not certified winners."""
     missing = sorted(set(REQUIRED_COLUMNS) - set(df.columns))
     if missing:
         raise ValueError(f"Missing required columns: {', '.join(missing)}")
@@ -54,6 +54,8 @@ def prepare_elections(df: pd.DataFrame) -> pd.DataFrame:
         raise ValueError("Both primary and general two-party vote totals must be positive")
     result["primary_rep_share"] = result["primary_rep_votes"] / p_total
     result["general_rep_share"] = result["general_rep_votes"] / g_total
-    result["general_rep_win"] = (result["general_rep_share"] > 0.5).astype(int)
+    # Backwards-compatible field name. It is *not* necessarily the certified winner.
+    result["general_two_party_rep_lead"] = (result["general_rep_share"] > 0.5).astype(int)
+    result["general_rep_win"] = result["general_two_party_rep_lead"]
     result["general_tie"] = result["general_rep_share"] == 0.5
     return result
