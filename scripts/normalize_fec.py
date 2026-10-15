@@ -119,6 +119,28 @@ def normalize_house(frame: pd.DataFrame, year: int, source_file: str, source_she
     return pd.DataFrame(included, columns=STANDARD_COLUMNS), pd.DataFrame(excluded, columns=["year", "state", "district", "reason"])
 
 
+
+def exclude_nonstandard_winners(normal: pd.DataFrame, audit: pd.DataFrame, year: int) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Exclude officially unconfirmed/RCV-inconsistent general results.
+
+    The rules inspect official *outcome labels* only for dataset eligibility,
+    never as a feature in a model. Keep one audit record per removed district.
+    """
+    bad = audit[audit["status"] != "agree"]
+    if bad.empty:
+        return normal.copy(), pd.DataFrame(columns=["year", "state", "district", "reason"])
+    existing = set(zip(normal["state"].astype(str), normal["district"].astype(str).str.zfill(2)))
+    records = []
+    for item in bad.itertuples():
+        key=(str(item.state),str(item.district).zfill(2))
+        if key not in existing:
+            raise AssertionError(f"Official winner discrepancy not in normalized input: {key}")
+        records.append({"year":year,"state":key[0],"district":key[1],
+                        "reason":f"official-ge-{item.status}"})
+    invalid = set((item["state"],item["district"]) for item in records)
+    kept = normal[~normal.apply(lambda row:(str(row["state"]),str(row["district"]).zfill(2)) in invalid,axis=1)].copy()
+    return kept,pd.DataFrame(records,columns=["year","state","district","reason"])
+
 def load_house_sheet(path: Path) -> tuple[str, pd.DataFrame]:
     with pd.ExcelFile(path) as book:
         matches = [s for s in book.sheet_names if "US House Results by State".lower() in s.lower()]
@@ -140,6 +162,13 @@ def main() -> None:
         path = args.input_dir / f"federalelections{year}.xlsx"
         sheet, df = load_house_sheet(path)
         normal, audit = normalize_house(df, year, path.name, sheet)
+        # Official 2018 ME-02 RCV outcome and NC-09 uncertified results are
+        # not ordinary two-party winner labels. Validate *all* years here.
+        from audit_winners import audit as audit_winners
+        from source_reconcile import read_house
+        official, _ = audit_winners(normal, {year: read_house(path)})
+        normal, new_excluded = exclude_nonstandard_winners(normal, official, year)
+        audit = pd.concat([audit, new_excluded], ignore_index=True)
         outputs.append(normal)
         audits.append(audit)
         meta.append({"year": year, "source": path.name, "sheet": sheet, "included": len(normal), "excluded": len(audit), "reason_counts": audit["reason"].value_counts().to_dict()})
