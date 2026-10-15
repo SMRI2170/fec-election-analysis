@@ -21,7 +21,7 @@ def party_tokens(label: object) -> list[str]:
     value=str(label).strip().upper()
     if "/" not in value and "+" not in value:
         return []
-    return re.split(r"[/+,\\s]+",value)
+    return re.split(r"[/+,\s]+", value)
 
 
 def examine(group: pd.DataFrame, year: int, state: str, district: str) -> tuple[list[dict],list[dict]]:
