@@ -8,6 +8,8 @@ on:
       - 'scripts/download_fec.py'
       - 'scripts/audit_fec_workbook.py'
       - 'scripts/normalize_fec.py'
+      - 'scripts/analyze.py'
+      - 'scripts/run_backtests.py'
       - '.github/workflows/fec-data-audit.yml'
 
 permissions:
@@ -54,6 +56,8 @@ jobs:
           assert actual == expected, f'FEC AL-01 discrepancy: {actual} != {expected}'
           print('FEC 2020 Alabama House district 01 reconciliation succeeded')
           PY
+      - name: Evaluate rolling out-of-year backtests
+        run: python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022 --output data/processed/backtest_metrics.csv
       - name: Publish only small audit logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -66,5 +70,6 @@ jobs:
             data/raw/fec2020-audit.json
             data/raw/fec2022-audit.json
             data/processed/normalization-summary.json
+            data/processed/backtest_metrics.csv
           if-no-files-found: ignore
           retention-days: 3

@@ -38,12 +38,18 @@ def evaluate(data: pd.DataFrame, test_year: int, chamber: str = "House") -> pd.D
         predicted = model.predict(Xtest).clip(0, 1)
         results.append({"task": "share", "model": name, "metric": "MAE", "score": mean_absolute_error(test["general_rep_share"], predicted), "n_train": len(train), "n_test": len(test)})
 
+    # No fitted parameters: naive baseline based on primary composition itself.
+    results.append({"task": "share", "model": "primary-share identity", "metric": "MAE", "score": mean_absolute_error(test["general_rep_share"], test["primary_rep_share"]), "n_train": len(train), "n_test": len(test)})
+
     train_clf = train[~train["general_tie"]]
     test_clf = test[~test["general_tie"]]
     if train_clf.empty or test_clf.empty:
         raise ValueError("Non-tied classification train/test is empty")
     if train_clf["general_rep_win"].nunique() < 2:
         raise ValueError("Training set needs both winner classes")
+    primary_vote_rule = (test_clf["primary_rep_share"] > 0.5).astype(int)
+    results.append({"task": "winner", "model": "primary-winner rule", "metric": "accuracy", "score": accuracy_score(test_clf["general_rep_win"], primary_vote_rule), "n_train": len(train_clf), "n_test": len(test_clf)})
+
     for name, model in [
         ("majority-class baseline", DummyClassifier(strategy="prior")),
         ("logistic regression", LogisticRegression(random_state=0, max_iter=1000)),
