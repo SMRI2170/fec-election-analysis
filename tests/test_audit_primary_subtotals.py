@@ -57,7 +57,7 @@ def test_discrepancy_count_fails_closed():
 
 def test_W_R_primary_writein_is_accounted_separately():
     frame, excluded=fixture()
-    frame.loc[len(frame)] = ["AZ","03",None,"Write in","W(R)",5]
+    frame.loc[len(frame)] = {"STATE ABBREVIATION":"AZ","DISTRICT":"03","CANDIDATE NAME":"Write in","PARTY":"W(R)","PRIMARY VOTES":5}
     frame.loc[frame.index[-1],"_state"]="AZ"
     frame.loc[frame.index[-1],"_district"]="03"
     frame.loc[frame.index[-1],"_party"]="W(R)"
