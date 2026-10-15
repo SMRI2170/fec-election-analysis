@@ -2,7 +2,7 @@
 
 ## 対象と未対応範囲
 
-確認した2020年・2022年のFEC公式Excelの \`US House Results by State\` シートのみを入力とする。2010〜2018年は**未対応**。モデル性能を優先して都合よくサンプルを選ぶことは避け、全ての除外理由を追跡できるようにする。
+確認した2016年・2018年・2020年・2022年のFEC公式Excelの \`US House Results by State\` シートのみを入力とする。2010〜2014年の旧XLSは**未対応**。モデル性能を優先して都合よくサンプルを選ぶことは避け、全ての除外理由を追跡できるようにする。
 
 - 候補者行をFEC ID（Hから始まる識別子）で特定する。
 - \`Party Votes:\` はPrimaryの小計行であり、候補者票と重複合計しない。小計と候補者票の和が一致しない場合は除外する。
@@ -16,8 +16,8 @@
 ## 実行
 
 \`\`\`bash
-python scripts/download_fec.py --years 2020 2022
-python scripts/normalize_fec.py --years 2020 2022
+python scripts/download_fec.py --years 2016 2018 2020 2022
+python scripts/normalize_fec.py --years 2016 2018 2020 2022
 python scripts/analyze.py --input data/processed/elections.csv --test-year 2022
 \`\`\`
 
@@ -51,3 +51,22 @@ python scripts/analyze.py --input data/processed/elections.csv --test-year 2022
 同じAction内で2020年アラバマ州下院第1区を元シートと突合し、共和党Primary=99,469、民主党Primary=52,103、共和党General=211,825、民主党General=116,949が一致したことを確認。
 
 **Issue #3はまだ完了ではない。** この突合は1選挙区だけであり、その他の州・年度の監査、Special Electionの判定、欠損と小計不整合の原因分析が残る。
+
+
+## 2016・2018年への拡張結果（2026-10-15）
+
+[4年度の実データ監査・正規化が成功したActionsログ](https://github.com/SMRI2170/fec-election-analysis/actions/runs/38687141206)。
+
+2016年には \`D\`（district）、\`FEC ID#\`（candidate ID）が使われ、2018年には \`DISTRICT\` と \`FEC ID#\` が使われる。2020・2022年には \`DISTRICT\` と \`FEC ID\` が使われる。**一次データの実ヘッダーを確認したうえで、これらの列名のみ互換化した。**
+
+| 年度 | 保守的な基準を満たすレコード | 除外した選挙区 | Primary小計不整合 |
+|---|---:|---:|---:|
+| 2016 | 169 | 269 | 46 |
+| 2018 | 197 | 241 | 55 |
+| 2020 | 188 | 253 | 56 |
+| 2022 | 186 | 253 | 67 |
+| **合計** | **740** | **1,016** | **224** |
+
+これらの値は抽出条件に強く依存する試行結果。小計不整合224件の原因は未検証であり、不正なデータと断定しない。選挙区の分母は年度ごとに異なること、州別制度や無対立選挙を相当数除外していることを本文で説明する必要がある。
+
+**未完了:** 2010〜2014年の旧XLSへの対応、各年度複数の選挙区での原票照合、複雑な州制度・特別選挙の個別確認、除外理由の研究上の妥当性評価。
