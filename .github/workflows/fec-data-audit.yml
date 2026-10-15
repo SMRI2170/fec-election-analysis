@@ -123,6 +123,7 @@ jobs:
             data/processed/primary-subtotal-examples.json
             data/processed/cohort-comparison.csv
             data/processed/cohort-summary.json
+            data/processed/selection-ledger.csv
             data/processed/year-state-selection.csv
             data/processed/state-reason-selection.csv
             data/processed/winner-label-audit.csv
