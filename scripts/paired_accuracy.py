@@ -28,6 +28,18 @@ def compare_predictions(df: pd.DataFrame, repetitions: int = 10000, seed: int = 
     rng = np.random.default_rng(seed)
     indices = rng.integers(0, len(df), size=(repetitions, len(df)))
     low, high = np.quantile(accuracy_delta[indices].mean(axis=1), [0.025, 0.975])
+    # Sensitivity: resample STATES (not individual districts) to account for
+    # potential within-state dependence in the exploratory uncertainty range.
+    state_ci = None
+    if "state" in df.columns and not df["state"].isna().any():
+        state_summaries = pd.DataFrame({
+            "state": df["state"].astype(str).to_numpy(), "delta": accuracy_delta
+        }).groupby("state")["delta"].agg(["sum", "count"])
+        if len(state_summaries) >= 2:
+            draw = rng.integers(0, len(state_summaries), size=(repetitions, len(state_summaries)))
+            totals = state_summaries["sum"].to_numpy()[draw].sum(axis=1)
+            weights = state_summaries["count"].to_numpy()[draw].sum(axis=1)
+            state_ci = [float(v) for v in np.quantile(totals / weights, [0.025, 0.975])]
     return {
         "n": len(df),
         "rule_errors": int(a.sum()),
@@ -40,6 +52,7 @@ def compare_predictions(df: pd.DataFrame, repetitions: int = 10000, seed: int = 
         "accuracy_difference_rule_minus_logistic": float(accuracy_delta.mean()),
         "bootstrap_paired_95pct_interval": [float(low), float(high)],
         "mcnemar_exact_two_sided_p": float(exact_p),
+        "state_cluster_bootstrap_95pct_interval": state_ci,
         "bootstrap_iterations": repetitions,
         "seed": seed,
         "exploratory": True,
