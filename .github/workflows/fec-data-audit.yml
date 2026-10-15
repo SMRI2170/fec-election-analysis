@@ -16,6 +16,7 @@ on:
       - 'scripts/source_reconcile.py'
       - 'scripts/paired_accuracy.py'
       - 'scripts/audit_primary_subtotals.py'
+      - 'scripts/audit_selection_bias.py'
       - 'scripts/audit_winners.py'
       - '.github/workflows/fec-data-audit.yml'
 
@@ -95,6 +96,10 @@ jobs:
         run: python scripts/source_reconcile.py
       - name: Produce reproducible report figures
         run: python scripts/plot_results.py --input data/processed/elections.csv --metrics data/processed/backtest_metrics.csv --test-year 2022
+      - name: Recompute historical cohort without attributed primary write-ins
+        run: python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy ignore --output-dir data/processed/legacy
+      - name: Compare fixed-holdout results and state-level sample selection
+        run: python scripts/audit_selection_bias.py --legacy-dir data/processed/legacy --current-dir data/processed --test-year 2022
       - name: Publish only small audit logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -116,6 +121,10 @@ jobs:
             data/processed/primary-subtotal-differences.csv
             data/processed/primary-subtotal-summary.json
             data/processed/primary-subtotal-examples.json
+            data/processed/cohort-comparison.csv
+            data/processed/cohort-summary.json
+            data/processed/year-state-selection.csv
+            data/processed/state-reason-selection.csv
             data/processed/winner-label-audit.csv
             data/processed/winner-label-summary.json
             data/processed/winner-label-exceptions.json
