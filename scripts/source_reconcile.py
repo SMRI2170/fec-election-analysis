@@ -57,7 +57,13 @@ def audit_one(group: pd.DataFrame, expected: pd.Series) -> tuple[dict, list[dict
         candidates = group[(group["_candidate"]) & (group["_party"] == party)]
         for field in ("PRIMARY VOTES", "GENERAL VOTES"):
             numbers = [vote(v) for v in candidates[field]]
-            computed[VOTE_FIELDS[party, field]] = sum(v for v in numbers if v is not None)
+            subtotal = sum(v for v in numbers if v is not None)
+            if field == "PRIMARY VOTES":
+                # Independent inclusion of all W(R)/W(D) lines.
+                # Does not depend on the normalized primary value.
+                attributed_writeins = group[group["_party"].eq(f"W({party})")]
+                subtotal += sum(vote(v) or 0 for v in attributed_writeins[field])
+            computed[VOTE_FIELDS[party, field]] = subtotal
         for _, row in candidates.iterrows():
             details.append({
                 "party": party, "fec_id": str(row["FEC ID"]),
