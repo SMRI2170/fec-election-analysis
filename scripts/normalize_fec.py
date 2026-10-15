@@ -35,7 +35,9 @@ def district_key(value: object) -> str | None:
     return None
 
 
-def normalize_house(frame: pd.DataFrame, year: int, source_file: str, source_sheet: str, excluded_states: frozenset[str] = DEFAULT_EXCLUDE_STATES) -> tuple[pd.DataFrame, pd.DataFrame]:
+def normalize_house(frame: pd.DataFrame, year: int, source_file: str, source_sheet: str, excluded_states: frozenset[str] = DEFAULT_EXCLUDE_STATES, writein_policy: str = 'attribute') -> tuple[pd.DataFrame, pd.DataFrame]:
+    if writein_policy not in ("attribute", "ignore"):
+        raise ValueError("writein_policy must be attribute or ignore")
     # Year-specific workbooks are human-readable reports, not clean candidate tables.
     source = frame.copy()
     # Verified year-specific aliases (FEC House workbooks for 2016/2018).
@@ -92,7 +94,7 @@ def normalize_house(frame: pd.DataFrame, year: int, source_file: str, source_she
                 # FEC denotes party-affiliated primary write-ins as W(R)/W(D).
                 # Their votes enter the corresponding Party Votes subtotal,
                 # but these are NOT votes for a named R/D candidate.
-                affiliated = group[group["_party"].eq(f"W({party})")]
+                affiliated = group[group["_party"].eq(f"W({party})")] if writein_policy == "attribute" else group.iloc[:0]
                 affiliated_values = [numeric_vote(v) for v in affiliated["PRIMARY VOTES"]]
                 if any(pd.notna(v) and n is None for v,n in zip(affiliated["PRIMARY VOTES"],affiliated_values)):
                     reason = "ambiguous-affiliated-writein"
@@ -168,6 +170,8 @@ def main() -> None:
     parser.add_argument("--input-dir", type=Path, default=Path("data/raw"))
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed"))
     parser.add_argument("--years", type=int, nargs="+", default=[2016, 2018, 2020, 2022])
+    parser.add_argument("--writein-policy", choices=["attribute", "ignore"], default="attribute",
+                        help="attribute: modern policy; ignore: legacy primary subtotal comparison, for historical sensitivity only")
     args = parser.parse_args()
     if not set(args.years).issubset({2016, 2018, 2020, 2022}):
         parser.error("This initial normalizer supports only inspected 2016/2018/2020/2022 xlsx layouts")
@@ -175,7 +179,7 @@ def main() -> None:
     for year in args.years:
         path = args.input_dir / f"federalelections{year}.xlsx"
         sheet, df = load_house_sheet(path)
-        normal, audit = normalize_house(df, year, path.name, sheet)
+        normal, audit = normalize_house(df, year, path.name, sheet, writein_policy=args.writein_policy)
         # Official 2018 ME-02 RCV outcome and NC-09 uncertified results are
         # not ordinary two-party winner labels. Validate *all* years here.
         from audit_winners import audit as audit_winners
@@ -185,7 +189,7 @@ def main() -> None:
         audit = pd.concat([audit, new_excluded], ignore_index=True)
         outputs.append(normal)
         audits.append(audit)
-        meta.append({"year": year, "source": path.name, "sheet": sheet, "included": len(normal), "excluded": len(audit), "reason_counts": audit["reason"].value_counts().to_dict()})
+        meta.append({"year": year, "source": path.name, "sheet": sheet, "writein_policy": args.writein_policy, "included": len(normal), "excluded": len(audit), "reason_counts": audit["reason"].value_counts().to_dict()})
     args.output_dir.mkdir(parents=True, exist_ok=True)
     output = pd.concat(outputs, ignore_index=True)
     exclusions = pd.concat(audits, ignore_index=True)
