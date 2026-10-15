@@ -31,9 +31,9 @@ jobs:
       - name: Download 2020 and 2022 primary source workbooks
         run: python scripts/download_fec.py --years 2020 2022
       - name: Inspect 2020 first sheets
-        run: python scripts/audit_fec_workbook.py data/raw/federalelections2020.xlsx --max-sheets 5 --rows 4 --output data/raw/fec2020-audit.json
+        run: python scripts/audit_fec_workbook.py data/raw/federalelections2020.xlsx --max-sheets 2 --rows 18 --sheet-contains "House Results" --output data/raw/fec2020-audit.json
       - name: Inspect 2022 first sheets
-        run: python scripts/audit_fec_workbook.py data/raw/federalelections2022.xlsx --max-sheets 5 --rows 4 --output data/raw/fec2022-audit.json
+        run: python scripts/audit_fec_workbook.py data/raw/federalelections2022.xlsx --max-sheets 2 --rows 18 --sheet-contains "House Results" --output data/raw/fec2022-audit.json
       - name: Publish only small audit logs
         if: always()
         uses: actions/upload-artifact@v4
