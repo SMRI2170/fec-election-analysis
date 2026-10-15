@@ -15,6 +15,7 @@ on:
       - 'scripts/plot_results.py'
       - 'scripts/source_reconcile.py'
       - 'scripts/paired_accuracy.py'
+      - 'scripts/audit_primary_subtotals.py'
       - '.github/workflows/fec-data-audit.yml'
 
 permissions:
@@ -67,6 +68,8 @@ jobs:
         run: python scripts/run_sensitivity.py --input data/processed/elections.csv --test-year 2022
       - name: Report the largest 2022 prediction errors
         run: python scripts/error_cases.py --input data/processed/elections.csv --test-year 2022
+      - name: Inspect every excluded primary subtotal discrepancy
+        run: python scripts/audit_primary_subtotals.py
       - name: Verify model error difference on paired 2022 contests
         run: python scripts/paired_accuracy.py
       - name: Reconcile all selected records against original FEC district totals
@@ -91,6 +94,9 @@ jobs:
             data/processed/paired-accuracy.json
             data/processed/case-evidence.json
             data/processed/source-reconciliation.csv
+            data/processed/primary-subtotal-differences.csv
+            data/processed/primary-subtotal-summary.json
+            data/processed/primary-subtotal-examples.json
             outputs/figures/*.png
           if-no-files-found: ignore
           retention-days: 3
