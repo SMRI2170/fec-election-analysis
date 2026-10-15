@@ -7,6 +7,7 @@ import pandas as pd
 from analyze import evaluate
 
 KEY=["year","state","district"]
+VOTES=["primary_rep_votes","primary_dem_votes","general_rep_votes","general_dem_votes"]
 
 def keys(df):
     if df.duplicated(KEY).any():
@@ -28,6 +29,14 @@ def state_counts(inc,exc,policy):
 
 def compare(legacy,current,test_year=2022):
     old,new=keys(legacy),keys(current)
+    if not old.issubset(new):
+        raise AssertionError("Corrected policy unexpectedly drops legacy observations")
+    # For all common districts, both policies must give identical normalized votes.
+    # This is stronger than merely sharing the same test key.
+    common_rows=legacy.merge(current,on=KEY,how="inner",suffixes=("_old","_new"),validate="one_to_one")
+    for col in VOTES:
+        if not common_rows[f"{col}_old"].eq(common_rows[f"{col}_new"]).all():
+            raise AssertionError(f"Different normalized {col} values for shared election rows")
     fixed=(old&new)
     fixed={k for k in fixed if k[0]==test_year}
     if not fixed:
@@ -55,6 +64,7 @@ def compare(legacy,current,test_year=2022):
              "legacy_only_test":sum(k[0]==test_year for k in old-new),
              "current_only_test":sum(k[0]==test_year for k in new-old),
              "fixed_test_observations_identical":True,
+             "same_vote_values_for_all_shared_rows_verified":True,
              "caution":"Full-cohort scores change training AND test populations. Fixed-test scores isolate training population changes on identical corrected source observations."}
     return pd.concat(outputs,ignore_index=True),summary
 
@@ -81,7 +91,30 @@ def main():
        old_ex.groupby(["year","state","reason"]).size().rename("n").reset_index().assign(policy="legacy"),
        new_ex.groupby(["year","state","reason"]).size().rename("n").reset_index().assign(policy="current")
     ])
+    # Each report group must appear exactly once in the per-district ledger.
+    ledger=pd.merge(
+        old_ex[KEY+["reason"]].rename(columns={"reason":"legacy_exclusion_reason"}),
+        new_ex[KEY+["reason"]].rename(columns={"reason":"current_exclusion_reason"}),
+        on=KEY,how="outer",validate="one_to_one"
+    )
+    ledger=pd.merge(
+        ledger,old[KEY].assign(legacy_included=True),
+        on=KEY,how="outer",validate="one_to_one"
+    )
+    ledger=pd.merge(
+        ledger,current[KEY].assign(current_included=True),
+        on=KEY,how="outer",validate="one_to_one"
+    )
+    ledger["legacy_included"]=ledger["legacy_included"].fillna(False).astype(bool)
+    ledger["current_included"]=ledger["current_included"].fillna(False).astype(bool)
+    if len(ledger)!=len(source_old):
+        raise AssertionError("The per-election ledger does not cover every official source group")
+    if (ledger["legacy_included"]==ledger["legacy_exclusion_reason"].notna()).any():
+        raise AssertionError("A legacy report group has both inclusion and exclusion")
+    if (ledger["current_included"]==ledger["current_exclusion_reason"].notna()).any():
+        raise AssertionError("A current report group has both inclusion and exclusion")
     output=args.current_dir
+    ledger.sort_values(KEY).to_csv(output/"selection-ledger.csv",index=False)
     scores.to_csv(output/"cohort-comparison.csv",index=False)
     states.to_csv(output/"year-state-selection.csv",index=False)
     reasons.to_csv(output/"state-reason-selection.csv",index=False)
