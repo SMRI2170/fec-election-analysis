@@ -7,6 +7,7 @@ on:
       - 'data/sources/**'
       - 'scripts/download_fec.py'
       - 'scripts/audit_fec_workbook.py'
+      - 'scripts/normalize_fec.py'
       - '.github/workflows/fec-data-audit.yml'
 
 permissions:
@@ -34,6 +35,21 @@ jobs:
         run: python scripts/audit_fec_workbook.py data/raw/federalelections2020.xlsx --max-sheets 2 --rows 18 --sheet-contains "House Results" --output data/raw/fec2020-audit.json
       - name: Inspect 2022 first sheets
         run: python scripts/audit_fec_workbook.py data/raw/federalelections2022.xlsx --max-sheets 2 --rows 18 --sheet-contains "House Results" --output data/raw/fec2022-audit.json
+      - name: Normalize conservative 2020/2022 House subset
+        run: python scripts/normalize_fec.py --years 2020 2022
+      - name: Validate normalized data against a known FEC example
+        run: |
+          python - <<'PY'
+          import pandas as pd
+          d = pd.read_csv('data/processed/elections.csv', dtype={'district': str})
+          subset = d[(d.year == 2020) & (d.state == 'AL') & (d.district == '01')]
+          assert len(subset) == 1, f'AL-01 missing/duplicated: {len(subset)}'
+          row = subset.iloc[0]
+          expected = (99469, 52103, 211825, 116949)
+          actual = tuple(int(row[c]) for c in ['primary_rep_votes', 'primary_dem_votes', 'general_rep_votes', 'general_dem_votes'])
+          assert actual == expected, f'FEC AL-01 discrepancy: {actual} != {expected}'
+          print('FEC 2020 Alabama House district 01 reconciliation succeeded')
+          PY
       - name: Publish only small audit logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -43,5 +59,6 @@ jobs:
             data/raw/download-manifest.json
             data/raw/fec2020-audit.json
             data/raw/fec2022-audit.json
+            data/processed/normalization-summary.json
           if-no-files-found: ignore
           retention-days: 3
