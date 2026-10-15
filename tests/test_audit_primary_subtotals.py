@@ -63,6 +63,7 @@ def test_W_R_primary_writein_is_accounted_separately():
     frame.loc[frame.index[-1],"_party"]="W(R)"
     frame.loc[frame.index[-1],"_marker"]=pd.NA
     frame.loc[frame.index[-1],"_candidate"]=False
+    frame["_candidate"]=frame["_candidate"].astype(bool)
     found,_=mod.inspect(frame,excluded,2020,"House")
     row=found[found.party=="R"].iloc[0]
     assert row.delta==5 and row.affiliated_writein_votes==5
