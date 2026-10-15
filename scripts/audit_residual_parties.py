@@ -36,7 +36,8 @@ def examine(group: pd.DataFrame, year: int, state: str, district: str) -> tuple[
         reported=vote(total.iloc[0]["PRIMARY VOTES"]) if len(total)==1 else None
         gap=(reported-count-writein) if reported is not None else None
         candidate_rows=group[group["_candidate"] & ~group["_party"].isin(["R","D"])]
-        multiparty=candidate_rows[candidate_rows["_party"].map(lambda x:party in party_tokens(x))]
+        has_party=candidate_rows["_party"].map(lambda x:party in party_tokens(x)).fillna(False).astype(bool)
+        multiparty=candidate_rows.loc[has_party]
         alternate_votes=[vote(v) for v in multiparty["PRIMARY VOTES"]]
         alternate_sum=sum(v for v in alternate_votes if v is not None)
         status=("no_single_party_subtotal" if reported is None else
