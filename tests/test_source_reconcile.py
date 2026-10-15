@@ -87,3 +87,13 @@ def test_total_includes_minor_party_row_without_fec_id():
     _, result = audit.reconcile(normalized, {2022: raw})
     assert result["summary"]["candidate_sum_mismatches"] == 0
     assert result["summary"]["district_total_mismatches"] == 0
+
+def test_state_cluster_bootstrap_returns_interval():
+    df = pd.DataFrame({
+        "state": ["AA","AA","BB","BB"],
+        "primary_rule_error": [0,0,1,0],
+        "logistic_error": [1,0,0,1],
+    })
+    result = stats.compare_predictions(df, repetitions=200, seed=13)
+    assert len(result["state_cluster_bootstrap_95pct_interval"]) == 2
+    assert all(-1 <= v <= 1 for v in result["state_cluster_bootstrap_95pct_interval"])
