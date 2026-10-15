@@ -54,3 +54,17 @@ def test_discrepancy_count_fails_closed():
     rows.loc[rows.party=="R","delta"]=0
     with pytest.raises(AssertionError,match="disagrees"):
         mod.summarize(rows,excluded)
+
+def test_W_R_primary_writein_is_accounted_separately():
+    frame, excluded=fixture()
+    frame.loc[len(frame)] = ["AZ","03",None,"Write in","W(R)",5]
+    frame.loc[frame.index[-1],"_state"]="AZ"
+    frame.loc[frame.index[-1],"_district"]="03"
+    frame.loc[frame.index[-1],"_party"]="W(R)"
+    frame.loc[frame.index[-1],"_marker"]=pd.NA
+    frame.loc[frame.index[-1],"_candidate"]=False
+    found,_=mod.inspect(frame,excluded,2020,"House")
+    row=found[found.party=="R"].iloc[0]
+    assert row.delta==5 and row.affiliated_writein_votes==5
+    assert row.remaining_after_affiliated_writeins==0
+    assert mod.summarize(found,excluded)["affiliated_writein_rows_explain_delta"]==1
