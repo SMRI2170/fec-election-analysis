@@ -63,3 +63,16 @@ def test_missing_party_rejected():
 def test_invalid_headers_fail():
     with pytest.raises(ValueError, match="missing"):
         mod.normalize_house(pd.DataFrame({"OTHER": [1]}), 2020, "fec.xlsx", "House")
+
+def test_2016_verified_district_and_fec_id_aliases():
+    df = sample_house().rename(columns={"DISTRICT": "D", "FEC ID": "FEC ID#"})
+    good, bad = mod.normalize_house(df, 2016, "fec2016.xlsx", "2016 US House Results by State")
+    assert len(good) == 1 and bad.empty
+    assert good.iloc[0]["district"] == "01"
+
+
+def test_2018_verified_fec_id_alias():
+    df = sample_house().rename(columns={"FEC ID": "FEC ID#"})
+    good, bad = mod.normalize_house(df, 2018, "fec2018.xlsx", "2018 US House Results by State")
+    assert len(good) == 1 and bad.empty
+    assert good.iloc[0]["primary_rep_votes"] == 70
