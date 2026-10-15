@@ -11,7 +11,8 @@ from source_reconcile import read_house, vote
 
 COLUMNS = ["year","state","district","party","candidate_sum","party_subtotal",
            "delta","abs_delta","candidate_count","idless_row_count",
-           "idless_votes","remaining_after_idless","non_numeric_candidate_count",
+           "idless_votes","remaining_after_idless","affiliated_writein_votes",
+    "affiliated_writein_rows","remaining_after_affiliated_writeins","non_numeric_candidate_count",
            "non_numeric_idless_count","source_sheet"]
 
 
