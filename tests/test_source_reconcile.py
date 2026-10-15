@@ -23,7 +23,7 @@ def example():
         ["AA","01",None,None,"Party Votes:","R",70,None],
         ["AA","01",None,None,"Party Votes:","D",60,None],
         ["AA","01",None,None,"District Votes:",None,130,105],
-        ["AA","01",None,"Third","Scattered","W",None,5],
+        ["AA","01",None,"Scattered",None,"W",None,5],
     ]
     raw = pd.DataFrame(rows, columns=fields)
     raw["_candidate"] = raw["FEC ID"].notna()
