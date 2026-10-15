@@ -69,13 +69,14 @@ def audit_one(group: pd.DataFrame, expected: pd.Series) -> tuple[dict, list[dict
     mismatch = [key for key, value in computed.items() if value != int(expected[key])]
     total_rows = group[group["_marker"].eq("district votes:")]
     reported = vote(total_rows.iloc[0]["GENERAL VOTES"]) if len(total_rows) == 1 else None
+    # Some valid minor-party / write-in rows have NO FEC candidate ID.
+    # The official District Votes total sums all rows carrying a party label,
+    # excluding explicit Party Votes / District Votes subtotal rows.
     actual_general_total = sum(
         vote(row["GENERAL VOTES"]) or 0
         for _, row in group.iterrows()
-        if bool(row["_candidate"]) or (
-            str(row.get("CANDIDATE NAME", "")).strip().lower() == "scattered"
-            and str(row["_party"]) == "W"
-        )
+        if pd.notna(row["_party"])
+        and str(row["_marker"]) not in {"district votes:", "party votes:", "total votes:"}
     )
     district_matches = None if reported is None else reported == actual_general_total
     return {
