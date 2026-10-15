@@ -10,7 +10,7 @@ FEC公式の2016/2018/2020/2022年下院結果から、予備選挙の共和・�
 
 - [x] [#2 出典調査](https://github.com/SMRI2170/fec-election-analysis/issues/2): 2010〜2022の公開資料リンク、2016〜2022公式XLSXの列構造
 - [x] [#4 年度外モデル比較](https://github.com/SMRI2170/fec-election-analysis/issues/4): 2018 / 2020 / 2022年の時間順評価
-- [x] [PR #13 公式票数照合・統計検定](https://github.com/SMRI2170/fec-election-analysis/pull/13): 抽出済み740件は候補者票・地区票と一致、2022年のモデル比較にペア検定・州クラスター区間推定を追加
+- [x] [PR #13 公式票数照合・統計検定](https://github.com/SMRI2170/fec-election-analysis/pull/13): 当初抽出740件は候補者票・地区票と一致（#15の2件追加除外後は738件）、2022年のモデル比較にペア検定・州クラスター区間推定を追加
 
 ## 次に実施するIssue（上から順に）
 
@@ -18,14 +18,14 @@ FEC公式の2016/2018/2020/2022年下院結果から、予備選挙の共和・�
 |---|---|---|---|
 | P0 | [#14 Primary小計差224件](https://github.com/SMRI2170/fec-election-analysis/issues/14) | 差分の監査、採用/除外ルールの確定 | 全差分と原因分類、変更前後の件数を再現 |
 | P0 | [#15 勝敗ターゲットの定義](https://github.com/SMRI2170/fec-election-analysis/issues/15) | 二大政党優勢 vs 公式当選者、州制度の監査 | 公式表示との一致/不一致とターゲットの定義を公表 |
-| P0 | [#16 標本選択と頑健性](https://github.com/SMRI2170/fec-election-analysis/issues/16) | 740件の偏りを年/州/除外理由で測定 | 母数・採用率、同じ標本での感度評価 |
+| P0 | [#16 標本選択と頑健性](https://github.com/SMRI2170/fec-election-analysis/issues/16) | 現行738件（初期740件）の偏りを年/州/除外理由で測定 | 母数・採用率、同じ標本での感度評価 |
 | P1 | [#17 誤予測5事例](https://github.com/SMRI2170/fec-election-analysis/issues/17) | 高誤差区の候補者・制度に基づくケーススタディ | 観察事実と仮説を分けた証拠表 |
 | P1 | [#18 再現性の固定](https://github.com/SMRI2170/fec-election-analysis/issues/18) | 3日で消えるActions Artifactsに依存せず条件・集計値を記録 | versionとSHAを残し同じ結果を再生成 |
 | 最終 | [#6 Wordレポート](https://github.com/SMRI2170/fec-election-analysis/issues/6) | 結果・考察・図表・文献・コードを指定テンプレートへ | DOCXのレイアウト・提出条件を満たし提出完了 |
 
 ## 親Issue（進捗管理の入口）
 
-- [#3 データの正規化品質](https://github.com/SMRI2170/fec-election-analysis/issues/3): #14・#15の成果を集約する。740件の内部整合確認は実施済み、除外理由の妥当性は未解決。
+- [#3 データの正規化品質](https://github.com/SMRI2170/fec-election-analysis/issues/3): #14・#15の成果を集約する。現在の738件（旧基準740件）の内部整合確認は実施済み、除外理由の妥当性は未解決。
 - [#5 頑健性とケーススタディ](https://github.com/SMRI2170/fec-election-analysis/issues/5): #16・#17の成果を集約する。既存モデルの評価・閾値感度・ペア検定は実施済み。
 - [#6 Word提出](https://github.com/SMRI2170/fec-election-analysis/issues/6): 上記の成果を論文として統合する。
 
