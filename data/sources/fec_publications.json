@@ -1,0 +1,13 @@
+{
+  "catalog_url": "https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/",
+  "verified_link_date": "2026-10-15",
+  "publications": [
+    {"year": 2010, "format": "xls", "excel_url": "https://www.fec.gov/documents/1675/federalelections2010.xls"},
+    {"year": 2012, "format": "xls", "excel_url": "https://www.fec.gov/documents/1691/federalelections2012.xls"},
+    {"year": 2014, "format": "xls", "excel_url": "https://www.fec.gov/documents/1700/federalelections2014.xls"},
+    {"year": 2016, "format": "xlsx", "excel_url": "https://www.fec.gov/documents/1890/federalelections2016.xlsx"},
+    {"year": 2018, "format": "xlsx", "excel_url": "https://www.fec.gov/documents/2706/federalelections2018.xlsx"},
+    {"year": 2020, "format": "xlsx", "excel_url": "https://www.fec.gov/documents/4228/federalelections2020.xlsx"},
+    {"year": 2022, "format": "xlsx", "excel_url": "https://www.fec.gov/documents/5676/federalelections2022.xlsx"}
+  ]
+}
