@@ -10,6 +10,8 @@ on:
       - 'scripts/normalize_fec.py'
       - 'scripts/analyze.py'
       - 'scripts/run_backtests.py'
+      - 'scripts/run_sensitivity.py'
+      - 'scripts/error_cases.py'
       - '.github/workflows/fec-data-audit.yml'
 
 permissions:
@@ -58,6 +60,10 @@ jobs:
           PY
       - name: Evaluate rolling out-of-year backtests
         run: python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022 --output data/processed/backtest_metrics.csv
+      - name: Evaluate sample selection sensitivity
+        run: python scripts/run_sensitivity.py --input data/processed/elections.csv --test-year 2022
+      - name: Report the largest 2022 prediction errors
+        run: python scripts/error_cases.py --input data/processed/elections.csv --test-year 2022
       - name: Publish only small audit logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -71,5 +77,7 @@ jobs:
             data/raw/fec2022-audit.json
             data/processed/normalization-summary.json
             data/processed/backtest_metrics.csv
+            data/processed/sensitivity_metrics.csv
+            data/processed/errors_2022.csv
           if-no-files-found: ignore
           retention-days: 3
