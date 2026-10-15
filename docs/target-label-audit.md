@@ -1,3 +1,5 @@
+> **現行の基準（2026-10-15、Issue #14のW(R)/W(D)修正）:** 分析対象921件。以下の740件・738件の値は**履歴**です。2022年のロジスティック正解率は86.67%、単純規則89.58%、McNemar正確検定p=0.09229です。[最新年度外予測](model-evaluation.md)に基づいて論文を作成してください。
+
 # FEC公式当選者と二大政党票の優勢の区別（Issue #15）
 
 検証日: **2026-10-15**。実データ根拠: [FEC source audit（修正前）](https://github.com/SMRI2170/fec-election-analysis/actions/runs/38701825993) / [FEC source audit（修正後）](https://github.com/SMRI2170/fec-election-analysis/actions/runs/38702180616)。

@@ -50,6 +50,22 @@ jobs:
         run: python scripts/audit_fec_workbook.py data/raw/federalelections2022.xlsx --max-sheets 2 --rows 18 --sheet-contains "House Results" --output data/raw/fec2022-audit.json
       - name: Normalize conservative 2016-2022 House subset
         run: python scripts/normalize_fec.py --years 2016 2018 2020 2022
+      - name: Regression-check party-affiliated FEC primary write-in handling
+        run: |
+          python - <<'PY'
+          import pandas as pd
+          rows = pd.read_csv('data/processed/elections.csv', dtype={'district': str})
+          assert len(rows) == 921, f"Unexpected eligible cases: {len(rows)}"
+          pa = rows[(rows.year==2022) & (rows.state=='PA') & (rows.district=='01')]
+          assert len(pa)==1
+          check = pa.iloc[0]
+          actual = (int(check.primary_rep_votes),int(check.primary_dem_votes))
+          assert actual == (92564,80012), f'FEC PA-01 primary write-in attribution: {actual}'
+          for state,district in [('ME','02'),('NC','09')]:
+              invalid = rows[(rows.year==2018)&(rows.state==state)&(rows.district==district)]
+              assert invalid.empty, f'Non-standard 2018 winner was retained: {state}-{district}'
+          print("FEC 2022 PA-01 R/D W(R),W(D) and excluded 2018 ME/NC issues verified")
+          PY
       - name: Validate normalized data against a known FEC example
         run: |
           python - <<'PY'
