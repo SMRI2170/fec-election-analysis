@@ -11,14 +11,17 @@ from pathlib import Path
 import pandas as pd
 
 
-def inspect(path: Path, max_sheets: int = 8, rows: int = 6) -> dict:
+def inspect(path: Path, max_sheets: int = 8, rows: int = 6, sheet_contains: str | None = None) -> dict:
     if not path.is_file():
         raise FileNotFoundError(path)
     if max_sheets < 1 or rows < 1:
         raise ValueError("max_sheets and rows must be >= 1")
     with pd.ExcelFile(path) as book:
         sheets = []
-        for name in book.sheet_names[:max_sheets]:
+        selected = [name for name in book.sheet_names if sheet_contains is None or sheet_contains.lower() in name.lower()]
+        if not selected:
+            raise ValueError(f"No matching sheet: {sheet_contains}")
+        for name in selected[:max_sheets]:
             frame = pd.read_excel(book, sheet_name=name, header=None, nrows=rows, dtype=object)
             preview = [
                 [None if pd.isna(v) else str(v)[:120] for v in row]
@@ -39,9 +42,10 @@ def main() -> None:
     parser.add_argument("file", type=Path)
     parser.add_argument("--max-sheets", type=int, default=8)
     parser.add_argument("--rows", type=int, default=6)
+    parser.add_argument("--sheet-contains", type=str)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    summary = inspect(args.file, args.max_sheets, args.rows)
+    summary = inspect(args.file, args.max_sheets, args.rows, args.sheet_contains)
     encoded = json.dumps(summary, ensure_ascii=False, indent=2)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
