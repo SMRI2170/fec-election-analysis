@@ -65,3 +65,11 @@ def test_reject_nonbinary_errors():
     df = pd.DataFrame({"primary_rule_error":[0,2], "logistic_error":[0,1]})
     with pytest.raises(ValueError, match="binary"):
         stats.compare_predictions(df)
+
+def test_reconcile_pandas_missing_marker_values():
+    raw, normalized = example()
+    raw.loc[0, "_marker"] = pd.NA
+    raw.loc[1, "_marker"] = pd.NA
+    _, result = audit.reconcile(normalized, {2022: raw})
+    assert result["summary"]["candidate_sum_mismatches"] == 0
+    assert result["summary"]["district_total_mismatches"] == 0
