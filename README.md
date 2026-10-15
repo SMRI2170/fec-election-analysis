@@ -72,3 +72,7 @@ python scripts/analyze.py --input data/processed/elections.csv --test-year 2022
 公開リポジトリの標準GitHub-hosted runner（`ubuntu-latest`）でテストを実施します。Actionsの実行時間は無料ですが、同時実行・単一ジョブの時間・成果物ストレージ等は制限されます。大量のバッチ分析をCIの代わりに連続実行する用途には使わないでください。
 
 研究用の初期構成であり、ライセンスは未設定です。外部データや参照コードは各ファイル・レポートに出典を示します。
+
+## 公式FECデータの出典・形式監査
+
+取得元一覧と検査方法は [出典台帳](docs/fec-source-inventory.md) を参照。`python scripts/download_fec.py --years 2020 2022` で公式Excelを取得し、`python scripts/audit_fec_workbook.py data/raw/federalelections2022.xlsx` で原ファイルの表構造を確認できます。データの正規化はIssue #3で行います。
