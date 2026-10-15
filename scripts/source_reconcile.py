@@ -72,7 +72,7 @@ def audit_one(group: pd.DataFrame, expected: pd.Series) -> tuple[dict, list[dict
     actual_general_total = sum(
         vote(row["GENERAL VOTES"]) or 0
         for _, row in group.iterrows()
-        if bool(row["_candidate"]) or row["_marker"] == "scattered"
+        if bool(row["_candidate"]) or str(row["_marker"]) == "scattered"
     )
     district_matches = None if reported is None else reported == actual_general_total
     return {
