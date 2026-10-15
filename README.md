@@ -88,3 +88,7 @@ python scripts/run_backtests.py --input data/processed/elections.csv --test-year
 ```
 
 [分析方法・実測結果と限界](docs/model-evaluation.md) / [データの除外条件](docs/normalization-audit.md)
+
+## データの信頼性と統計的な不確実性
+
+抽出した740件について、公式Excelの候補者票と選挙区別総票の内部整合を再確認しました。[原票照合と限界](docs/source-reconciliation.md) / [2022年の勝敗モデル比較と統計的検定](docs/sensitivity-analysis.md)。
