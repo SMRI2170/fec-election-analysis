@@ -31,6 +31,11 @@ def inspect(raw: pd.DataFrame, excluded: pd.DataFrame, year: int, sheet: str):
             subtotals = party_rows[party_rows["_marker"].eq("party votes:")]
             other = party_rows[~party_rows["_candidate"] &
                                ~party_rows["_marker"].isin(["party votes:","district votes:","total votes:"])]
+            # Official FEC Party Votes often include write-ins coded W(R)/W(D).
+            # Preserve them separately; do not yet change normalized samples.
+            affiliate = group[group["_party"].eq(f"W({party})")]
+            affiliate_values = [vote(v) for v in affiliate["PRIMARY VOTES"]]
+            affiliate_sum = sum(v for v in affiliate_values if v is not None)
             candidate_values = [vote(v) for v in candidates["PRIMARY VOTES"]]
             other_values = [vote(v) for v in other["PRIMARY VOTES"]]
             candidate_sum = sum(v for v in candidate_values if v is not None)
@@ -44,6 +49,9 @@ def inspect(raw: pd.DataFrame, excluded: pd.DataFrame, year: int, sheet: str):
                 "candidate_count":len(candidates),"idless_row_count":len(other),
                 "idless_votes":other_sum,
                 "remaining_after_idless":delta-other_sum if delta is not None else None,
+                "affiliated_writein_votes":affiliate_sum,
+                "affiliated_writein_rows":len(affiliate),
+                "remaining_after_affiliated_writeins":delta-affiliate_sum if delta is not None else None,
                 "non_numeric_candidate_count":sum(pd.notna(v) and n is None for v,n in zip(candidates["PRIMARY VOTES"],candidate_values)),
                 "non_numeric_idless_count":sum(pd.notna(v) and n is None for v,n in zip(other["PRIMARY VOTES"],other_values)),
                 "source_sheet":sheet
@@ -51,6 +59,13 @@ def inspect(raw: pd.DataFrame, excluded: pd.DataFrame, year: int, sheet: str):
             case["parties"].append({
                 "party":party, "candidate_sum":candidate_sum,"subtotal":subtotal,
                 "delta":delta,"idless_vote_sum":other_sum,
+                "affiliated_writein_votes":affiliate_sum,
+                "affiliated_writein_rows":[{
+                    "name":str(row.get("CANDIDATE NAME","")),
+                    "party":str(row.get("PARTY","")),
+                    "raw_primary":None if pd.isna(row["PRIMARY VOTES"]) else str(row["PRIMARY VOTES"]),
+                    "footnote":None if pd.isna(row.get("FOOTNOTES")) else str(row["FOOTNOTES"])[:150]
+                } for _,row in affiliate.iterrows()],
                 "candidates":[{
                     "name":str(row.get("CANDIDATE NAME","")),
                     "fec_id":str(row.get("FEC ID","")),
@@ -81,6 +96,9 @@ def summarize(details:pd.DataFrame,excluded:pd.DataFrame) -> dict:
         "by_year":{str(k):int(v) for k,v in wanted.groupby("year").size().items()},
         "affected_party_sides":len(affected),
         "idless_rows_explain_delta":explained,
+        "affiliated_writein_rows_explain_delta":int(affected["remaining_after_affiliated_writeins"].eq(0).sum()),
+        "affiliated_writein_delta_unresolved":int(affected["remaining_after_affiliated_writeins"].ne(0).sum()),
+        "total_affiliated_writein_votes_on_affected_party_sides":int(affected["affiliated_writein_votes"].sum()),
         "remaining_unresolved_party_sides":len(affected)-explained,
         "party_breakdown":{str(k):int(v) for k,v in affected.groupby("party").size().items()},
         "subtotal_greater_than_candidates":int(affected.delta.gt(0).sum()),
