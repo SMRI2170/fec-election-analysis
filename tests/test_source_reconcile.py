@@ -73,3 +73,17 @@ def test_reconcile_pandas_missing_marker_values():
     _, result = audit.reconcile(normalized, {2022: raw})
     assert result["summary"]["candidate_sum_mismatches"] == 0
     assert result["summary"]["district_total_mismatches"] == 0
+
+def test_total_includes_minor_party_row_without_fec_id():
+    raw, normalized = example()
+    extra = raw.iloc[-1].copy()
+    extra["CANDIDATE NAME"] = "Independent"
+    extra["PARTY"] = "IND"
+    extra["_party"] = "IND"
+    extra["GENERAL VOTES"] = 3
+    extra["_candidate"] = False
+    raw = pd.concat([raw, pd.DataFrame([extra])], ignore_index=True)
+    raw.loc[raw["TOTAL VOTES"].eq("District Votes:"), "GENERAL VOTES"] = 108
+    _, result = audit.reconcile(normalized, {2022: raw})
+    assert result["summary"]["candidate_sum_mismatches"] == 0
+    assert result["summary"]["district_total_mismatches"] == 0
