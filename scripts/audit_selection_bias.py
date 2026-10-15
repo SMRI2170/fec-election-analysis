@@ -102,7 +102,7 @@ def main():
         on=KEY,how="outer",validate="one_to_one"
     )
     ledger=pd.merge(
-        ledger,current[KEY].assign(current_included=True),
+        ledger,new[KEY].assign(current_included=True),
         on=KEY,how="outer",validate="one_to_one"
     )
     ledger["legacy_included"]=ledger["legacy_included"].fillna(False).astype(bool)
