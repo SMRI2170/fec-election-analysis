@@ -1,4 +1,4 @@
-"""Conservative normalizer for 2020/2022 FEC US House results sheets.
+"""Conservative normalizer for 2016/2018/2020/2022 FEC US House results sheets.
 
 Output is a subset: an excluded-contest audit must accompany every dataset.
 No imputation of missing primary votes or inferences about special elections.
@@ -38,7 +38,9 @@ def district_key(value: object) -> str | None:
 def normalize_house(frame: pd.DataFrame, year: int, source_file: str, source_sheet: str, excluded_states: frozenset[str] = DEFAULT_EXCLUDE_STATES) -> tuple[pd.DataFrame, pd.DataFrame]:
     # Year-specific workbooks are human-readable reports, not clean candidate tables.
     source = frame.copy()
-    source.columns = [str(name).strip().upper() for name in source.columns]
+    # Verified year-specific aliases (FEC House workbooks for 2016/2018).
+    aliases = {"D": "DISTRICT", "FEC ID#": "FEC ID"}
+    source.columns = [aliases.get(str(name).strip().upper(), str(name).strip().upper()) for name in source.columns]
     missing = sorted(set(REQUIRED) - set(source.columns))
     if missing:
         raise ValueError(f"Expected House columns missing: {missing}")
@@ -129,10 +131,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Normalize conservatively selected House general/primary contests")
     parser.add_argument("--input-dir", type=Path, default=Path("data/raw"))
     parser.add_argument("--output-dir", type=Path, default=Path("data/processed"))
-    parser.add_argument("--years", type=int, nargs="+", default=[2020, 2022])
+    parser.add_argument("--years", type=int, nargs="+", default=[2016, 2018, 2020, 2022])
     args = parser.parse_args()
-    if not set(args.years).issubset({2020, 2022}):
-        parser.error("This initial normalizer supports only inspected 2020/2022 xlsx layouts")
+    if not set(args.years).issubset({2016, 2018, 2020, 2022}):
+        parser.error("This initial normalizer supports only inspected 2016/2018/2020/2022 xlsx layouts")
     outputs, audits, meta = [], [], []
     for year in args.years:
         path = args.input_dir / f"federalelections{year}.xlsx"
