@@ -16,6 +16,7 @@ on:
       - 'scripts/source_reconcile.py'
       - 'scripts/paired_accuracy.py'
       - 'scripts/audit_primary_subtotals.py'
+      - 'scripts/audit_residual_parties.py'
       - 'scripts/audit_selection_bias.py'
       - 'scripts/audit_winners.py'
       - '.github/workflows/fec-data-audit.yml'
@@ -88,6 +89,8 @@ jobs:
         run: python scripts/error_cases.py --input data/processed/elections.csv --test-year 2022
       - name: Inspect every excluded primary subtotal discrepancy
         run: python scripts/audit_primary_subtotals.py
+      - name: Diagnose remaining composite-party and unmatched primary gaps
+        run: python scripts/audit_residual_parties.py
       - name: Compare two-party leads with FEC general election winners
         run: python scripts/audit_winners.py
       - name: Verify model error difference on paired 2022 contests
@@ -121,6 +124,9 @@ jobs:
             data/processed/primary-subtotal-differences.csv
             data/processed/primary-subtotal-summary.json
             data/processed/primary-subtotal-examples.json
+            data/processed/residual-party-discrepancies.csv
+            data/processed/residual-multiparty-candidates.csv
+            data/processed/residual-party-summary.json
             data/processed/cohort-comparison.csv
             data/processed/cohort-summary.json
             data/processed/selection-ledger.csv
