@@ -1,3 +1,5 @@
+> **進捗更新（2026-10-15）:** #15は完了、#14では`W(R)`/`W(D)`を正規化して現行921件（旧738件）を採用。Primary小計不一致による残りの除外は21件。残る対象は#14の複数政党表記・#16の標本選択バイアス、#17・#18・#6。本文中の旧740/738は履歴を指す。
+
 # FEC Election Analysis — 実施順序とIssue台帳
 
 更新: 2026-10-15。**GitHub Issueの番号を唯一の参照先として使用する。** 以前の「Issue 1〜5」は概要用の仮番号であり、実際のGitHub番号ではなかったため置き換えた。
@@ -17,7 +19,7 @@ FEC公式の2016/2018/2020/2022年下院結果から、予備選挙の共和・�
 | 優先 | GitHub | 作業 | 完了の判定 |
 |---|---|---|---|
 | P0 | [#14 Primary小計差224件](https://github.com/SMRI2170/fec-election-analysis/issues/14) | 差分の監査、採用/除外ルールの確定 | 全差分と原因分類、変更前後の件数を再現 |
-| P0 | [#15 勝敗ターゲットの定義](https://github.com/SMRI2170/fec-election-analysis/issues/15) | 二大政党優勢 vs 公式当選者、州制度の監査 | 公式表示との一致/不一致とターゲットの定義を公表 |
+| 完了 | [#15 勝敗ターゲットの定義](https://github.com/SMRI2170/fec-election-analysis/issues/15) | 二大政党優勢 vs 公式当選者、州制度の監査 | 公式表示との一致/不一致とターゲットの定義を公表 |
 | P0 | [#16 標本選択と頑健性](https://github.com/SMRI2170/fec-election-analysis/issues/16) | 現行738件（初期740件）の偏りを年/州/除外理由で測定 | 母数・採用率、同じ標本での感度評価 |
 | P1 | [#17 誤予測5事例](https://github.com/SMRI2170/fec-election-analysis/issues/17) | 高誤差区の候補者・制度に基づくケーススタディ | 観察事実と仮説を分けた証拠表 |
 | P1 | [#18 再現性の固定](https://github.com/SMRI2170/fec-election-analysis/issues/18) | 3日で消えるActions Artifactsに依存せず条件・集計値を記録 | versionとSHAを残し同じ結果を再生成 |
