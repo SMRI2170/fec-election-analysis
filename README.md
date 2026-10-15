@@ -76,3 +76,15 @@ python scripts/analyze.py --input data/processed/elections.csv --test-year 2022
 ## 公式FECデータの出典・形式監査
 
 取得元一覧と検査方法は [出典台帳](docs/fec-source-inventory.md) を参照。`python scripts/download_fec.py --years 2020 2022` で公式Excelを取得し、`python scripts/audit_fec_workbook.py data/raw/federalelections2022.xlsx` で原ファイルの表構造を確認できます。データの正規化はIssue #3で行います。
+
+## 年度外予測の再現
+
+FEC公式XLSXの2016〜2022年をダウンロード・正規化した後、時間順にモデルを学習して評価します。
+
+```bash
+python scripts/download_fec.py --years 2016 2018 2020 2022
+python scripts/normalize_fec.py --years 2016 2018 2020 2022
+python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022
+```
+
+[分析方法・実測結果と限界](docs/model-evaluation.md) / [データの除外条件](docs/normalization-audit.md)
