@@ -47,3 +47,16 @@ def test_overlap_raises():
     base=make_data().iloc[:2]
     with pytest.raises(ValueError,match="overlap"):
         mod.state_counts(base,base[["year","state","district"]].iloc[[0]],"test")
+
+def test_common_district_vote_changes_are_rejected():
+    old=make_data()
+    current=old.copy()
+    current.loc[(current.year==2022)&(current.state=="AA"),"primary_rep_votes"]=200
+    with pytest.raises(AssertionError,match="Different normalized primary_rep_votes"):
+        mod.compare(old,current,2022)
+
+def test_legacy_cases_not_in_corrected_cohort_are_rejected():
+    old=make_data()
+    current=old[~((old.year==2022)&(old.state=="AA"))].copy()
+    with pytest.raises(AssertionError,match="drops legacy"):
+        mod.compare(old,current,2022)
