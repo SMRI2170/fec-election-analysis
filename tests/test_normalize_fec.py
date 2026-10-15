@@ -98,3 +98,29 @@ def test_valid_winners_remain_unchanged():
     flags=pd.DataFrame([{"state":"AL","district":"01","status":"agree"}])
     kept,removed=mod.exclude_nonstandard_winners(df,flags,2020)
     assert len(kept)==1 and removed.empty
+
+
+def test_affiliated_writein_votes_are_included_only_when_subtotal_matches():
+    df=sample_house()
+    df.loc[df["TOTAL VOTES"].eq("Party Votes:") & df["PARTY"].eq("R"),"PRIMARY VOTES"]=75
+    df.loc[len(df)] = ["AL","01",None,None,"W(R)",5,None]
+    good,bad=mod.normalize_house(df,2022,"fec.xlsx","House")
+    assert len(good)==1 and bad.empty
+    assert good.iloc[0]["primary_rep_votes"]==75
+    assert good.iloc[0]["primary_dem_votes"]==60
+
+
+def test_incorrect_affiliated_writein_subtotal_still_excluded():
+    df=sample_house()
+    df.loc[df["TOTAL VOTES"].eq("Party Votes:") & df["PARTY"].eq("R"),"PRIMARY VOTES"]=80
+    df.loc[len(df)] = ["AL","01",None,None,"W(R)",5,None]
+    good,bad=mod.normalize_house(df,2022,"fec.xlsx","House")
+    assert good.empty and bad.iloc[0]["reason"]=="primary-subtotal-mismatch"
+
+
+def test_affiliated_writein_without_party_total_is_not_guessed():
+    df=sample_house()
+    df=df[~(df["TOTAL VOTES"].eq("Party Votes:") & df["PARTY"].eq("R"))].copy()
+    df.loc[len(df)] = ["AL","01",None,None,"W(R)",5,None]
+    good,bad=mod.normalize_house(df,2022,"fec.xlsx","House")
+    assert good.empty and bad.iloc[0]["reason"]=="missing-primary-party-subtotal"
