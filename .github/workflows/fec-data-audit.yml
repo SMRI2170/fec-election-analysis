@@ -13,6 +13,8 @@ on:
       - 'scripts/run_sensitivity.py'
       - 'scripts/error_cases.py'
       - 'scripts/plot_results.py'
+      - 'scripts/source_reconcile.py'
+      - 'scripts/paired_accuracy.py'
       - '.github/workflows/fec-data-audit.yml'
 
 permissions:
@@ -65,6 +67,10 @@ jobs:
         run: python scripts/run_sensitivity.py --input data/processed/elections.csv --test-year 2022
       - name: Report the largest 2022 prediction errors
         run: python scripts/error_cases.py --input data/processed/elections.csv --test-year 2022
+      - name: Verify model error difference on paired 2022 contests
+        run: python scripts/paired_accuracy.py
+      - name: Reconcile all selected records against original FEC district totals
+        run: python scripts/source_reconcile.py
       - name: Produce reproducible report figures
         run: python scripts/plot_results.py --input data/processed/elections.csv --metrics data/processed/backtest_metrics.csv --test-year 2022
       - name: Publish only small audit logs
@@ -82,6 +88,9 @@ jobs:
             data/processed/backtest_metrics.csv
             data/processed/sensitivity_metrics.csv
             data/processed/errors_2022.csv
+            data/processed/paired-accuracy.json
+            data/processed/case-evidence.json
+            data/processed/source-reconciliation.csv
             outputs/figures/*.png
           if-no-files-found: ignore
           retention-days: 3
