@@ -76,3 +76,25 @@ def test_2018_verified_fec_id_alias():
     good, bad = mod.normalize_house(df, 2018, "fec2018.xlsx", "2018 US House Results by State")
     assert len(good) == 1 and bad.empty
     assert good.iloc[0]["primary_rep_votes"] == 70
+
+def test_uncertified_and_rcv_winners_are_separated():
+    df = pd.DataFrame([
+      {"year":2018,"state":"ME","district":"02","chamber":"House"},
+      {"year":2018,"state":"NC","district":"09","chamber":"House"},
+      {"year":2018,"state":"AL","district":"01","chamber":"House"},
+    ])
+    official = pd.DataFrame([
+      {"state":"ME","district":"02","status":"different_winner"},
+      {"state":"NC","district":"09","status":"no_official_flag"},
+      {"state":"AL","district":"01","status":"agree"},
+    ])
+    kept, removed=mod.exclude_nonstandard_winners(df,official,2018)
+    assert len(kept)==1 and kept.iloc[0]["state"]=="AL"
+    assert set(removed["reason"])=={"official-ge-different_winner","official-ge-no_official_flag"}
+
+
+def test_valid_winners_remain_unchanged():
+    df = pd.DataFrame([{"state":"AL","district":"01","year":2020}])
+    flags=pd.DataFrame([{"state":"AL","district":"01","status":"agree"}])
+    kept,removed=mod.exclude_nonstandard_winners(df,flags,2020)
+    assert len(kept)==1 and removed.empty
