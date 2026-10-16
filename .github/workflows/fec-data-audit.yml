@@ -12,6 +12,7 @@ on:
       - 'scripts/run_backtests.py'
       - 'scripts/run_sensitivity.py'
       - 'scripts/error_cases.py'
+      - 'scripts/build_error_case_studies.py'
       - 'scripts/plot_results.py'
       - 'scripts/source_reconcile.py'
       - 'scripts/paired_accuracy.py'
@@ -101,6 +102,8 @@ jobs:
         run: python scripts/paired_accuracy.py
       - name: Reconcile all selected records against original FEC district totals
         run: python scripts/source_reconcile.py
+      - name: Build source-verified top-five prediction error case study
+        run: python scripts/build_error_case_studies.py --top-n 5
       - name: Produce reproducible report figures
         run: python scripts/plot_results.py --input data/processed/elections.csv --metrics data/processed/backtest_metrics.csv --test-year 2022
       - name: Recompute historical cohort without attributed primary write-ins
@@ -126,6 +129,7 @@ jobs:
             data/processed/errors_2022.csv
             data/processed/paired-accuracy.json
             data/processed/case-evidence.json
+            data/processed/2022-top-error-cases.csv
             data/processed/source-reconciliation.csv
             data/processed/primary-subtotal-differences.csv
             data/processed/primary-subtotal-summary.json
