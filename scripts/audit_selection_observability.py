@@ -142,6 +142,19 @@ def diagnose(
         "general_margin_uses_only_reported_numeric_R_D_candidate_rows": True,
         "report_groups_are_not_a_US_national_probability_sample": True,
     }
+    # Compare competitiveness only where the original workbook contains
+    # observed numeric R and D General candidate votes. This is NOT an
+    # estimate for excluded groups lacking comparable candidate vote cells.
+    for name, selected in (("selected", True), ("excluded", False)):
+        comparable = frame[frame["included"].eq(selected) & frame["general_both_observed"]]
+        margins = comparable["general_observed_abs_margin"].dropna()
+        coverage[f"{name}_general_margin_comparable_n"] = len(margins)
+        coverage[f"{name}_general_median_abs_margin"] = (
+            float(margins.median()) if len(margins) else None
+        )
+        coverage[f"{name}_general_margin_within_10pp_n"] = (
+            int((margins <= 0.10).sum()) if len(margins) else 0
+        )
     return frame, summary, coverage
 
 
