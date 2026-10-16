@@ -100,3 +100,29 @@ python scripts/audit_selection_bias.py --legacy-dir data/processed/legacy --curr
 - Issue #17の個別誤予測例では、採用群に偏りがあることを踏まえ、原因の因果的断定を避ける。
 
 この研究の中心結果は「前処理によって予測の統計的結論が変わり得ること」だが、**原因が書き込み票の扱いに限定される範囲と、それ以外のサンプル選択による差を分けて説明する**。
+
+## 追加検証：除外群で観測できる得票情報（Issue #16、2026-10-16）
+
+[実FECデータ監査（全1,756グループ）](https://github.com/SMRI2170/fec-election-analysis/actions/runs/38849363678) により、採用／除外群の**もともとの原票セル**を再調査した。
+
+|原票から観測可能な項目|採用群（921件）|除外群（835件）|
+|---|---:|---:|
+|PrimaryのR/Dそれぞれの`Party Votes:`小計が数値で取得できる|921|68|
+|GeneralのR/D候補者票が両方とも数値で取得できる|921|577|
+
+Primaryについては候補者票からの欠損補完を行わず、**FECの公式Party Votes小計が各党1つずつ存在して数値である場合のみ**「観測可能」と判定する。Generalは数値が入ったR/D候補者行だけを使用し、空欄・`Unopposed`などの非数値欄をゼロとして埋めない。両党候補者票の数値がそれぞれ一つ以上ある場合に限り、観測値から二大政党得票比率および得票差を計算する。
+
+このため、除外群835件のうち577件にはGeneralの得票情報が残るが、68件にしか**両党の公式Primary小計**をそのまま取得できない。これらの条件は、元の正規化に必要な党別得票・候補者・制度の条件をすべて満たすわけではない。**68件をそのまま追加採用できるとは主張しない**。
+
+この追加検証は選挙後の**診断**であり、Generalの得票数・得票差を予測時の入力特徴量として学習・推論に渡さない。また、除外群の観測可能な一部だけを比べても、除外された全グループの競争度を推定したことにはならない。
+
+### 再現
+
+```bash
+python scripts/download_fec.py --years 2016 2018 2020 2022
+python scripts/normalize_fec.py --years 2016 2018 2020 2022
+python scripts/audit_selection_observability.py
+```
+
+Git管理対象外の成果物は `data/processed/selection-observability.csv`（全FECグループの元票・欠損区別・採否）、`selection-observability-summary.csv`（年度・除外理由別）、`selection-observability-meta.json`（全体の観測可能件数と競争度統計）。GitHub Actionsが生成する。観測可能なGeneral得票差の中央値は、元ファイルで両党の数値行がある対象に限定して記述し、採用群との単純な比較を全米の選挙競争度の比較と取り違えない。
+
