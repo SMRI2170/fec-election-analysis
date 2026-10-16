@@ -21,7 +21,7 @@ def raw_fixture():
         ["AA", "01", None, "R", 55, None, "Party Votes:"],
         ["AA", "01", None, "D", 45, None, "Party Votes:"],
         ["BB", "02", "HBB01", "R", "Unopposed", 75, None],
-        ["BB", "02", "HBB02", "D", 30, None, None],
+        ["BB", "02", "HBB02", "D", 30, 30, None],
         ["BB", "02", None, "R", "Unopposed", None, "Party Votes:"],
         ["BB", "02", None, "D", 30, None, "Party Votes:"],
     ]
