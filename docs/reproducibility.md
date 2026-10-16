@@ -15,7 +15,7 @@
 
 - 論文に掲載する指標の実数値は[現行916件の実験報告](model-evaluation.md)と合わせる。
 - 固定値は表示用に丸めた精度をもとにしているため許容誤差は`0.0001`。年・モデル名・評価件数が変わる場合は許容しない。
-- 公式ファイルの**恒久的SHA-256固定は、成功した公式データ監査からハッシュを確認してから**`official_source_sha256`へ追加する。追加前は、取得後ファイルとダウンロード時の記録の相互照合であり、将来の公式ファイル差し替えを検出する恒久的基準にはならない。
+- 公式ファイルの**SHA-256は固定済み**。2026-10-16の[成功したGitHub Actions](https://github.com/SMRI2170/fec-election-analysis/actions/runs/38853445992)から確認し、`data/sources/expected_analysis.json`の`official_source_sha256`に記録した。再取得したExcelが後日差し替わればCIが失敗する。
 
 ## 再実行方法
 
