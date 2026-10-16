@@ -69,3 +69,28 @@ python scripts/build_error_case_studies.py --top-n 5
 - [ ] 誤差の大きい5区と、それ以外の選挙区の候補者数・党内競争度を比較する。ただし事後選択バイアスと、因果解釈の制限を明示する。
 
 ここまでの**事実記録・原票照合**は完成したが、政治制度・候補者背景の外部裏付けが未完了のため、Issue #17はOpenのままとする。
+
+## 6. 州選管一次資料との独立照合（2026-10-16、追跡中）
+
+以下はFECから独立した**州当局の公式結果サイト**の所在と確認状況を記録する。サイトを発見したことと、候補者票を独立に照合できたことは区別する。
+
+|選挙区|公式州資料|検証状況|残作業|
+|---|---|---|---|
+|RI-02|[RI 2022 statewide primary](https://www.ri.gov/election/results/2022/statewide_primary/) / [RI 2022 general election](https://www.ri.gov/election/results/2022/general_election/)|**一次資料の票数照合済み**（下記）|候補者選択・党派参加層について因果説明はしない|
+|OH-15|[Ohio Secretary of State公式結果ポータル](https://www.ohiosos.gov/data) / [2022年本選挙の認証公表](https://www.ohiosos.gov/office/media-center/categories/press-releases/2022-12-09)|**公式資料の参照先特定のみ**|2022年Primary/Generalの地区別公式票数を取得しFEC候補者行と照合|
+|OH-09|[Ohio Secretary of State公式結果ポータル](https://www.ohiosos.gov/data) / [2022年本選挙の認証公表](https://www.ohiosos.gov/office/media-center/categories/press-releases/2022-12-09)|**公式資料の参照先特定のみ**|地区別Primary/General票数、候補者4対1を照合|
+|MI-03|[Michigan Secretary of State Election results and data](https://www.michigan.gov/sos/elections/election-results-and-data)|**公式2022年Primary/General報告への入口を特定**|該当年度の州認証結果で候補者と得票を照合|
+|NH-01|[NH州2022年共和党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state) / [民主党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-democratic-state) / [General結果](https://www.sos.nh.gov/elections/2022-election-results/2022-general-election-results)|**公式Primary/General結果の参照先を特定**|地区1の候補者別PDF/Excelを抽出しFEC行と数値照合|
+
+### RI-02：州政府資料とFECの照合が成立した事実
+
+- 公式Statewide PrimaryにおけるRI-02共和党Allan W. Fungは**12,113票**。民主党はSeth M. Magaziner **30,309票**を含む**6候補**で、合計は **56,102票**（30,309 + 9,067 + 6,696 + 6,112 + 2,600 + 1,318）。
+- 公式General ElectionでFungは**93,969票**、Magazinerは**101,432票**、第三党William H. Gilbertは**5,489票**、write-inは**199票**。二大政党票率の計算には後二者を混入させない。
+- このR/D票数は上記のFEC起源の値と一致する。予備選挙の共和党候補は1人、民主党は6人。予備選挙の共和党比率17.76%と本選挙48.09%の違いは**観測事実**。
+- **未検証の仮説:** 民主党予備選の競争による参加人数増、候補者個人の吸引力、参加者の党派構成や投票率の違い。これらの因果効果を票数だけから断定できない。
+
+### 解釈上のゲート
+
+- 「州の公式ポータルを発見」は「FEC票数と州票数が一致」ではない。照合完了のフラグを地区ごとに更新する。
+- 2022年の誤差上位5件を**事後的に選んだ**ため、これらの例を代表性のある因果分析や独立の汎化テストとして扱わない。
+- 高誤差の候補者構成と他の2022年選挙区との対照分析は別の探索的検証とする。資料を確認できない政治的背景は「未検証」と明記する。
