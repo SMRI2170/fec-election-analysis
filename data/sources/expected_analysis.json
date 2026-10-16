@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "year_counts": [
+    {
+      "year": 2016,
+      "included": 200,
+      "excluded": 238
+    },
+    {
+      "year": 2018,
+      "included": 241,
+      "excluded": 197
+    },
+    {
+      "year": 2020,
+      "included": 237,
+      "excluded": 204
+    },
+    {
+      "year": 2022,
+      "included": 238,
+      "excluded": 201
+    }
+  ],
+  "total_included": 916,
+  "out_of_year_metrics": [
+    {
+      "year": 2018,
+      "model": "linear regression",
+      "metric": "MAE",
+      "score": 0.0442,
+      "n_test": 241
+    },
+    {
+      "year": 2018,
+      "model": "primary-winner rule",
+      "metric": "accuracy",
+      "score": 0.9004,
+      "n_test": 241
+    },
+    {
+      "year": 2018,
+      "model": "logistic regression",
+      "metric": "accuracy",
+      "score": 0.8423,
+      "n_test": 241
+    },
+    {
+      "year": 2020,
+      "model": "linear regression",
+      "metric": "MAE",
+      "score": 0.0549,
+      "n_test": 237
+    },
+    {
+      "year": 2020,
+      "model": "primary-winner rule",
+      "metric": "accuracy",
+      "score": 0.8987,
+      "n_test": 237
+    },
+    {
+      "year": 2020,
+      "model": "logistic regression",
+      "metric": "accuracy",
+      "score": 0.9156,
+      "n_test": 237
+    },
+    {
+      "year": 2022,
+      "model": "linear regression",
+      "metric": "MAE",
+      "score": 0.0502,
+      "n_test": 238
+    },
+    {
+      "year": 2022,
+      "model": "primary-winner rule",
+      "metric": "accuracy",
+      "score": 0.8992,
+      "n_test": 238
+    },
+    {
+      "year": 2022,
+      "model": "logistic regression",
+      "metric": "accuracy",
+      "score": 0.8697,
+      "n_test": 238
+    }
+  ],
+  "_comment": "Source SHA256 hashes will be pinned after the official 2026-10-16 Actions manifest is inspected. Approximate metrics tolerance 1e-4; values from docs/model-evaluation.md."
+}
