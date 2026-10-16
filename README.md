@@ -1,104 +1,71 @@
-> **現行データ基準（2026-10-16）:** 対象は50州のVoting Representative選挙で、公式FECデータから**916件**を採用（2022年238件）。古い921/738/740件は過去の前処理基準による履歴値。最新結果は[モデル評価](docs/model-evaluation.md)。
-
-> **過去の921件基準（2026-10-15）:** 党帰属付きPrimary書き込み票を修正した段階の結果です。非投票権Delegateの分離前で、現在の対象件数ではありません。
-
 # FEC Election Analysis — データサイエンス特論レポート課題 #1
 
-米国連邦選挙委員会（FEC）の公開選挙結果データを用い、**予備選挙（Primary）の投票構成から本選挙（General）をどこまで予測できるか**、また**データの選び方によって結論が変化するか**を検証する研究用リポジトリです。
+> **現行基準（2026-10-16）**: FEC公式2016・2018・2020・2022年結果から、**米国50州の投票権を持つ下院議員選挙916レコード**を厳格な規則で抽出（2016=200、2018=241、2020=237、2022=238）。非投票権Delegate/Resident Commissionerを含む旧921件、旧738/740件は**履歴上の異なる抽出基準**。本文の現行指標と混ぜない。
 
-> **実データによる実験は実施済み:** 公式FECの2016/2018/2020/2022年のデータから、厳格な採用条件で**916選挙区**を抽出して年度外評価を実施しています。公式Excelと生成CSVはGit管理外ですが、取得コード・監査コード・再現手順と実測値を公開しています。`data/examples/` のデータは架空のテスト専用です。
+## 研究課題
 
-## 研究上の問い
+**予備選挙（Primary）の二大政党別投票構成は、本選挙（General）の二大政党得票比率・多数派をどこまで予測できるか。前処理・標本の選び方によって結論は変わるか。**
 
-1. 予備選挙の共和党・民主党の投票比率は、本選挙の政党別得票比率・勝敗と関係するか。
-2. 過去年度のデータで構築したモデルは、未使用の年度にも通用するか。
-3. 選挙制度・無対立選挙・欠損値などの扱いは、予測性能の解釈にどの程度影響するか。
+- 入力: `P = R_primary / (R_primary + D_primary)`
+- 回帰ターゲット: `G = R_general / (R_general + D_general)`
+- 分類ターゲット: **Generalの二大政党票における共和党優勢**（`G > 0.5`）。`general_rep_win`という後方互換名は**FEC公式当選者と同義ではない**。
+- 年度外評価: 2018年は2016年、2020年は2016–2018年、2022年は2016–2020年のみで学習。テスト年の結果を説明変数に含めない。
 
-一次資料: [FEC Election and voting information](https://www.fec.gov/introduction-campaign-finance/election-and-voting-information/)
+## 現行の実験結果
 
-## フォルダ構成
+| テスト年 | テスト件数 | 線形回帰MAE | Primary多数派規則 正解率 | ロジスティック回帰 正解率 |
+|---|---:|---:|---:|---:|
+| 2018 | 241 | 0.0442 | 90.04% | 84.23% |
+| 2020 | 237 | 0.0549 | 89.87% | 91.56% |
+| 2022 | 238 | 0.0502 | 89.92% | 86.97% |
 
-```text
-.github/workflows/ci.yml       CI（テスト・Pythonチェック）
-data/examples/                 架空のテスト用データ
-data/raw/                      元データ（Git管理対象外）
-data/processed/                正規化データ（Git管理対象外）
-docs/research-plan.md          仮説・研究計画
-docs/data-dictionary.md        正規化後データの仕様
-docs/issue-backlog.md          実装の順序
-docs/report-outline.md         論文の構成
-scripts/inspect_fec.py         年度別Excel/CSVの構造調査
-scripts/analyze.py             正規化済みCSVの簡易予測・評価
-src/fec_analysis/core.py       検証・特徴量作成
-tests/test_core.py             ユニットテスト
-```
+2022年の単純規則−ロジスティック回帰の差は**約+2.94ポイント**だが、McNemar正確両側検定は **p=0.09229**。5%有意水準で両モデルに明確な差があるとは主張できない。異なる抽出基準で出た旧738件のp=0.00635と混ぜない。
 
-## セットアップ
+- [現行のモデル評価・限界](docs/model-evaluation.md)
+- [標本選択の影響](docs/selection-bias.md)
+- [2022年の誤予測上位5例](docs/2022-error-case-studies.md)
+- [FEC原票との照合・正規化方針](docs/normalization-audit.md)
+- [再現性、データSHA-256、固定した実験指標](docs/reproducibility.md)
 
-Python 3.11+:
+**重要な限界:** 916件は50州すべての選挙の無作為標本ではない。無対立選挙、特殊な州制度、小計の不一致、欠損などを理由付きで除外している。予備選挙と本選挙では投票者が異なり、Primaryの比率を世論調査・支持率や因果効果と同一視できない。2022年の予測誤差を確認した後に研究対象を修正した経緯もあり、以後の比較は探索的として扱う。
+
+## 再現手順
+
+Python 3.11以降。以下はリポジトリのルートから実行する。
 
 ```bash
-python -m venv .venv
-# Windows PowerShell: .\.venv\Scripts\Activate.ps1
-# macOS/Linux: source .venv/bin/activate
 python -m pip install -r requirements.txt
 python -m pytest -q
-```
-
-取得したFECの実ファイルの構造を確認:
-
-```bash
-python scripts/inspect_fec.py data/raw/2022.xlsx
-```
-
-**注意:** 2022.xlsxはファイル名の例です。ダウンロードした実ファイルを指定してください。年度ごとの構造を確認した後、`docs/data-dictionary.md`に従って`data/processed/elections.csv`に変換します（変換器は未実装）。
-
-正規化データで年度外評価:
-
-```bash
-python scripts/analyze.py --input data/processed/elections.csv --test-year 2022
-```
-
-## 分析上の注意
-
-- 上院（州単位）と下院（選挙区単位）は、原則として別々に分析する。
-- 予備選挙は政党ごとに参加者と制度が異なり、二大政党の票数比率は有権者全体の支持率と一致するものではない。
-- FECの年別Excel/PDFは表構造が異なり得る。候補者名・州・区・政党・選挙段階を確認し、原票との照合記録を残す。
-- 無対立・特殊選挙・同日特別選挙・Top-two primaryなどを機械的に合算しない。
-- テスト年度はモデル調整に使用しない。除外基準とその変更結果を公開できる形で記録する。
-
-## レポート提出について
-
-提出物は大学指定テンプレートを利用した`.docx`。本文2〜4ページ推奨（最大8ページ）、締切2026年11月3日17:00。コードは付録に添付し、参考資料と独自の成果を明確に区別します。最終レポート原稿はGit管理対象外とします。
-
-## GitHub Actions
-
-公開リポジトリの標準GitHub-hosted runner（`ubuntu-latest`）でテストを実施します。Actionsの実行時間は無料ですが、同時実行・単一ジョブの時間・成果物ストレージ等は制限されます。大量のバッチ分析をCIの代わりに連続実行する用途には使わないでください。
-
-研究用の初期構成であり、ライセンスは未設定です。外部データや参照コードは各ファイル・レポートに出典を示します。
-
-## 公式FECデータの出典・形式監査
-
-取得元一覧と検査方法は [出典台帳](docs/fec-source-inventory.md) を参照。`python scripts/download_fec.py --years 2020 2022` で公式Excelを取得し、`python scripts/audit_fec_workbook.py data/raw/federalelections2022.xlsx` で原ファイルの表構造を確認できます。データの正規化はIssue #3で行います。
-
-## 年度外予測の再現
-
-FEC公式XLSXの2016〜2022年をダウンロード・正規化した後、時間順にモデルを学習して評価します。
-
-```bash
 python scripts/download_fec.py --years 2016 2018 2020 2022
-python scripts/normalize_fec.py --years 2016 2018 2020 2022
+python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy attribute
 python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022
+python scripts/verify_reproducibility.py
 ```
 
-[分析方法・実測結果と限界](docs/model-evaluation.md) / [データの除外条件](docs/normalization-audit.md)
+- Windows PowerShellでは必要に応じて`python`を`py`に、macOS/Linuxでは`python3`に置換する。
+- 入力元は[FEC公式選挙結果](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/)に掲載される4年度のExcel。取得URLとファイルSHA-256は`data/sources/fec_publications.json`および`data/sources/expected_analysis.json`で管理。
+- `data/raw/`と`data/processed/`の大きな公式Excel・正規化CSVはGit管理外。コードと小容量の固定基準・説明文書はGitで公開。
+- `Python CI`は単体テスト、`FEC source audit`は実公式ファイルを用いた票数照合・予測評価・再現性チェックを行う。後日公式ファイルや分析結果が変化した場合は自動で基準値を上書きせずエラーとする。
 
-## データの信頼性と統計的な不確実性
+## ディレクトリの主要ファイル
 
-抽出した740件について、公式Excelの候補者票と選挙区別総票の内部整合を再確認しました。[原票照合と限界](docs/source-reconciliation.md) / [2022年の勝敗モデル比較と統計的検定](docs/sensitivity-analysis.md)。
+| パス | 用途 |
+|---|---|
+| `scripts/download_fec.py` | 公式FEC Excel取得・出典とSHA-256記録 |
+| `scripts/normalize_fec.py` | 候補者票・政党小計の変換と除外理由記録 |
+| `scripts/run_backtests.py` | 年度外予測と基準モデル比較 |
+| `scripts/source_reconcile.py` | FEC候補者行・地区票の独立照合 |
+| `scripts/error_cases.py` / `scripts/build_error_case_studies.py` | 誤差上位例・候補者行の照合 |
+| `scripts/verify_reproducibility.py` | 固定した年別件数・指標・公式データSHA-256との比較 |
+| `data/sources/expected_analysis.json` | **現行916件**の再現性基準 |
+| `docs/issue-backlog.md` | 現行Issue進捗・依存関係・AI開発ルール |
 
-## 公式当選者の検証と研究上のラベル
+## 進捗・次の作業
 
-FEC`GE WINNER INDICATOR`と二大政党の得票優勢を比較する[監査と理由付き除外](docs/target-label-audit.md)を追加しました。2018年ME-02（順位選択投票で結果が逆転）およびNC-09（2018年結果が非認証）を除外した結果、**当初の標本は738件でしたが、党帰属付き書き込み票を追加検証した現行の標本は921件**です。
+現状: #15（当選者ターゲット監査）、#16（標本選択分析）、#18（再現性固定）は完了。**#14（残り21区のPrimary小計差）、#17（高誤差5区の州選管一次資料）、#6（指定Word提出）**が主要な未完了事項。研究Issue一覧は[Issue台帳](docs/issue-backlog.md)を参照。
 
-[現行のモデル評価・MAE・正解率](docs/model-evaluation.md) / [Primary小計不一致224件の監査](docs/primary-subtotal-audit.md)。現行の`general_rep_win`は後方互換名で、定義は「共和党の二大政党得票数での優勢」です（すべての選挙における実際の当選とは限りません）。
+## 提出形式と公開範囲
+
+提出予定: **2026年11月3日17:00**、Manaba+R、大学指定Wordテンプレートの`.docx`。本文2–4ページ推奨（最大8ページ）・ソースコード付録。**締切日時・容量・正式な書式は講義資料と提出画面で最終確認すること。** 個人情報・学生番号・提出前の未公開レポート原稿を公開GitHubへコミットしない。
+
+本リポジトリは研究・課題提出用であり、ライセンスは未設定。
