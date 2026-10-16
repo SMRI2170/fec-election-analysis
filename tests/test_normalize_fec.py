@@ -124,3 +124,22 @@ def test_affiliated_writein_without_party_total_is_not_guessed():
     df.loc[len(df)] = ["AL","01",None,None,"W(R)",5,None]
     good,bad=mod.normalize_house(df,2022,"fec.xlsx","House")
     assert good.empty and bad.iloc[0]["reason"]=="missing-primary-party-subtotal"
+
+def test_nonvoting_delegate_jurisdictions_are_not_voting_house_districts():
+    for jurisdiction in ("AS","DC","GU","MP","PR","VI"):
+        df=sample_house()
+        df["STATE ABBREVIATION"]=jurisdiction
+        df["DISTRICT"]="00"
+        included,excluded=mod.normalize_house(df,2022,"fec.xlsx","House")
+        assert included.empty
+        assert excluded.iloc[0]["reason"]=="nonvoting-delegate-jurisdiction"
+
+
+def test_state_at_large_district_00_is_not_excluded_as_a_delegate():
+    # A district numbered 00 also occurs in a genuine 50-state voting House seat.
+    df=sample_house()
+    df["STATE ABBREVIATION"]="WY"
+    df["DISTRICT"]="00"
+    included,excluded=mod.normalize_house(df,2022,"fec.xlsx","House")
+    assert excluded.empty
+    assert len(included)==1 and included.iloc[0]["district"]=="00"
