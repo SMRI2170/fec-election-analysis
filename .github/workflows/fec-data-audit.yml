@@ -18,6 +18,7 @@ on:
       - 'scripts/audit_primary_subtotals.py'
       - 'scripts/audit_residual_parties.py'
       - 'scripts/audit_selection_bias.py'
+      - 'scripts/audit_selection_observability.py'
       - 'scripts/audit_winners.py'
       - '.github/workflows/fec-data-audit.yml'
 
@@ -103,6 +104,8 @@ jobs:
         run: python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy ignore --output-dir data/processed/legacy
       - name: Compare fixed-holdout results and state-level sample selection
         run: python scripts/audit_selection_bias.py --legacy-dir data/processed/legacy --current-dir data/processed --test-year 2022
+      - name: Diagnose observed votes and missingness among excluded election groups
+        run: python scripts/audit_selection_observability.py
       - name: Publish only small audit logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -130,6 +133,9 @@ jobs:
             data/processed/cohort-comparison.csv
             data/processed/cohort-summary.json
             data/processed/selection-ledger.csv
+            data/processed/selection-observability.csv
+            data/processed/selection-observability-summary.csv
+            data/processed/selection-observability-meta.json
             data/processed/year-state-selection.csv
             data/processed/state-reason-selection.csv
             data/processed/winner-label-audit.csv
