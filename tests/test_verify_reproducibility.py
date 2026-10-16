@@ -1,6 +1,7 @@
 import importlib.util
 from pathlib import Path
 import json
+from copy import deepcopy
 import pytest
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -15,26 +16,26 @@ def fixture():
 
 def test_identical_snapshot_accepted():
     current=fixture()
-    expected={k:v for k,v in current.items() if k!="official_source_files"}
+    expected=deepcopy({k:v for k,v in current.items() if k!="official_source_files"})
     m.validate(current,expected)
 
 def test_accuracy_drift_is_rejected():
     current=fixture()
-    expected={k:v for k,v in current.items() if k!="official_source_files"}
+    expected=deepcopy({k:v for k,v in current.items() if k!="official_source_files"})
     expected["out_of_year_metrics"]=[{**expected["out_of_year_metrics"][0],"score":0.07}]
     with pytest.raises(AssertionError,match="Metric drift"):
         m.validate(current,expected)
 
 def test_cohort_change_is_rejected():
     current=fixture()
-    expected={k:v for k,v in current.items() if k!="official_source_files"}
+    expected=deepcopy({k:v for k,v in current.items() if k!="official_source_files"})
     expected["year_counts"][0]["included"]=3
     with pytest.raises(AssertionError,match="counts changed"):
         m.validate(current,expected)
 
 def test_source_hash_change_is_rejected():
     current=fixture()
-    expected={k:v for k,v in current.items() if k!="official_source_files"}
+    expected=deepcopy({k:v for k,v in current.items() if k!="official_source_files"})
     expected["official_source_sha256"]={"2022":"b"*64}
     with pytest.raises(AssertionError,match="source bytes changed"):
         m.validate(current,expected)
