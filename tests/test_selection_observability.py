@@ -66,6 +66,9 @@ def test_observed_general_share_is_only_a_diagnostic():
     included, excluded = selections()
     rows, _, totals = module.diagnose(included, excluded, {2022: raw_fixture()})
     assert totals["general_outcomes_are_post_election_diagnostics_not_features"]
+    assert totals["selected_general_margin_comparable_n"] == 1
+    assert totals["excluded_general_margin_comparable_n"] == 1
+    assert totals["selected_general_median_abs_margin"] == pytest.approx(0.2)
     by_state = rows.set_index("state")
     assert by_state.loc["AA", "general_observed_abs_margin"] == pytest.approx(0.2)
     assert by_state.loc["BB", "general_observed_r_share"] == pytest.approx(75 / 105)
