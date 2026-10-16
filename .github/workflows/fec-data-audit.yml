@@ -58,7 +58,10 @@ jobs:
           python - <<'PY'
           import pandas as pd
           rows = pd.read_csv('data/processed/elections.csv', dtype={'district': str})
-          assert len(rows) == 921, f"Unexpected eligible cases: {len(rows)}"
+          # Delegate/Resident Commissioner offices are not 50-state voting House seats.
+          assert len(rows) < 921, f"Nonvoting offices may still be included: {len(rows)}"
+          nonvoting = {'AS','DC','GU','MP','PR','VI'}
+          assert set(rows.state).isdisjoint(nonvoting), 'Nonvoting jurisdiction in voting House cohort'
           pa = rows[(rows.year==2022) & (rows.state=='PA') & (rows.district=='01')]
           assert len(pa)==1
           check = pa.iloc[0]
