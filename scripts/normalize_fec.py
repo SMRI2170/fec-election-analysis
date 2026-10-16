@@ -14,6 +14,7 @@ import pandas as pd
 
 REQUIRED = ("STATE ABBREVIATION", "DISTRICT", "FEC ID", "TOTAL VOTES", "PARTY", "PRIMARY VOTES", "GENERAL VOTES")
 DEFAULT_EXCLUDE_STATES = frozenset({"AK", "CA", "CT", "LA", "NY", "WA"})
+NONVOTING_DELEGATE_JURISDICTIONS = frozenset({"AS", "DC", "GU", "MP", "PR", "VI"})
 STANDARD_COLUMNS = ["year", "state", "chamber", "district", "primary_rep_votes", "primary_dem_votes", "general_rep_votes", "general_dem_votes", "source_file", "source_sheet", "election_id"]
 
 
@@ -60,7 +61,9 @@ def normalize_house(frame: pd.DataFrame, year: int, source_file: str, source_she
     excluded: list[dict] = []
     for (state, district), group in source.groupby(["_state", "_district"], sort=True):
         reason = None
-        if state in excluded_states:
+        if state in NONVOTING_DELEGATE_JURISDICTIONS:
+            reason = "nonvoting-delegate-jurisdiction"
+        elif state in excluded_states:
             reason = "needs-state-election-rule-review"
         if reason is None:
             unresolved = group[
