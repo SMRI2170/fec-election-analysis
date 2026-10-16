@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "year_counts": [
+    {
+      "year": 2016,
+      "included": 200,
+      "excluded": 238
+    },
+    {
+      "year": 2018,
+      "included": 241,
+      "excluded": 197
+    },
+    {
+      "year": 2020,
+      "included": 237,
+      "excluded": 204
+    },
+    {
+      "year": 2022,
+      "included": 238,
+      "excluded": 201
+    }
+  ],
+  "total_included": 916,
+  "out_of_year_metrics": [
+    {
+      "year": 2018,
+      "model": "linear regression",
+      "metric": "MAE",
+      "score": 0.0442,
+      "n_test": 241
+    },
+    {
+      "year": 2018,
+      "model": "primary-winner rule",
+      "metric": "accuracy",
+      "score": 0.9004,
+      "n_test": 241
+    },
+    {
+      "year": 2018,
+      "model": "logistic regression",
+      "metric": "accuracy",
+      "score": 0.8423,
+      "n_test": 241
+    },
+    {
+      "year": 2020,
+      "model": "linear regression",
+      "metric": "MAE",
+      "score": 0.0549,
+      "n_test": 237
+    },
+    {
+      "year": 2020,
+      "model": "primary-winner rule",
+      "metric": "accuracy",
+      "score": 0.8987,
+      "n_test": 237
+    },
+    {
+      "year": 2020,
+      "model": "logistic regression",
+      "metric": "accuracy",
+      "score": 0.9156,
+      "n_test": 237
+    },
+    {
+      "year": 2022,
+      "model": "linear regression",
+      "metric": "MAE",
+      "score": 0.0502,
+      "n_test": 238
+    },
+    {
+      "year": 2022,
+      "model": "primary-winner rule",
+      "metric": "accuracy",
+      "score": 0.8992,
+      "n_test": 238
+    },
+    {
+      "year": 2022,
+      "model": "logistic regression",
+      "metric": "accuracy",
+      "score": 0.8697,
+      "n_test": 238
+    }
+  ],
+  "_comment": "Pinned to SHA-256 hashes verified from official FEC workbooks in GitHub Actions run 38853445992 on 2026-10-16. Numeric metrics rounded to four decimal places, accepted tolerance 0.0001.",
+  "official_source_sha256": {
+    "2016": "b4a1d1383602bc388cfbdf1fbea2476476d32e0b44b44236d3a3910fa9782eb6",
+    "2018": "f2c42311862b4927df2ca5908c5f9c8f8da6221a8db88fd00434a22ec1e0e303",
+    "2020": "5073b6d2c76c86c941508dfb1a11cc497e8529b0068c5132aceb0f385c19352e",
+    "2022": "cdb258ea23803e50d752bcea19faa39b3c201eb960094bcb556c3a38c2350897"
+  }
+}
