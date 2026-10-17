@@ -172,3 +172,15 @@ python scripts/audit_fusion_primary.py --assert-baseline
 
 CIから`data/processed/fusion-primary-evidence.json`（短期Artifact、原票XLSXはGit管理外）を取得可能。コミットするのは監査コード・テスト・判定方法と原票の要約のみ。
 
+### 重要：同一FEC候補者IDの別党Primary行が8党側で出現（2026-10-17追加検証）
+
+[上記CIの検証出力](https://github.com/SMRI2170/fec-election-analysis/actions/runs/38989851372)では、算術上一致する18党側のうち**8党側**で、同じFEC候補者IDが当該選挙区に2つの候補者行として現れ、かつ両行に正のPrimary票が記録されていた。**うち7党側はOR、1党側はNH**。この重複は候補者単位の原票記載であり、票が重複計上されたと直ちに意味するものではない。
+
+| 代表例 | 主要党の複合コード行 | 同一FEC IDの別党書き込み行 | 検証上の注意 |
+|---|---|---|---|
+| 2016 NH-01（共和党側） | `R/W` 25,678票、`H0NH01225`（Excel行2139） | `W(D)` 88票、同じID（Excel行2134） | 別党の書き込み票88票を共和党のPrimaryに足さない |
+| 2016 OR-01（民主党側） | `D/IP` 99,153票、`H2OR01133`（Excel行2941） | `W(IP)` 855票、同じID（Excel行2945） | `W(IP)`は`W(D)`と同一ではなく、機械的に民主党票へ合算しない |
+| 2018 OR-04（民主党側） | `D/IP/PRO/WF` 78,575票、`H6OR04047`（Excel行3346） | `W(IP)` 888票、同じID（Excel行3351） | 異なる党コード行の候補者IDだけで重複削除しない |
+
+この8党側は`scripts/audit_fusion_primary.py`で`same_id_source_rows`、`multiple_positive_primary_rows_same_id`を記録し、CIで再現できる。結論は**「FEC候補者IDの単純な一意化では党別Primaryの分類に十分ではない」**というデータ仕様上の注意である。Primary党小計の制度的帰属や州公式票との一致を別途確認するまで、8党側を含む地区も**916件に追加しない**。
+
