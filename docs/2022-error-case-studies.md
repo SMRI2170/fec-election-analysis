@@ -137,7 +137,7 @@ python scripts/verify_mi03_state_canvass.py
 
 **検証範囲の明示:** 公式Michigan Manualの郡別表は人手で構造化JSONへ転記したもので、CIはその転記値の総和、刊行物の州合計、および別に取得したFECの正規化数値を突合する。**CIがMichigan州公式PDFを毎回再ダウンロード・パースしているわけではない**。候補者交代、支持者層、地域要因の因果効果はこの票の一致からは断定できない。
 
-**#17の残件:** OH-09、OH-15、NH-01の州公式票数との独立した票数照合、ならびに背景に関する仮説の一次資料調査。
+**#17の残件（2026-10-17更新）:** §9–§12の検証状況を優先する。OH-09はGeneral全区の照合が完了、OH-15はClark郡だけの部分照合、NH-01は民主党Primaryのみ照合済み。各地区の未検証党側と段階を明確に区別する。
 
 ## 8. OH-15：Ohio Clark郡公式結果による部分照合（2026-10-17）
 
@@ -173,7 +173,7 @@ python scripts/verify_mi03_state_canvass.py
 
 **結果の判定は county_only_not_district_complete とし、complete_district_reconciliation_verified=false を明示。** OH-15の州公認地区全体の候補者得票を独立照合するには、Ohio Secretary of Stateの認証済み全地区結果、または区域内各郡選管の認証済み公式票を足し合わせる必要がある。
 
-**Issue #17の進捗**：RI-02とMI-03は州公式全地区値との照合済み。OH-15はClark郡の部分照合段階。OH-09とNH-01およびOH-15全地区は未完了。
+**Issue #17の進捗（2026-10-17更新）**：RI-02とMI-03は全地区Primary/Generalを照合済み。OH-15はClark郡のみ。OH-09はGeneralのみ、NH-01は民主党Primaryのみ照合済み。
 
 ## 9. 2026-10-17 時点の外部照合ステータス（研究論文引用時の基準）
 
@@ -187,7 +187,7 @@ python scripts/verify_mi03_state_canvass.py
 | OH-15 | **Clark郡のみ照合** | **Clark郡のみ照合** | [§8と再現コード](../scripts/audit_oh15_county.py) | **両選挙とも部分照合**。全選挙区の州公式結果は未完了 |
 | NH-01 | **民主党側42,368票のみ照合済み**・共和党側75,401票は未完了 | **未完了** | [NH州公式民主党Primary PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-sp-congressional-district-1-democratic-remediated.pdf) / [§10](#10-nh-01民主党primary票の州公式集計との独立照合2026-10-17) | **Primary Dだけの部分照合**。R PrimaryとGeneralの公式票数は未検証 |
 
-**公開リポジトリの現行916件・2022年の238件・モデル精度・McNemar統計検定は、今回の外部照合の追加では変更しない。** 州公式Primaryとの独立照合が未完了なOH-09、地区全体の照合が未完了なOH-15、NH-01について、完了率を5/5と表記してはならない。
+**公開リポジトリの現行916件・2022年の238件・モデル精度・McNemar統計検定は、外部照合の追加では変更しない。** 下記§10の追加検証により、NH-01は**民主党PrimaryのR/D二党のうちD側だけ**独立照合できた。OH-09のPrimary、OH-15の全選挙区、NH-01共和党Primary・Generalは依然未完了。**5/5地区が完全検証済みとは表記しない**。
 
 ## 10. NH-01：民主党Primary票の州公式集計との独立照合（2026-10-17）
 
@@ -243,4 +243,23 @@ python scripts/verify_mi03_state_canvass.py
     python scripts/compare_error_case_candidates.py --assert-baseline
 
 **リポジトリの現行916件、モデルの学習内容と主要予測指標は変更しない。**
+
+## 12. 一次資料による検証範囲を20党側×選挙段階で固定（2026-10-17）
+
+2022年の5選挙区を、**R/DそれぞれのPrimaryとGeneral**に分解すると5×2×2＝**20の検証対象**となる。[出典・検証状態の機械可読台帳](../data/sources/2022_state_evidence_coverage.json) と [検証コード](../scripts/validate_2022_state_coverage.py) で、FEC公式2022年Excelから作ったデータとの照合範囲を固定する。
+
+|判定|党×選挙段階|説明|
+|---|---:|---|
+|地区全体の党側の州公式票を独立照合済み|**11/20**|RI-02 Primary/GeneralのR,D＝4、MI-03の4、OH-09 Generalの2、NH-01民主党Primaryの1|
+|一部の郡の州公式票のみ確認|**4/20**|OH-15のClark郡Primary/General、R/D各側。地区全体の証明ではない|
+|党側の公式得票総数は未照合|**5/20**|OH-09 PrimaryのR,D、NH-01共和党Primary、NH-01 GeneralのR,D|
+|**選挙区全体のPrimaryとGeneralのR/D双方を確認済み**|**2/5地区**|RI-02とMI-03|
+
+**NH-01の資料探索で判明した注意点:** NH Secretary of Stateの[2022年General第1区PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf)は確認したが、今回の調査環境では公式PDF本文の読み出しがアクセス制限を受けた。**PDFのURLを発見しただけでPappas 167,391票・Leavitt 142,229票を州側で照合済みとはしていない**。同じく[共和党Primaryの州結果案内](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state)を確認したが、候補者10人の公式票数の再合計は未完了。
+
+**2022年の選挙区割りに注意:** 自治体の2022年年報を補助的に利用する場合は、[2022年適用のNH州議会の第1区区域規定](https://gc.nh.gov/bill_status/legacy/bs2016/billText.aspx?id=30032022&sy=2022&txtFormat=html)と照合する。例えば**Madison町は2022年NH-01に含まれないため、MadisonのGeneral/Primary票をNH-01の一部とみなしてはならない**。郡名や現在の区割りから2022年の所属を推測しない。
+
+**Ohioの資料探索:** [Defiance County選管の2022年5月Primary資料](https://www.boe.ohio.gov/defiance/c/elecres/20220503overlap.pdf)のURLは見つかったが、その文書にOH-09の8郡すべての候補者票があると今回の調査で確認できていない。**資料候補の発見≠独立した票数照合**。候補者名・票種・District番号・郡別網羅性を検証して初めてPrimaryの検証状態を更新する。
+
+この台帳に対するCIは、地区全体の独立照合から部分照合へ降格すべきケース、出典が欠損しているのに照合完了としてしまうケース、および現行916件の基準を誤って変更するケースを**失敗として検出**する。州公式PDFをGitHub Actionsで毎回取得して再読しているわけではなく、台帳に記載した出典・転記済み票数と公式FECからの再生成票を照合するものである。
 
