@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "year": 2022,
+  "state": "OH",
+  "district": "15",
+  "county": "Clark",
+  "verification_level": "county_only_not_district_complete",
+  "official_sources": {
+    "primary": "https://liveresults.boe.ohio.gov/clarkoh/LiveResults/en/Index_9.html",
+    "general": "https://liveresults.boe.ohio.gov/ENR/clarkohenr/11/en/Index_11.html",
+    "primary_date": "2022-05-03",
+    "general_date": "2022-11-08",
+    "primary_updated": "2022-05-25",
+    "general_updated": "2022-11-30",
+    "note": "Clark County Board of Elections official results; these are county portions, NOT complete district totals."
+  },
+  "county_votes": {
+    "primary": {
+      "Mike Carey (R)": 3398,
+      "Gary Josephson (D)": 365
+    },
+    "general": {
+      "Mike Carey (R)": 15671,
+      "Gary Josephson (D)": 5407
+    }
+  },
+  "district_fec_comparison_values": {
+    "primary_rep_votes": 48938,
+    "primary_dem_votes": 9047,
+    "general_rep_votes": 143112,
+    "general_dem_votes": 108139
+  },
+  "warnings": [
+    "Clark County contributes only part of OH-15; no statewide/district-complete independent reconciliation has been performed.",
+    "The number of precincts shown for this congressional district differed between May primary and November general; do not compare turnout as a stable population without district-boundary/precinct mapping.",
+    "Ohio Secretary of State officially certified November 2022 results, but this county result has not been independently summed over all counties in OH-15.",
+    "Do not infer candidate popularity or causal effects from these figures."
+  ]
+}
