@@ -1,0 +1,41 @@
+name: NH-01 Goffstown town primary/general witness
+
+on:
+  pull_request:
+    paths:
+      - data/sources/nh01_goffstown_2022_primary_general.json
+      - scripts/audit_nh01_goffstown.py
+      - tests/test_nh01_goffstown.py
+      - .github/workflows/nh01-goffstown-audit.yml
+      - data/sources/2022_state_evidence_coverage.json
+      - docs/2022-error-case-studies.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  official-town-partial-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pytest -q tests/test_nh01_goffstown.py
+      - name: Download FEC official 2022 workbook
+        run: python scripts/download_fec.py --years 2022
+      - name: Normalize original FEC House election records
+        run: python scripts/normalize_fec.py --years 2022
+      - name: Audit official Goffstown Primary and two-town NH01 General witnesses
+        run: python scripts/audit_nh01_goffstown.py
+      - name: Guard stage-by-party evidence coverage separately
+        run: python scripts/validate_2022_state_coverage.py --fec-2022-csv data/processed/elections.csv
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nh01-goffstown-independent-town-witness
+          path: data/processed/nh01_goffstown_audit.json
+          retention-days: 3
