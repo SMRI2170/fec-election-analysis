@@ -16,8 +16,8 @@ def fixture():
 def test_complete_matrix_has_only_two_whole_cases():
     got=mod.validate_ledger(fixture(),ROOT)
     assert got["district_verified_party_stages"]==11
-    assert got["partial_subdistrict_party_stages"]==8
-    assert got["not_verified_party_stages"]==1
+    assert got["partial_subdistrict_party_stages"]==9
+    assert got["not_verified_party_stages"]==0
     assert got["whole_cases_verified_primary_and_general"]==2
     assert got["source_discovery_is_not_verification"] is True
 
@@ -33,10 +33,22 @@ def test_oh15_clark_only_may_not_become_entire_district():
     with pytest.raises(AssertionError,match="Independent district votes"):
         mod.validate_ledger(d,ROOT)
 
-def test_nh01_democratic_primary_does_not_verify_republican_primary():
+def test_nh01_goffstown_republican_primary_may_not_be_promoted_to_full_district():
     d=fixture()
-    d["cases"]["NH-01"]["primary"]["R"]["votes"]=75401
-    with pytest.raises(AssertionError,match="Unverified source may not carry"):
+    d["cases"]["NH-01"]["primary"]["R"]["level"]="district_verified"
+    with pytest.raises(AssertionError,match="Independent district votes"):
+        mod.validate_ledger(d,ROOT)
+
+def test_nh01_goffstown_primary_evidence_vote_change_is_rejected():
+    d=fixture()
+    d["cases"]["NH-01"]["primary"]["R"]["votes"]=1948
+    with pytest.raises(AssertionError,match="Goffstown town partial"):
+        mod.validate_ledger(d,ROOT)
+
+def test_nh01_general_alton_must_remain_a_component_of_two_town_tally():
+    d=fixture()
+    d["cases"]["NH-01"]["general"]["R"]["additional_town_source"]["evidence"]="data/sources/not_alton.json"
+    with pytest.raises(AssertionError,match="Alton town component"):
         mod.validate_ledger(d,ROOT)
 
 def test_partial_oh09_primary_may_not_be_promoted_without_statewide_source():

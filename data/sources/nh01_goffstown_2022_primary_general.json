@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "year": 2022,
+  "state": "NH",
+  "district": "01",
+  "municipality": "Goffstown",
+  "official_source": {
+    "publisher": "Town of Goffstown, New Hampshire",
+    "title": "2022 Annual Town Report, 2022 Election Results",
+    "url": "https://www.goffstownnh.gov/Archive.aspx?ADID=108",
+    "republican_primary_date": "2022-09-13",
+    "general_date": "2022-11-08",
+    "primary_pdf_page_index": 53,
+    "primary_printed_page": 52,
+    "general_pdf_page_index": 54,
+    "general_printed_page": 53,
+    "district_membership": "2022 Annual Report printed page 8 names Representative in US Congress - 1st District Chris Pappas; primary and general sections both identify congressional contest",
+    "verification_method": "Town's official PDF candidate rows inspected and visually confirmed; CI operates on pinned transcription and fresh official FEC 2022 source, not a fresh Town-PDF download."
+  },
+  "republican_primary": {
+    "named_candidate_votes": {
+      "Karoline Leavitt": 660,
+      "Mary Maxwell": 13,
+      "Matt Mowers": 564,
+      "Russell Prescott": 180,
+      "Kevin R. Rondeau": 19,
+      "Gilead R. Towne": 8,
+      "Tom Alciere": 7,
+      "Tim Baxter": 174,
+      "Gail Huff Brown": 303,
+      "Mark Kilbane": 12
+    },
+    "writeins_under_5_votes_each": 2,
+    "named_cross_party_writein": {
+      "Chris Pappas": 5
+    },
+    "overvotes": 4,
+    "undervotes": 63,
+    "counted_valid_republican_primary_votes": 1947,
+    "candidate_named_votes_sum": 1940
+  },
+  "general": {
+    "party_candidate_votes": {
+      "Karoline Leavitt (R)": 3720,
+      "Chris Pappas (D)": 3955
+    },
+    "other_writein_votes": 9,
+    "overvotes": 1,
+    "undervotes": 88
+  },
+  "independent_source_scope": {
+    "town_only": true,
+    "whole_congressional_district_primary_verified": false,
+    "whole_congressional_district_general_verified": false,
+    "do_not_move_cross_party_writein_to_democratic_primary": true
+  },
+  "fec_district_context": {
+    "primary_rep_votes": 75401,
+    "general_rep_votes": 142229,
+    "general_dem_votes": 167391
+  }
+}
