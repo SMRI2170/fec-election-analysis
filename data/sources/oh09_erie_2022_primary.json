@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "election": {
+    "year": 2022,
+    "state": "OH",
+    "district": "09",
+    "stage": "primary",
+    "date": "2022-05-03",
+    "county": "Erie"
+  },
+  "official_source": {
+    "authority": "Erie County Board of Elections",
+    "official_certified_pdf": "https://www.boe.ohio.gov/erie/c/elecres/20220503results.pdf",
+    "published_report": "Summary Results Report - Group Detail",
+    "report_timestamp": "2022-05-25 12:42",
+    "democratic_printed_page": 5,
+    "republican_printed_page": 26,
+    "precincts_reported": 62,
+    "note": "Official final canvass candidate TOTAL column; county-only subset of the 8-county Ohio District 9"
+  },
+  "primary_candidates": {
+    "Republican": {
+      "Beth Deck": 434,
+      "Theresa Gavarone": 1987,
+      "J.R. Majewski": 2510,
+      "Craig S. Riedel": 1917
+    },
+    "Democratic": {
+      "Marcy Kaptur": 3388
+    }
+  },
+  "official_county_party_totals": {
+    "Republican": 6848,
+    "Democratic": 3388
+  },
+  "county_republican_winner": "J.R. Majewski",
+  "no_district_wide_independent_primary_claim": true
+}
