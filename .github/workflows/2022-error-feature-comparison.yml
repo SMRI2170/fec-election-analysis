@@ -6,6 +6,7 @@ on:
       - scripts/compare_error_case_candidates.py
       - tests/test_compare_error_case_candidates.py
       - .github/workflows/2022-error-feature-comparison.yml
+      - docs/2022-error-case-studies.md
   workflow_dispatch:
 
 permissions:
