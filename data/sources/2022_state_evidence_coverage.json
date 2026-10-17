@@ -72,16 +72,16 @@
     "OH-09": {
       "primary": {
         "R": {
-          "level": "not_verified",
-          "votes": null,
-          "evidence": null,
-          "source_url": null
+          "level": "partial_subdistrict",
+          "votes": 4854,
+          "evidence": "data/sources/oh09_defiance_2022_primary.json",
+          "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf"
         },
         "D": {
-          "level": "not_verified",
-          "votes": null,
-          "evidence": null,
-          "source_url": null
+          "level": "partial_subdistrict",
+          "votes": 1133,
+          "evidence": "data/sources/oh09_defiance_2022_primary.json",
+          "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf"
         }
       },
       "general": {
@@ -177,7 +177,8 @@
       "district": "OH-09",
       "stage": "primary",
       "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503overlap.pdf",
-      "status": "official_source_candidate_found_but_not_inspected_for_eight_county_congressional_votes"
+      "status": "official_defiance_county_primary_votes_transcribed_but_eight_county_district_totals_not_inspected",
+      "note": "Defiance county certified candidate sums R=4854 D=1133 established separately; this overlap document is a possible full district canvass but its coverage and values have not been validated"
     }
   ],
   "safeguards": {
