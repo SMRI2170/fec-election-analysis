@@ -73,31 +73,49 @@
       "primary": {
         "R": {
           "level": "partial_subdistrict",
-          "votes": 11702,
-          "evidence": "data/sources/oh09_erie_2022_primary.json",
-          "source_url": "https://www.boe.ohio.gov/erie/c/elecres/20220503results.pdf",
+          "votes": 16959,
+          "evidence": "data/sources/oh09_ottawa_2022_amended_primary.json",
+          "source_url": "https://boe.ottawa.oh.gov/wp-content/uploads/2022/06/Amended-Official-Summary.pdf",
           "included_counties": [
             "Defiance",
-            "Erie"
+            "Erie",
+            "Ottawa"
           ],
-          "additional_county_source": {
-            "evidence": "data/sources/oh09_defiance_2022_primary.json",
-            "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf"
-          }
+          "additional_county_sources": [
+            {
+              "county": "Defiance",
+              "evidence": "data/sources/oh09_defiance_2022_primary.json",
+              "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf"
+            },
+            {
+              "county": "Erie",
+              "evidence": "data/sources/oh09_erie_2022_primary.json",
+              "source_url": "https://www.boe.ohio.gov/erie/c/elecres/20220503results.pdf"
+            }
+          ]
         },
         "D": {
           "level": "partial_subdistrict",
-          "votes": 4521,
-          "evidence": "data/sources/oh09_erie_2022_primary.json",
-          "source_url": "https://www.boe.ohio.gov/erie/c/elecres/20220503results.pdf",
+          "votes": 6659,
+          "evidence": "data/sources/oh09_ottawa_2022_amended_primary.json",
+          "source_url": "https://boe.ottawa.oh.gov/wp-content/uploads/2022/06/Amended-Official-Summary.pdf",
           "included_counties": [
             "Defiance",
-            "Erie"
+            "Erie",
+            "Ottawa"
           ],
-          "additional_county_source": {
-            "evidence": "data/sources/oh09_defiance_2022_primary.json",
-            "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf"
-          }
+          "additional_county_sources": [
+            {
+              "county": "Defiance",
+              "evidence": "data/sources/oh09_defiance_2022_primary.json",
+              "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf"
+            },
+            {
+              "county": "Erie",
+              "evidence": "data/sources/oh09_erie_2022_primary.json",
+              "source_url": "https://www.boe.ohio.gov/erie/c/elecres/20220503results.pdf"
+            }
+          ]
         }
       },
       "general": {
@@ -214,8 +232,8 @@
       "district": "OH-09",
       "stage": "primary",
       "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503overlap.pdf",
-      "status": "official_defiance_county_primary_votes_transcribed_but_eight_county_district_totals_not_inspected",
-      "note": "Defiance county certified candidate sums R=4854 D=1133 established separately; this overlap document is a possible full district canvass but its coverage and values have not been validated"
+      "status": "official_three_county_amended_primary_results_transcribed_but_eight_county_district_canvass_not_verified",
+      "note": "Defiance+Erie+Ottawa 3/8 counties: R16959 D6659. Ottawa is an amended official report 2022-06-08; 5 counties outstanding. Do not upgrade to district_verified."
     }
   ],
   "safeguards": {
