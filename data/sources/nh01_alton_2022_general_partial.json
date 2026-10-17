@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "year": 2022,
+  "state": "NH",
+  "district": "01",
+  "stage": "general",
+  "municipality": "Alton",
+  "recorded_party_candidate_votes": {
+    "Karoline Leavitt (R)": 1936,
+    "Chris Pappas (D)": 1224
+  },
+  "official_state_document": {
+    "name": "New Hampshire Secretary of State, 2022 General Election, Congressional District 1",
+    "url": "https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf",
+    "municipality": "Alton",
+    "row_first_candidate": "Karoline Leavitt (R)",
+    "row_second_candidate": "Chris Pappas (D)",
+    "evidence_method": "Search-indexed first-page candidate headers and Alton town row. Direct PDF body download in investigation environment returned HTTP 403, so no claim that the full official PDF was machine parsed.",
+    "full_document_programmatically_verified": false
+  },
+  "contemporaneous_correspondence": {
+    "source": "Salmon Press regional coverage of Alton, Barnstead and New Durham 2022 election results",
+    "url": "https://linpub.blob.core.windows.net/pdf/1/56902283-6f9f-43d3-bba8-0a6b8246a986.pdf",
+    "votes_in_alton": {
+      "Karoline Leavitt (R)": 1936,
+      "Chris Pappas (D)": 1224
+    },
+    "note": "Contemporaneous news report corroborates the same local votes; it is not a substitute for the state's full-district certified canvass."
+  },
+  "district_membership_source": "https://gc.nh.gov/bill_status/legacy/bs2016/billText.aspx?id=30032022&sy=2022&txtFormat=html",
+  "verification": {
+    "alton_subdistrict_row_corrobated": true,
+    "whole_nh01_general_district_reconciled": false,
+    "2022_nh01_general_rep_fec_baseline": 142229,
+    "2022_nh01_general_dem_fec_baseline": 167391,
+    "missing_remainder_unverified": true,
+    "do_not_infer_causality": true
+  }
+}
