@@ -86,3 +86,23 @@ def test_one_excluded_district_yields_exactly_two_sides():
     assert report["party_sides"] == 2
     assert report["counts"]["fusion_arithmetic_match"] == 1
     assert report["no_automatic_reallocation"]
+
+
+def test_cross_party_writein_can_share_candidate_id_without_entering_d_total_twice():
+    df = fixture()
+    # A candidate ID may recur on a *different party's* write-in ballot row.
+    # It must be preserved in the diagnostic without shifting W(IP) votes to D.
+    extra = df.iloc[[2]].copy()
+    extra["_party"] = "W(IP)"
+    extra["PARTY"] = "W(IP)"
+    extra["PRIMARY VOTES"] = 7
+    df = pd.concat([df, extra], ignore_index=True)
+    side = get_side(mod.inspect_district(df, 2022, "WI", "07"))
+    assert side["remaining_gap"] == 40
+    assert side["fusion_candidate_primary"] == 40
+    assert side["arithmetic_match"]
+    evidence = side["candidate_evidence"][0]
+    assert evidence["duplicate_fec_id_in_district"]
+    assert evidence["multiple_positive_primary_rows_same_id"]
+    assert sorted(r["party_code"] for r in evidence["same_id_source_rows"]) == ["D/IP/WF", "W(IP)"]
+    assert not side["safe_to_auto_include"]
