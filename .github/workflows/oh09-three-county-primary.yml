@@ -1,0 +1,44 @@
+name: OH-09 three certified county primary crosscheck
+
+on:
+  pull_request:
+    paths:
+      - data/sources/oh09_ottawa_2022_amended_primary.json
+      - data/sources/2022_state_evidence_coverage.json
+      - scripts/audit_oh09_three_county_primary.py
+      - scripts/validate_2022_state_coverage.py
+      - tests/test_oh09_three_county_primary.py
+      - tests/test_2022_state_coverage.py
+      - .github/workflows/oh09-three-county-primary.yml
+      - docs/2022-error-case-studies.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-three-of-eight-counties:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Test independent Ottawa amended vote transcription and 3-county sums
+        run: python -m pytest -q tests/test_oh09_three_county_primary.py tests/test_2022_state_coverage.py
+      - name: Download official FEC 2022 workbook
+        run: python scripts/download_fec.py --years 2022
+      - name: Normalize official FEC voting House districts
+        run: python scripts/normalize_fec.py --years 2022
+      - name: Verify three separately certified Ohio county primary sources
+        run: python scripts/audit_oh09_three_county_primary.py
+      - name: Verify stage-by-party evidence-level coverage without changing cohort
+        run: python scripts/validate_2022_state_coverage.py --fec-2022-csv data/processed/elections.csv
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oh09-three-county-2022-primary
+          path: data/processed/oh09_three_county_primary_audit.json
+          retention-days: 3
