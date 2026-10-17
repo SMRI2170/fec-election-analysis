@@ -1,0 +1,37 @@
+name: 2022 top error candidate comparison
+
+on:
+  pull_request:
+    paths:
+      - scripts/compare_error_case_candidates.py
+      - tests/test_compare_error_case_candidates.py
+      - .github/workflows/2022-error-feature-comparison.yml
+      - docs/2022-error-case-studies.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reproducible-2022-candidate-comparison:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pytest -q tests/test_compare_error_case_candidates.py
+      - run: python scripts/download_fec.py --years 2016 2018 2020 2022
+      - run: python scripts/normalize_fec.py --years 2016 2018 2020 2022
+      - run: python scripts/error_cases.py --input data/processed/elections.csv --test-year 2022
+      - run: python scripts/compare_error_case_candidates.py --assert-baseline
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 2022-error-feature-comparison
+          path: |
+            data/processed/error-case-feature-comparison.csv
+            data/processed/error-case-feature-summary.json
+          retention-days: 3
