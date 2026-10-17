@@ -80,7 +80,7 @@ python scripts/build_error_case_studies.py --top-n 5
 |OH-15|[Ohio Secretary of State公式結果ポータル](https://www.ohiosos.gov/data) / [2022年本選挙の認証公表](https://www.ohiosos.gov/office/media-center/categories/press-releases/2022-12-09) / [Clark County BOE](https://liveresults.boe.ohio.gov/ENR/clarkohenr/11/en/Index_11.html)|**Clark郡のPrimary/General票を部分照合（PR #37）**|州当局の全選挙区公式Primary/General票をまだ独立照合していない|
 |OH-09|[8郡の認証済みGeneral票（Lucas County BOE、Defiance郡保管）](https://www.boe.ohio.gov/defiance/c/elecres/20221108overlap.pdf)|**Generalの全8郡・全地区票をFECと照合済み（PR #38）**|2022年5月Primaryの州公式候補者票との独立照合が残る|
 |MI-03|[Michigan州議会公式公刊物](https://www.legislature.mi.gov/documents/2023-2024/michiganmanual/2023-MM-Chapter9.pdf)|**Primary/Generalの3郡合計でFECと独立一致（PR #36）**|予測誤差の要因は因果検証していない|
-|NH-01|[NH州2022年共和党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state) / [民主党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-democratic-state) / [General結果](https://www.sos.nh.gov/elections/2022-election-results/2022-general-election-results)|**民主党Primaryの党小計のみFECと一致（§10）**|共和党Primary票とGeneral票の州公式独立照合は未完了|
+|NH-01|[NH州2022年共和党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state) / [民主党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-democratic-state) / [General結果](https://www.sos.nh.gov/elections/2022-election-results/2022-general-election-results)|**民主党Primaryの党小計を照合（§10）、GeneralのAlton町を部分照合（§13）**|共和党Primary票とGeneral全選挙区票の州公式独立照合は未完了|
 
 ### RI-02：州政府資料とFECの照合が成立した事実
 
@@ -185,7 +185,7 @@ python scripts/verify_mi03_state_canvass.py
 | MI-03 | **地区全体の郡別R/D票照合済み** | **地区全体の郡別R/D票照合済み** | [§7と再現コード](../scripts/verify_mi03_state_canvass.py) | 完了（州原典の転記JSONとFECを比較） |
 | OH-09 | **未完了** | **全8郡の認証済み地区票とFECが完全一致** | [Ohio州認証canvassの8郡表](oh09-general-canvass.md)、[自動照合コード](../scripts/verify_oh09_general_canvass.py) | **Generalだけ完了**。Primary候補4対1の州公式票を未検証 |
 | OH-15 | **Clark郡のみ照合** | **Clark郡のみ照合** | [§8と再現コード](../scripts/audit_oh15_county.py) | **両選挙とも部分照合**。全選挙区の州公式結果は未完了 |
-| NH-01 | **民主党側42,368票のみ照合済み**・共和党側75,401票は未完了 | **未完了** | [NH州公式民主党Primary PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-sp-congressional-district-1-democratic-remediated.pdf) / [§10](#10-nh-01民主党primary票の州公式集計との独立照合2026-10-17) | **Primary Dだけの部分照合**。R PrimaryとGeneralの公式票数は未検証 |
+| NH-01 | **民主党側42,368票のみ照合済み**・共和党側75,401票は未完了 | **Alton町のR/D候補者票のみ照合、全選挙区未完了** | [NH州公式民主党Primary PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-sp-congressional-district-1-democratic-remediated.pdf) / [§10](#10-nh-01民主党primary票の州公式集計との独立照合2026-10-17) | **Primary Dだけの部分照合**。R PrimaryとGeneralの公式票数は未検証 |
 
 **公開リポジトリの現行916件・2022年の238件・モデル精度・McNemar統計検定は、外部照合の追加では変更しない。** 下記§10の追加検証により、NH-01は**民主党PrimaryのR/D二党のうちD側だけ**独立照合できた。OH-09のPrimary、OH-15の全選挙区、NH-01共和党Primary・Generalは依然未完了。**5/5地区が完全検証済みとは表記しない**。
 
@@ -251,15 +251,40 @@ python scripts/verify_mi03_state_canvass.py
 |判定|党×選挙段階|説明|
 |---|---:|---|
 |地区全体の党側の州公式票を独立照合済み|**11/20**|RI-02 Primary/GeneralのR,D＝4、MI-03の4、OH-09 Generalの2、NH-01民主党Primaryの1|
-|一部の郡の州公式票のみ確認|**4/20**|OH-15のClark郡Primary/General、R/D各側。地区全体の証明ではない|
-|党側の公式得票総数は未照合|**5/20**|OH-09 PrimaryのR,D、NH-01共和党Primary、NH-01 GeneralのR,D|
+|一部の郡・町の公式票のみ確認|**6/20**|OH-15のClark郡Primary/General R/D計4側、NH-01 GeneralのAlton町R/D計2側。全地区の証明ではない|
+|党側の公式得票総数は未照合|**3/20**|OH-09 PrimaryのR,D、NH-01共和党Primary。NH-01 Generalは町単位の公式票だけ部分照合したが、全地区は未照合|
 |**選挙区全体のPrimaryとGeneralのR/D双方を確認済み**|**2/5地区**|RI-02とMI-03|
 
-**NH-01の資料探索で判明した注意点:** NH Secretary of Stateの[2022年General第1区PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf)は確認したが、今回の調査環境では公式PDF本文の読み出しがアクセス制限を受けた。**PDFのURLを発見しただけでPappas 167,391票・Leavitt 142,229票を州側で照合済みとはしていない**。同じく[共和党Primaryの州結果案内](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state)を確認したが、候補者10人の公式票数の再合計は未完了。
+**NH-01の資料探索で判明した注意点:** NH Secretary of Stateの[2022年General第1区PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf)は確認したが、今回の調査環境では公式PDF本文の読み出しがアクセス制限を受けた。**Alton町の票数だけは州公式PDFの検索索引と地元の同時代報道で相互照合したが、Pappas 167,391票・Leavitt 142,229票という全地区の数字を州側で独立合算できたわけではない**。同じく[共和党Primaryの州結果案内](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state)を確認したが、候補者10人の公式票数の再合計は未完了。
 
 **2022年の選挙区割りに注意:** 自治体の2022年年報を補助的に利用する場合は、[2022年適用のNH州議会の第1区区域規定](https://gc.nh.gov/bill_status/legacy/bs2016/billText.aspx?id=30032022&sy=2022&txtFormat=html)と照合する。例えば**Madison町は2022年NH-01に含まれないため、MadisonのGeneral/Primary票をNH-01の一部とみなしてはならない**。郡名や現在の区割りから2022年の所属を推測しない。
 
 **Ohioの資料探索:** [Defiance County選管の2022年5月Primary資料](https://www.boe.ohio.gov/defiance/c/elecres/20220503overlap.pdf)のURLは見つかったが、その文書にOH-09の8郡すべての候補者票があると今回の調査で確認できていない。**資料候補の発見≠独立した票数照合**。候補者名・票種・District番号・郡別網羅性を検証して初めてPrimaryの検証状態を更新する。
 
 この台帳に対するCIは、地区全体の独立照合から部分照合へ降格すべきケース、出典が欠損しているのに照合完了としてしまうケース、および現行916件の基準を誤って変更するケースを**失敗として検出**する。州公式PDFをGitHub Actionsで毎回取得して再読しているわけではなく、台帳に記載した出典・転記済み票数と公式FECからの再生成票を照合するものである。
+
+## 13. NH-01 General：2022年Alton町の公式票を部分照合（2026-10-17）
+
+NH州Secretary of Stateの[2022年General District 1の公式PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf)を検索索引上で確認した。文書の候補者列は**共和党Karoline Leavitt→民主党Chris Pappas→Scattered**の順で、Alton町の行は**1,936票→1,224票**。同じAltonの得票を2022年当時の[Alton/Barnstead/New Durhamを扱う地域紙（Salmon Press）](https://linpub.blob.core.windows.net/pdf/1/56902283-6f9f-43d3-bba8-0a6b8246a986.pdf)もLeavitt **1,936票**、Pappas **1,224票**と記録している。
+
+| NH-01 General | Alton町の票 | FEC全選挙区票 | 未独立照合部分 |
+|---|---:|---:|---:|
+| Karoline Leavitt（R） | **1,936** | **142,229** | 140,293 |
+| Chris Pappas（D） | **1,224** | **167,391** | 166,167 |
+
+この比較はAlton町の記録と検索索引上の州公式表の1行が一致するという意味に限る。**NH州のPDF全文を再取得して州総計を検算できたわけではない**ので、全地区の`general_rep_votes`/`general_dem_votes`が独立照合済みとは表現しない。なお、Alton町は州公式2022年第1区General PDFの掲載自治体であり、同じニューハンプシャー州でも選挙区が異なるMadison町の票を流用しない。
+
+- [Alton町の票数、州公式PDF URL、同時代地域紙URL、検証範囲](../data/sources/nh01_alton_2022_general_partial.json)
+- [Alton町・地域紙間の一致、FEC2022全地区票との整合性を検証](../scripts/audit_nh01_alton_general.py)
+- [証拠改変、区外自治体誤帰属、全地区検証への誤格上げを拒否するテスト](../tests/test_nh01_alton_general.py)
+- [全5選挙区のparty×stage検証範囲台帳](../data/sources/2022_state_evidence_coverage.json)にもAlton町R/Dを`partial_subdistrict`として追加。検証状態は**11全区照合、6部分照合、3未照合（20党側）**。
+
+再現手順：
+
+    python scripts/download_fec.py --years 2022
+    python scripts/normalize_fec.py --years 2022
+    python scripts/audit_nh01_alton_general.py
+    python scripts/validate_2022_state_coverage.py --fec-2022-csv data/processed/elections.csv
+
+**重要:** アルゴリズム変更・候補者票の追加・FECの全地区票の置換は行っていない。現行研究対象916件とモデル評価は不変。州のOfficial PDFはCIが毎回取得・再パースするわけではなく、**州公式PDFの検索索引と同時代報道から確認したAlton町の票数を固定し、FECを再生成して範囲の安全性を確認する方式**である。
 
