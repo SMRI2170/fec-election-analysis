@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "year": 2022,
+  "state": "MI",
+  "district": "03",
+  "election_primary_date": "2022-08-02",
+  "election_general_date": "2022-11-08",
+  "source": {
+    "official_state_manual": "https://www.legislature.mi.gov/documents/2023-2024/michiganmanual/2023-MM-Chapter9.pdf",
+    "primary_printed_page": 729,
+    "general_printed_page": 767,
+    "county_primary": "https://electionstats.kentcountymi.gov/eng/contests/view/2881",
+    "county_general": "https://electionstats.kentcountymi.gov/eng/contests/view/5950",
+    "state_primary_certification": "https://www.michigan.gov/sos/resources/news/2022/08/19/board-of-state-canvassers-certifies-primary-elections",
+    "note": "Manual's county totals transcribed from official state tables; CI checks arithmetic and agreement against the already normalized FEC 2022 workbook. It does not download/reparse Michigan Manual or prove political causes."
+  },
+  "county_order": [
+    "Kent",
+    "Muskegon",
+    "Ottawa"
+  ],
+  "primary": {
+    "John Gibbs (R)": {
+      "Kent": 36597,
+      "Muskegon": 5866,
+      "Ottawa": 11673
+    },
+    "Peter Meijer (R)": {
+      "Kent": 35623,
+      "Muskegon": 5118,
+      "Ottawa": 9699
+    },
+    "Hillary Scholten (D)": {
+      "Kent": 45600,
+      "Muskegon": 8803,
+      "Ottawa": 5258
+    }
+  },
+  "general": {
+    "John Gibbs (R)": {
+      "Kent": 98016,
+      "Muskegon": 16420,
+      "Ottawa": 27793
+    },
+    "Hillary Scholten (D)": {
+      "Kent": 139812,
+      "Muskegon": 24013,
+      "Ottawa": 22164
+    },
+    "Jamie Lewis (L)": {
+      "Kent": 4726,
+      "Muskegon": 856,
+      "Ottawa": 1052
+    },
+    "Louis Palus (WCP)": {
+      "Kent": 2733,
+      "Muskegon": 793,
+      "Ottawa": 610
+    }
+  },
+  "official_statewide_checks": {
+    "primary": {
+      "John Gibbs (R)": 54136,
+      "Peter Meijer (R)": 50440,
+      "Hillary Scholten (D)": 59661
+    },
+    "general": {
+      "John Gibbs (R)": 142229,
+      "Hillary Scholten (D)": 185989,
+      "Jamie Lewis (L)": 6634,
+      "Louis Palus (WCP)": 4136
+    },
+    "general_all_candidates": 338988
+  }
+}
