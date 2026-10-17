@@ -81,6 +81,35 @@ def validate_ledger(ledger: dict, root: Path, fec_2022_csv: Path | None = None) 
                         second = entry.get("additional_county_source", {})
                         if second.get("evidence") != "data/sources/oh09_defiance_2022_primary.json" or not (root / second["evidence"]).is_file():
                             raise AssertionError("OH-09 Defiance certified county source must remain independently traced")
+                    if district == "NH-01" and level == "partial_subdistrict":
+                        goffstown_path = "data/sources/nh01_goffstown_2022_primary_general.json"
+                        if entry["evidence"] != goffstown_path:
+                            raise AssertionError("NH-01 partial evidence must link to the Goffstown official town witness")
+                        goffstown = json.loads((root / goffstown_path).read_text(encoding="utf-8"))
+                        if stage == "primary":
+                            if party != "R" or votes != 1947 or entry.get("included_municipalities") != ["Goffstown"]:
+                                raise AssertionError("NH-01 Republican Primary remains only a Goffstown town partial witness")
+                            prim = goffstown["republican_primary"]
+                            named = sum(prim["named_candidate_votes"].values())
+                            valid = named + sum(prim["named_cross_party_writein"].values()) + prim["writeins_under_5_votes_each"]
+                            if named != 1940 or valid != votes or prim["named_cross_party_writein"] != {"Chris Pappas": 5}:
+                                raise AssertionError("NH-01 GOP town primary candidate/write-in source does not reconcile")
+                        else:
+                            want = {"R": 5656, "D": 5179}[party]
+                            if votes != want or entry.get("included_municipalities") != ["Alton", "Goffstown"]:
+                                raise AssertionError("NH-01 general remains only a two-town partial witness")
+                            alton_source = entry.get("additional_town_source", {})
+                            alton_path = "data/sources/nh01_alton_2022_general_partial.json"
+                            if alton_source.get("evidence") != alton_path or not (root / alton_path).is_file():
+                                raise AssertionError("NH-01 Alton town component source is missing")
+                            alton = json.loads((root / alton_path).read_text(encoding="utf-8"))
+                            name = {"R": "Karoline Leavitt (R)", "D": "Chris Pappas (D)"}[party]
+                            alton_vote = alton["recorded_party_candidate_votes"][name]
+                            goffstown_vote = goffstown["general"]["party_candidate_votes"][name]
+                            if (alton_vote + goffstown_vote != votes or
+                                alton_vote != {"R":1936,"D":1224}[party] or
+                                goffstown_vote != {"R":3720,"D":3955}[party]):
+                                raise AssertionError("NH-01 Alton + Goffstown primary-source witness sums changed")
                 counts[level] += 1
     if sum(counts.values()) != 20:
         raise AssertionError("Expected five cases x two elections x two parties = 20 cells")
