@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "generated_basis": "research notes and merged PRs through 2026-10-17",
+  "study_year": 2022,
+  "measurement_unit": "party_election_stage_within_one_district",
+  "levels": {
+    "district_verified": "Two-party FEC subtotal independently checked for this party/stage against district-wide official state or state-certified subcounty results. No causal validation.",
+    "partial_subdistrict": "Independent official county/municipality subset only. A partial subtotal <= FEC district total does NOT demonstrate agreement for whole district.",
+    "not_verified": "No independent party/stage district-level numerical reconciliation. State portal/source document existence is not a completed check."
+  },
+  "cases": {
+    "RI-02": {
+      "primary": {
+        "R": {
+          "level": "district_verified",
+          "votes": 12113,
+          "evidence": "docs/2022-error-case-studies.md",
+          "source_url": "https://www.ri.gov/election/results/2022/statewide_primary/"
+        },
+        "D": {
+          "level": "district_verified",
+          "votes": 56102,
+          "evidence": "docs/2022-error-case-studies.md",
+          "source_url": "https://www.ri.gov/election/results/2022/statewide_primary/"
+        }
+      },
+      "general": {
+        "R": {
+          "level": "district_verified",
+          "votes": 93969,
+          "evidence": "docs/2022-error-case-studies.md",
+          "source_url": "https://www.ri.gov/election/results/2022/general_election/"
+        },
+        "D": {
+          "level": "district_verified",
+          "votes": 101432,
+          "evidence": "docs/2022-error-case-studies.md",
+          "source_url": "https://www.ri.gov/election/results/2022/general_election/"
+        }
+      }
+    },
+    "MI-03": {
+      "primary": {
+        "R": {
+          "level": "district_verified",
+          "votes": 104576,
+          "evidence": "data/sources/mi03_2022_state_canvass.json",
+          "source_url": "https://www.legislature.mi.gov/documents/2023-2024/michiganmanual/2023-MM-Chapter9.pdf"
+        },
+        "D": {
+          "level": "district_verified",
+          "votes": 59661,
+          "evidence": "data/sources/mi03_2022_state_canvass.json",
+          "source_url": "https://www.legislature.mi.gov/documents/2023-2024/michiganmanual/2023-MM-Chapter9.pdf"
+        }
+      },
+      "general": {
+        "R": {
+          "level": "district_verified",
+          "votes": 142229,
+          "evidence": "data/sources/mi03_2022_state_canvass.json",
+          "source_url": "https://www.legislature.mi.gov/documents/2023-2024/michiganmanual/2023-MM-Chapter9.pdf"
+        },
+        "D": {
+          "level": "district_verified",
+          "votes": 185989,
+          "evidence": "data/sources/mi03_2022_state_canvass.json",
+          "source_url": "https://www.legislature.mi.gov/documents/2023-2024/michiganmanual/2023-MM-Chapter9.pdf"
+        }
+      }
+    },
+    "OH-09": {
+      "primary": {
+        "R": {
+          "level": "not_verified",
+          "votes": null,
+          "evidence": null,
+          "source_url": null
+        },
+        "D": {
+          "level": "not_verified",
+          "votes": null,
+          "evidence": null,
+          "source_url": null
+        }
+      },
+      "general": {
+        "R": {
+          "level": "district_verified",
+          "votes": 115362,
+          "evidence": "data/sources/oh09_2022_official_general_canvass.json",
+          "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20221108overlap.pdf"
+        },
+        "D": {
+          "level": "district_verified",
+          "votes": 150655,
+          "evidence": "data/sources/oh09_2022_official_general_canvass.json",
+          "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20221108overlap.pdf"
+        }
+      }
+    },
+    "OH-15": {
+      "primary": {
+        "R": {
+          "level": "partial_subdistrict",
+          "votes": 3398,
+          "evidence": "data/sources/oh15_clark_2022_official_votes.json",
+          "source_url": "https://liveresults.boe.ohio.gov/clarkoh/LiveResults/en/Index_9.html"
+        },
+        "D": {
+          "level": "partial_subdistrict",
+          "votes": 365,
+          "evidence": "data/sources/oh15_clark_2022_official_votes.json",
+          "source_url": "https://liveresults.boe.ohio.gov/clarkoh/LiveResults/en/Index_9.html"
+        }
+      },
+      "general": {
+        "R": {
+          "level": "partial_subdistrict",
+          "votes": 15671,
+          "evidence": "data/sources/oh15_clark_2022_official_votes.json",
+          "source_url": "https://liveresults.boe.ohio.gov/ENR/clarkohenr/11/en/Index_11.html"
+        },
+        "D": {
+          "level": "partial_subdistrict",
+          "votes": 5407,
+          "evidence": "data/sources/oh15_clark_2022_official_votes.json",
+          "source_url": "https://liveresults.boe.ohio.gov/ENR/clarkohenr/11/en/Index_11.html"
+        }
+      }
+    },
+    "NH-01": {
+      "primary": {
+        "R": {
+          "level": "not_verified",
+          "votes": null,
+          "evidence": null,
+          "source_url": null
+        },
+        "D": {
+          "level": "district_verified",
+          "votes": 42368,
+          "evidence": "data/sources/nh01_2022_democratic_primary.json",
+          "source_url": "https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-sp-congressional-district-1-democratic-remediated.pdf"
+        }
+      },
+      "general": {
+        "R": {
+          "level": "not_verified",
+          "votes": null,
+          "evidence": null,
+          "source_url": null
+        },
+        "D": {
+          "level": "not_verified",
+          "votes": null,
+          "evidence": null,
+          "source_url": null
+        }
+      }
+    }
+  },
+  "source_discovery_only": [
+    {
+      "district": "NH-01",
+      "stage": "general",
+      "source_url": "https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf",
+      "status": "official_document_identified_but_no_independent_totals_transcribed"
+    },
+    {
+      "district": "NH-01",
+      "stage": "primary_R",
+      "source_url": "https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state",
+      "status": "official_index_identified_but_no_independent_totals_transcribed"
+    },
+    {
+      "district": "OH-09",
+      "stage": "primary",
+      "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503overlap.pdf",
+      "status": "official_source_candidate_found_but_not_inspected_for_eight_county_congressional_votes"
+    }
+  ],
+  "safeguards": {
+    "baseline_total_study_records": 916,
+    "holdout_2022_records": 238,
+    "do_not_treat_document_discovery_as_reconciliation": true,
+    "do_not_infer_causality": true,
+    "municipality_must_be_in_2022_congressional_district": true,
+    "example_invalid_candidate_municipality_for_nh01": "Madison",
+    "nh_2022_district_definition": "https://gc.nh.gov/bill_status/legacy/bs2016/billText.aspx?id=30032022&sy=2022&txtFormat=html",
+    "note": "The 2022 town of Madison is NOT inside NH congressional district 1 under the 2022 town allocation; do not use a NH-02 town PDF for NH-01."
+  }
+}
