@@ -85,11 +85,32 @@ def audit(frame: pd.DataFrame) -> dict:
     }
 
 
+def verify_observed_2020_boundary(report: dict) -> None:
+    """Fail CI if the evidence recorded in the research note no longer holds."""
+    results = {record["district"]: record for record in report["districts"]}
+    expect = {
+        "01": (40273, 0, 40404, 131),
+        "02": (18812, 181, 18862, -131),
+    }
+    for district, expected in expect.items():
+        item = results[district]
+        actual = (item["candidate_votes"], item["affiliated_writein_votes"],
+                  item["official_party_subtotal"], item["remaining_gap"])
+        if actual != expected:
+            raise AssertionError(f"WI-{district} official primary evidence changed: {actual}")
+    suspicious = [row for row in results["02"]["writein_primary_rows"]
+                  if row["excel_row_approx"] == 3941
+                  and row["party_code"] == "W(R)" and row["primary_votes"] == 131]
+    if not suspicious or not report["opposite_gap_with_matching_wi02_writein"]:
+        raise AssertionError("Expected out-of-order WI-02 W(R) 131 source row not found")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--workbook", type=Path, default=Path("data/raw/federalelections2020.xlsx"))
     parser.add_argument("--expected", type=Path, default=Path("data/sources/expected_analysis.json"))
     parser.add_argument("--output", type=Path, default=Path("data/processed/wi-2020-primary-boundary-audit.json"))
+    parser.add_argument("--require-known-snapshot", action="store_true")
     args = parser.parse_args()
     wanted = json.loads(args.expected.read_text(encoding="utf-8"))["official_source_sha256"]["2020"]
     actual = hashlib.sha256(args.workbook.read_bytes()).hexdigest()
@@ -99,6 +120,8 @@ def main() -> None:
     report = audit(frame)
     report["source_sheet"] = sheet
     report["source_sha256"] = actual
+    if args.require_known_snapshot:
+        verify_observed_2020_boundary(report)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2, ensure_ascii=False))
