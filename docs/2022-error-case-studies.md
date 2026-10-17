@@ -78,7 +78,7 @@ python scripts/build_error_case_studies.py --top-n 5
 |---|---|---|---|
 |RI-02|[RI 2022 statewide primary](https://www.ri.gov/election/results/2022/statewide_primary/) / [RI 2022 general election](https://www.ri.gov/election/results/2022/general_election/)|**一次資料の票数照合済み**（下記）|候補者選択・党派参加層について因果説明はしない|
 |OH-15|[Ohio Secretary of State公式結果ポータル](https://www.ohiosos.gov/data) / [2022年本選挙の認証公表](https://www.ohiosos.gov/office/media-center/categories/press-releases/2022-12-09) / [Clark County BOE](https://liveresults.boe.ohio.gov/ENR/clarkohenr/11/en/Index_11.html)|**Clark郡のPrimary/General票を部分照合（PR #37）**|州当局の全選挙区公式Primary/General票をまだ独立照合していない|
-|OH-09|[8郡の認証済みGeneral票（Lucas County BOE、Defiance郡保管）](https://www.boe.ohio.gov/defiance/c/elecres/20221108overlap.pdf)|**Generalの全8郡・全地区票をFECと照合済み（PR #38）**|2022年5月Primaryの州公式候補者票との独立照合が残る|
+|OH-09|[8郡の認証済みGeneral票（Lucas County BOE、Defiance郡保管）](https://www.boe.ohio.gov/defiance/c/elecres/20221108overlap.pdf)|**General全8郡を独立照合（PR #38）、PrimaryはDefiance郡だけ照合（PR #44）**|2022年5月Primaryの残り7郡・全地区を州公式候補者票と独立照合する必要がある|
 |MI-03|[Michigan州議会公式公刊物](https://www.legislature.mi.gov/documents/2023-2024/michiganmanual/2023-MM-Chapter9.pdf)|**Primary/Generalの3郡合計でFECと独立一致（PR #36）**|予測誤差の要因は因果検証していない|
 |NH-01|[NH州2022年共和党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state) / [民主党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-democratic-state) / [General結果](https://www.sos.nh.gov/elections/2022-election-results/2022-general-election-results)|**民主党Primaryの党小計を照合（§10）、GeneralのAlton町を部分照合（§13）**|共和党Primary票とGeneral全選挙区票の州公式独立照合は未完了|
 
@@ -183,11 +183,11 @@ python scripts/verify_mi03_state_canvass.py
 |---|---|---|---|---|
 | RI-02 | **地区全体のR/D票照合済み** | **地区全体のR/D票照合済み** | 上記§6 | 完了（背景の因果説明は未検証） |
 | MI-03 | **地区全体の郡別R/D票照合済み** | **地区全体の郡別R/D票照合済み** | [§7と再現コード](../scripts/verify_mi03_state_canvass.py) | 完了（州原典の転記JSONとFECを比較） |
-| OH-09 | **未完了** | **全8郡の認証済み地区票とFECが完全一致** | [Ohio州認証canvassの8郡表](oh09-general-canvass.md)、[自動照合コード](../scripts/verify_oh09_general_canvass.py) | **Generalだけ完了**。Primary候補4対1の州公式票を未検証 |
+| OH-09 | **Defiance郡の候補者別R/D票のみ独立照合、全地区未完了** | **全8郡の認証済み地区票とFECが完全一致** | [Ohio州認証canvassの8郡表](oh09-general-canvass.md)、[自動照合コード](../scripts/verify_oh09_general_canvass.py) | **Generalだけ全地区完了**。PrimaryはDefiance郡のみ独立照合 |
 | OH-15 | **Clark郡のみ照合** | **Clark郡のみ照合** | [§8と再現コード](../scripts/audit_oh15_county.py) | **両選挙とも部分照合**。全選挙区の州公式結果は未完了 |
 | NH-01 | **民主党側42,368票のみ照合済み**・共和党側75,401票は未完了 | **Alton町のR/D候補者票のみ照合、全選挙区未完了** | [NH州公式民主党Primary PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-sp-congressional-district-1-democratic-remediated.pdf) / [§10](#10-nh-01民主党primary票の州公式集計との独立照合2026-10-17) | **Primary Dだけの部分照合**。R PrimaryとGeneralの公式票数は未検証 |
 
-**公開リポジトリの現行916件・2022年の238件・モデル精度・McNemar統計検定は、外部照合の追加では変更しない。** 下記§10の追加検証により、NH-01は**民主党PrimaryのR/D二党のうちD側だけ**独立照合できた。OH-09のPrimary、OH-15の全選挙区、NH-01共和党Primary・Generalは依然未完了。**5/5地区が完全検証済みとは表記しない**。
+**公開リポジトリの現行916件・2022年の238件・モデル精度・McNemar統計検定は、外部照合の追加では変更しない。** 下記§10の追加検証により、NH-01は**民主党PrimaryのR/D二党のうちD側だけ**独立照合できた。OH-09のPrimary全地区、OH-15の全選挙区、NH-01共和党Primary・General全地区は依然未完了。**5/5地区が完全検証済みとは表記しない**。
 
 ## 10. NH-01：民主党Primary票の州公式集計との独立照合（2026-10-17）
 
@@ -251,15 +251,15 @@ python scripts/verify_mi03_state_canvass.py
 |判定|党×選挙段階|説明|
 |---|---:|---|
 |地区全体の党側の州公式票を独立照合済み|**11/20**|RI-02 Primary/GeneralのR,D＝4、MI-03の4、OH-09 Generalの2、NH-01民主党Primaryの1|
-|一部の郡・町の公式票のみ確認|**6/20**|OH-15のClark郡Primary/General R/D計4側、NH-01 GeneralのAlton町R/D計2側。全地区の証明ではない|
-|党側の公式得票総数は未照合|**3/20**|OH-09 PrimaryのR,D、NH-01共和党Primary。NH-01 Generalは町単位の公式票だけ部分照合したが、全地区は未照合|
+|一部の郡・町の公式票のみ確認|**8/20**|OH-15のClark郡Primary/General R/D計4側、NH-01 GeneralのAlton町R/D計2側、OH-09 PrimaryのDefiance郡R/D計2側。全地区の証明ではない|
+|党側の公式得票総数は未照合|**1/20**|NH-01の共和党Primary。OH-09 PrimaryはDefiance郡のみ、NH-01 GeneralはAlton町のみ部分照合で全地区は未完了|
 |**選挙区全体のPrimaryとGeneralのR/D双方を確認済み**|**2/5地区**|RI-02とMI-03|
 
 **NH-01の資料探索で判明した注意点:** NH Secretary of Stateの[2022年General第1区PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf)は確認したが、今回の調査環境では公式PDF本文の読み出しがアクセス制限を受けた。**Alton町の票数だけは州公式PDFの検索索引と地元の同時代報道で相互照合したが、Pappas 167,391票・Leavitt 142,229票という全地区の数字を州側で独立合算できたわけではない**。同じく[共和党Primaryの州結果案内](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state)を確認したが、候補者10人の公式票数の再合計は未完了。
 
 **2022年の選挙区割りに注意:** 自治体の2022年年報を補助的に利用する場合は、[2022年適用のNH州議会の第1区区域規定](https://gc.nh.gov/bill_status/legacy/bs2016/billText.aspx?id=30032022&sy=2022&txtFormat=html)と照合する。例えば**Madison町は2022年NH-01に含まれないため、MadisonのGeneral/Primary票をNH-01の一部とみなしてはならない**。郡名や現在の区割りから2022年の所属を推測しない。
 
-**Ohioの資料探索:** [Defiance County選管の2022年5月Primary資料](https://www.boe.ohio.gov/defiance/c/elecres/20220503overlap.pdf)のURLは見つかったが、その文書にOH-09の8郡すべての候補者票があると今回の調査で確認できていない。**資料候補の発見≠独立した票数照合**。候補者名・票種・District番号・郡別網羅性を検証して初めてPrimaryの検証状態を更新する。
+**Ohioの資料探索（2026-10-17追記）:** [Defiance County選管の2022年5月Primaryの確定票](https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf)から、OH-09の同郡共和党4候補と民主党1候補の票を独立確認した（§14）。一方、[全郡集計の資料候補](https://www.boe.ohio.gov/defiance/c/elecres/20220503overlap.pdf)がOH-09全8郡を網羅するかは未検証。**1郡の票数照合≠全地区の独立照合**。候補者名・票種・District番号・郡別網羅性を検証して初めてPrimaryの検証状態を更新する。
 
 この台帳に対するCIは、地区全体の独立照合から部分照合へ降格すべきケース、出典が欠損しているのに照合完了としてしまうケース、および現行916件の基準を誤って変更するケースを**失敗として検出**する。州公式PDFをGitHub Actionsで毎回取得して再読しているわけではなく、台帳に記載した出典・転記済み票数と公式FECからの再生成票を照合するものである。
 
@@ -287,4 +287,33 @@ NH州Secretary of Stateの[2022年General District 1の公式PDF](https://www.so
     python scripts/validate_2022_state_coverage.py --fec-2022-csv data/processed/elections.csv
 
 **重要:** アルゴリズム変更・候補者票の追加・FECの全地区票の置換は行っていない。現行研究対象916件とモデル評価は不変。州のOfficial PDFはCIが毎回取得・再パースするわけではなく、**州公式PDFの検索索引と同時代報道から確認したAlton町の票数を固定し、FECを再生成して範囲の安全性を確認する方式**である。
+
+## 14. OH-09 Primary：Defiance郡公式認証票の候補者別部分照合（2026-10-17）
+
+2022年5月3日Primaryの[Defiance County Board of ElectionsのOfficial Canvass（2022年5月24日確定）](https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf)で、**同郡内のOhio Congressional District 9**の候補者票が党別に公開されている。民主党は印刷2ページ、共和党は印刷4ページ。検索索引で公開されたPDF本文の候補者票を転記し、州公式票の候補者別内訳と党別小計の算術一致を記録した。
+
+| 党 | 候補者 | Defiance郡でのPrimary得票 |
+|---|---|---:|
+| R | Beth Deck | 226 |
+| R | Theresa Gavarone | 548 |
+| R | J.R. Majewski | 1,315 |
+| R | Craig S. Riedel | 2,765 |
+| **R** | **党合計** | **4,854** |
+| D | Marcy Kaptur | 1,133 |
+
+共和党のDefiance郡計は226+548+1,315+2,765＝**4,854**票で、公式CanvassのR小計と一致。民主党はKapturの**1,133**票。FEC公式2022年Excelの第9区Primary全区R=**61,090**票、D=**32,968**票の**一部**として整合し、他郡分は未照合のままとする。
+
+**地域による候補者支持の違い（観測事実）:** Defiance郡内ではCraig Riedel 2,765票がJ.R. Majewski 1,315票より多かった。一方、OH-09全地区の共和党予備選挙の勝者はMajewski。したがって、**1郡での最多候補者と全区の勝者は異なる**。それだけで予測誤差の原因や地域差の因果効果を推定してはならない。
+
+再現可能な監査：
+- [2022 Defiance郡の公式出典、候補者票、認証日、全地区非対応の証拠JSON](../data/sources/oh09_defiance_2022_primary.json)
+- [郡候補者票→R/D小計の照合とFEC2022全地区票の確認](../scripts/audit_oh09_defiance_primary.py)
+- [転記誤りや郡内勝者と全区勝者の誤同定を検出するテスト](../tests/test_oh09_defiance_primary.py)
+
+    python scripts/download_fec.py --years 2022
+    python scripts/normalize_fec.py --years 2022
+    python scripts/audit_oh09_defiance_primary.py
+    python scripts/validate_2022_state_coverage.py --fec-2022-csv data/processed/elections.csv
+
+**確認した範囲:** Official Canvassの票はDefiance郡**1郡のみ**。Ohio第9区Primaryの**残る7郡のR/D候補者票の独立照合は未完了**。これを選挙区全体の検証済みとして扱うことはCIでも禁止する。監査CIはFEC公式2022年Excelを再取得するが、Ohio郡の公刊PDFを毎回自動ダウンロード・解析するわけではなく、公刊値を固定JSONに転記して再計算する。
 
