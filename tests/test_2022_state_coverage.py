@@ -62,3 +62,15 @@ def test_stale_fec_normalization_rejected(tmp_path):
        "2022,NH,01,75401,42368,142230,167391\n",encoding="utf-8")
     with pytest.raises(AssertionError,match="Missing FEC baseline"):
         mod.validate_ledger(d,ROOT,path)
+
+def test_oh09_two_county_partial_sum_cannot_be_silently_changed():
+    d=fixture()
+    d["cases"]["OH-09"]["primary"]["R"]["votes"] = 11703
+    with pytest.raises(AssertionError, match="two-county Primary witness"):
+        mod.validate_ledger(d, ROOT)
+
+def test_oh09_missing_defiance_component_rejected():
+    d=fixture()
+    d["cases"]["OH-09"]["primary"]["D"]["additional_county_source"]["evidence"]="data/sources/unknown_defiance.json"
+    with pytest.raises(AssertionError, match="Defiance certified county source"):
+        mod.validate_ledger(d, ROOT)
