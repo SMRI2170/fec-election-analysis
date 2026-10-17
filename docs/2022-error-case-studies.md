@@ -1,6 +1,6 @@
 # 2022年の下院選挙予測で誤差が大きい5選挙区 — FEC候補者票の事例調査
 
-検証日: **2026-10-16**。分析対象は50州の投票権を持つ下院議員選挙916件（2022年238件）。[公式FEC結果を再取得して年度外学習・予測したActions](https://github.com/SMRI2170/fec-election-analysis/actions/runs/38850507154)。
+検証日: **2026-10-17**。分析対象は50州の投票権を持つ下院議員選挙916件（2022年238件）。[公式FEC結果を再取得して年度外学習・予測したActions](https://github.com/SMRI2170/fec-election-analysis/actions/runs/38850507154)。
 
 ## 研究目的
 
@@ -80,7 +80,7 @@ python scripts/build_error_case_studies.py --top-n 5
 |OH-15|[Ohio Secretary of State公式結果ポータル](https://www.ohiosos.gov/data) / [2022年本選挙の認証公表](https://www.ohiosos.gov/office/media-center/categories/press-releases/2022-12-09) / [Clark County BOE](https://liveresults.boe.ohio.gov/ENR/clarkohenr/11/en/Index_11.html)|**Clark郡のPrimary/General票を部分照合（PR #37）**|州当局の全選挙区公式Primary/General票をまだ独立照合していない|
 |OH-09|[8郡の認証済みGeneral票（Lucas County BOE、Defiance郡保管）](https://www.boe.ohio.gov/defiance/c/elecres/20221108overlap.pdf)|**General全8郡を独立照合（PR #38）、PrimaryはDefiance・Erieの2郡を独立照合（PR #44/45）**|2022年5月Primaryの残り6郡を独立照合し、全地区を再計算する必要がある|
 |MI-03|[Michigan州議会公式公刊物](https://www.legislature.mi.gov/documents/2023-2024/michiganmanual/2023-MM-Chapter9.pdf)|**Primary/Generalの3郡合計でFECと独立一致（PR #36）**|予測誤差の要因は因果検証していない|
-|NH-01|[NH州2022年共和党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state) / [民主党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-democratic-state) / [General結果](https://www.sos.nh.gov/elections/2022-election-results/2022-general-election-results)|**民主党Primaryの党小計を照合（§10）、GeneralのAlton町を部分照合（§13）**|共和党Primary票とGeneral全選挙区票の州公式独立照合は未完了|
+|NH-01|[NH州公式Primary・General結果](https://www.sos.nh.gov/elections/2022-election-results) / [Goffstown町公式年報](https://www.goffstownnh.gov/Archive.aspx?ADID=108)|**民主党Primaryは全区照合（§10）、共和党PrimaryはGoffstown町のみ照合（§16）、GeneralはAlton＋Goffstownの2町分を部分照合（§13・§16）**|共和党Primary75,401票とGeneral全区のR/D票数の独立総計は未完了|
 
 ### RI-02：州政府資料とFECの照合が成立した事実
 
@@ -185,9 +185,9 @@ python scripts/verify_mi03_state_canvass.py
 | MI-03 | **地区全体の郡別R/D票照合済み** | **地区全体の郡別R/D票照合済み** | [§7と再現コード](../scripts/verify_mi03_state_canvass.py) | 完了（州原典の転記JSONとFECを比較） |
 | OH-09 | **Defiance・Erieの2郡候補者別R/D票を独立照合、全地区未完了** | **全8郡の認証済み地区票とFECが完全一致** | [Ohio州認証canvassの8郡表](oh09-general-canvass.md)、[自動照合コード](../scripts/verify_oh09_general_canvass.py) | **Generalだけ全地区完了**。PrimaryはDefiance・Erieの2郡のみ独立照合 |
 | OH-15 | **Clark郡のみ照合** | **Clark郡のみ照合** | [§8と再現コード](../scripts/audit_oh15_county.py) | **両選挙とも部分照合**。全選挙区の州公式結果は未完了 |
-| NH-01 | **民主党側42,368票のみ照合済み**・共和党側75,401票は未完了 | **Alton町のR/D候補者票のみ照合、全選挙区未完了** | [NH州公式民主党Primary PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-sp-congressional-district-1-democratic-remediated.pdf) / [§10](#10-nh-01民主党primary票の州公式集計との独立照合2026-10-17) | **Primary Dだけの部分照合**。R PrimaryとGeneralの公式票数は未検証 |
+| NH-01 | **民主党側42,368票を全区照合済み**・共和党側はGoffstown町1,947票のみ部分照合 | **Alton＋Goffstownの2町のR/D候補者票を部分照合、全選挙区未完了** | [NH州公式民主党Primary PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-sp-congressional-district-1-democratic-remediated.pdf) / [§10](#10-nh-01民主党primary票の州公式集計との独立照合2026-10-17) | **Primary Dだけの部分照合**。R PrimaryとGeneralの公式票数は未検証 |
 
-**公開リポジトリの現行916件・2022年の238件・モデル精度・McNemar統計検定は、外部照合の追加では変更しない。** 下記§10の追加検証により、NH-01は**民主党PrimaryのR/D二党のうちD側だけ**独立照合できた。OH-09のPrimary残り6郡を含む全地区、OH-15の全選挙区、NH-01共和党Primary・General全地区は依然未完了。**5/5地区が完全検証済みとは表記しない**。
+**公開リポジトリの現行916件・2022年の238件・モデル精度・McNemar統計検定は、外部照合の追加では変更しない。** 下記§10の追加検証により、NH-01は民主党PrimaryのD側だけ全区照合できたほか、Goffstown町の共和党PrimaryとAlton＋GoffstownのGeneral票を**部分照合**できた。OH-09のPrimary残り6郡を含む全地区、OH-15の全選挙区、NH-01共和党Primary・General全地区の独立照合は依然未完了。**5/5地区が完全検証済みとは表記しない**。
 
 ## 10. NH-01：民主党Primary票の州公式集計との独立照合（2026-10-17）
 
@@ -251,8 +251,8 @@ python scripts/verify_mi03_state_canvass.py
 |判定|党×選挙段階|説明|
 |---|---:|---|
 |地区全体の党側の州公式票を独立照合済み|**11/20**|RI-02 Primary/GeneralのR,D＝4、MI-03の4、OH-09 Generalの2、NH-01民主党Primaryの1|
-|一部の郡・町の公式票のみ確認|**8/20**|OH-15のClark郡Primary/General R/D計4側、NH-01 GeneralのAlton町R/D計2側、OH-09 PrimaryのDefiance＋Erieの2郡合計R/D計2側。全地区の証明ではない|
-|党側の公式得票総数は未照合|**1/20**|NH-01の共和党Primary。OH-09 PrimaryはDefiance・Erieの2郡のみ、NH-01 GeneralはAlton町のみ部分照合で全地区は未完了|
+|一部の郡・町の公式票のみ確認|**9/20**|OH-15のClark郡Primary/General R/D計4側、NH-01 GeneralのAlton＋Goffstownの2町R/D計2側、**NH-01共和党PrimaryのGoffstown町1側**、OH-09 PrimaryのDefiance＋Erieの2郡R/D計2側。全地区の証明ではない|
+|公式資料から党側の票数を一切照合していない項目|**0/20**|ただし完全照合は11/20にとどまり、**9/20は部分照合にすぎない**。NH-01共和党PrimaryはGoffstownのみ、NH-01 GeneralはAlton＋Goffstownのみ|
 |**選挙区全体のPrimaryとGeneralのR/D双方を確認済み**|**2/5地区**|RI-02とMI-03|
 
 **NH-01の資料探索で判明した注意点:** NH Secretary of Stateの[2022年General第1区PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf)は確認したが、今回の調査環境では公式PDF本文の読み出しがアクセス制限を受けた。**Alton町の票数だけは州公式PDFの検索索引と地元の同時代報道で相互照合したが、Pappas 167,391票・Leavitt 142,229票という全地区の数字を州側で独立合算できたわけではない**。同じく[共和党Primaryの州結果案内](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state)を確認したが、候補者10人の公式票数の再合計は未完了。
@@ -348,4 +348,54 @@ NH州Secretary of Stateの[2022年General District 1の公式PDF](https://www.so
     python scripts/validate_2022_state_coverage.py --fec-2022-csv data/processed/elections.csv
 
 **916件の学習・評価標本、予測値、McNemar統計などの主要指標は変更していない。**
+
+## 16. NH-01 Primary・General：Goffstown町2022年公式年報による独立した町別照合（2026-10-17）
+
+[NH州Goffstown町公式『2022 Annual Report』（PDF）](https://www.goffstownnh.gov/Archive.aspx?ADID=108)の**印刷52ページ／PDFページindex 53**に2022年9月13日の共和党Primary、**印刷53ページ／index 54**に2022年11月8日のGeneral候補者票が掲載されている。同年報の公職者一覧には第1選挙区の議員としてChris Pappasが記載されており、**2022年NH-01に属する町の結果**として扱う。2ページの結果表は原PDFの表示を目視確認した。データ構造化後のCIは町PDFを都度パースせず、転記した値と再取得したFECの公式Excelを比較する。
+
+### Goffstown町の共和党Primary：10候補＋write-inの票を区別
+
+|共和党Primary（Goffstown町）|公式記録の票数|
+|---|---:|
+|Karoline Leavitt|660|
+|Matt Mowers|564|
+|Gail Huff Brown|303|
+|Russell Prescott|180|
+|Tim Baxter|174|
+|Kevin R. Rondeau|19|
+|Mary Maxwell|13|
+|Mark Kilbane|12|
+|Gilead R. Towne|8|
+|Tom Alciere|7|
+|**10候補者合計**|**1,940**|
+|共和党Primary投票用紙上のChris Pappas記名write-in|5|
+|その他の少数write-in|2|
+|**共和党Primary有効票合計（Goffstown町）**|**1,947**|
+
+注意：Chris Pappasは民主党候補者だが、年報では**共和党Primaryの選挙欄に記名write-in 5票**が掲載されている。この5票を民主党Primaryへ移してはならない。共和党Primary欄のovervote4・undervote63は**有効な候補者票に足さない**。現行FEC NH-01共和党Primaryの地区全体票**75,401票**のうち、独立確認できたのはこの町の1,947票だけである。
+
+### Goffstown・Altonの2町でGeneral票を部分照合
+
+|NH-01 General|Alton町（PR #43）|Goffstown町（今回）|2町の候補者票合計|FEC全区票|
+|---|---:|---:|---:|---:|
+|Karoline Leavitt（R）|1,936|3,720|**5,656**|142,229|
+|Chris Pappas（D）|1,224|3,955|**5,179**|167,391|
+
+Goffstown町の本選挙には他党へのwrite-in 9、overvote1、undervote88の別行があり、**二大政党候補票へ混ぜない**。Alton町の票は[NH州公式General索引と同時代地域紙を照合](../data/sources/nh01_alton_2022_general_partial.json)、Goffstown町は**町政府公式2022年報**を独立資料として使用。2町合計はNH-01全地区総票ではない。
+
+### 監査の再現と限界
+
+- [町公式2022年報の各候補者票と出典、印刷/PDFページを保存](../data/sources/nh01_goffstown_2022_primary_general.json)
+- [10候補＋7write-in、2町General票の独立合算とFEC2022全区基準を比較](../scripts/audit_nh01_goffstown.py)
+- [候補者票の誤転記、他党write-inの誤算入、町票の全区誤格上げを検出](../tests/test_nh01_goffstown.py)
+- [5区の20党側の独立資料台帳](../data/sources/2022_state_evidence_coverage.json)は**全区照合11、町・郡の部分照合9、全くの数値未照合0**へ更新。ただし**Primary/Generalの両党全区照合済みの選挙区は2/5のまま**。
+
+再現：
+
+    python scripts/download_fec.py --years 2022
+    python scripts/normalize_fec.py --years 2022
+    python scripts/audit_nh01_goffstown.py
+    python scripts/validate_2022_state_coverage.py --fec-2022-csv data/processed/elections.csv
+
+**残件：NH州公式共和党Primaryの全区75,401票の独立再集計、NH General全区のR142,229／D167,391票の独立再集計。** 町票から投票者属性やモデル予測誤差の因果関係を断定しない。現在の916研究対象、2022年238件テスト、モデル・McNemar検定は一切変更しない。
 
