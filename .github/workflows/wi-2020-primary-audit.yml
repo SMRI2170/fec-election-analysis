@@ -1,0 +1,35 @@
+name: 2020 WI primary boundary diagnostic
+
+on:
+  pull_request:
+    paths:
+      - scripts/audit_wi_2020_writeins.py
+      - tests/test_wi_2020_writeins.py
+      - .github/workflows/wi-2020-primary-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-official-2020:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Run read-only synthetic regression tests
+        run: python -m pytest -q tests/test_wi_2020_writeins.py
+      - name: Download 2020 FEC workbook (do not commit)
+        run: python scripts/download_fec.py --years 2020
+      - name: Verify SHA-256 and print WI-01/02 source rows
+        run: python scripts/audit_wi_2020_writeins.py --require-known-snapshot
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wi-2020-primary-audit
+          path: data/processed/wi-2020-primary-boundary-audit.json
+          retention-days: 3
