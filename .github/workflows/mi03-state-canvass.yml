@@ -1,0 +1,38 @@
+name: MI-03 independent state canvass
+
+on:
+  pull_request:
+    paths:
+      - data/sources/mi03_2022_state_canvass.json
+      - scripts/verify_mi03_state_canvass.py
+      - tests/test_mi03_state_canvass.py
+      - .github/workflows/mi03-state-canvass.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-state-canvass:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Synthetic and official-canvass transcription unit tests
+        run: python -m pytest -q tests/test_mi03_state_canvass.py
+      - name: Download FEC official 2022 Excel
+        run: python scripts/download_fec.py --years 2022
+      - name: Normalize FEC voting House districts
+        run: python scripts/normalize_fec.py --years 2022
+      - name: Compare state manual's county votes to FEC-normalized MI-03
+        run: python scripts/verify_mi03_state_canvass.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mi03-state-fec-audit
+          path: data/processed/mi03_state_fec_audit.json
+          retention-days: 3
