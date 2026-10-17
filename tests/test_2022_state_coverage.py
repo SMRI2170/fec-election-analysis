@@ -16,8 +16,8 @@ def fixture():
 def test_complete_matrix_has_only_two_whole_cases():
     got=mod.validate_ledger(fixture(),ROOT)
     assert got["district_verified_party_stages"]==11
-    assert got["partial_subdistrict_party_stages"]==6
-    assert got["not_verified_party_stages"]==3
+    assert got["partial_subdistrict_party_stages"]==8
+    assert got["not_verified_party_stages"]==1
     assert got["whole_cases_verified_primary_and_general"]==2
     assert got["source_discovery_is_not_verification"] is True
 
@@ -39,7 +39,7 @@ def test_nh01_democratic_primary_does_not_verify_republican_primary():
     with pytest.raises(AssertionError,match="Unverified source may not carry"):
         mod.validate_ledger(d,ROOT)
 
-def test_unverified_missing_source_does_not_allow_false_completion():
+def test_partial_oh09_primary_may_not_be_promoted_without_statewide_source():
     d=fixture()
     d["cases"]["OH-09"]["primary"]["R"]["level"]="district_verified"
     d["cases"]["OH-09"]["primary"]["R"]["votes"]=61090
