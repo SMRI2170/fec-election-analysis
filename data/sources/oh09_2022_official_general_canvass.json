@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "year": 2022,
+  "state": "OH",
+  "district": "09",
+  "election": "general",
+  "date": "2022-11-08",
+  "official_source": {
+    "certified_all_counties": "https://www.boe.ohio.gov/defiance/c/elecres/20221108overlap.pdf",
+    "most_populous_certifying_board": "Lucas County Board of Elections",
+    "independent_defiance_county": "https://www.boe.ohio.gov/defiance/c/elecres/20221108results.pdf",
+    "ohio_sos_certification_notice": "https://www.ohiosos.gov/office/media-center/categories/press-releases/2022-12-09",
+    "description": "Ohio official canvass by most populous county (Lucas) of all eight counties of congressional district 9. The published table is hosted by Defiance County BOE."
+  },
+  "counties": {
+    "Defiance": {
+      "Marcy Kaptur (D)": 5272,
+      "J.R. Majewski (R)": 7914
+    },
+    "Erie": {
+      "Marcy Kaptur (D)": 15249,
+      "J.R. Majewski (R)": 13498
+    },
+    "Fulton": {
+      "Marcy Kaptur (D)": 6544,
+      "J.R. Majewski (R)": 9584
+    },
+    "Lucas": {
+      "Marcy Kaptur (D)": 86676,
+      "J.R. Majewski (R)": 44972
+    },
+    "Ottawa": {
+      "Marcy Kaptur (D)": 8906,
+      "J.R. Majewski (R)": 9400
+    },
+    "Sandusky": {
+      "Marcy Kaptur (D)": 9523,
+      "J.R. Majewski (R)": 11607
+    },
+    "Williams": {
+      "Marcy Kaptur (D)": 4732,
+      "J.R. Majewski (R)": 7947
+    },
+    "Wood": {
+      "Marcy Kaptur (D)": 13753,
+      "J.R. Majewski (R)": 10440
+    }
+  },
+  "officially_certified_district_candidate_totals": {
+    "Marcy Kaptur (D)": 150655,
+    "J.R. Majewski (R)": 115362
+  },
+  "verification": {
+    "general_district_complete": true,
+    "primary_district_complete": false,
+    "counties_as_published_in_canvass": 8,
+    "independent_of_fec_for_general": true,
+    "do_not_infer_causes": true
+  }
+}
