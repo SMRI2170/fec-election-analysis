@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "election": {
+    "year": 2022,
+    "state": "NH",
+    "district": "01",
+    "stage": "democratic_primary",
+    "date": "2022-09-13"
+  },
+  "source": {
+    "publisher": "New Hampshire Secretary of State",
+    "official_pdf": "https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-sp-congressional-district-1-democratic-remediated.pdf",
+    "official_results_index": "https://www.sos.nh.gov/elections/2022-election-results/2022-state-primary-election-results/2022-democratic-state-primary",
+    "transcription_method": "manual transcription of official PDF's Totals row; not re-downloaded/parsed on each CI run"
+  },
+  "reported_totals": {
+    "Chris Pappas (D)": 41990,
+    "write_in_named": {
+      "Tom Alciere": 1,
+      "Tim Baxter": 19,
+      "Gail Huff Brown": 42,
+      "Mark Kilbane": 0,
+      "Karoline Leavitt": 72,
+      "Mary Maxwell": 2,
+      "Matt Mowers": 72,
+      "Russell Prescott": 15,
+      "Kevin Rondeau": 2,
+      "Gilead R. Towne": 1
+    },
+    "scattered_write_in": 152,
+    "all_votes": 42368
+  },
+  "verification_scope": {
+    "democratic_primary": true,
+    "republican_primary": false,
+    "general_election": false,
+    "primary_party_subtotal_only": true,
+    "independent_pdf_transcribed_not_fetched_by_ci": true
+  },
+  "fec_baseline": {
+    "primary_dem_votes": 42368,
+    "primary_rep_votes": 75401,
+    "general_dem_votes": 167391,
+    "general_rep_votes": 142229
+  },
+  "notes": "FEC Primary R and General D/R are baseline context only, not independently confirmed by this source. Named write-ins for Republican politicians in the Democratic primary must not be added to the Republican primary total."
+}

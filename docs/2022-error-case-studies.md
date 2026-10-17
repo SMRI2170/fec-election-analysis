@@ -80,7 +80,7 @@ python scripts/build_error_case_studies.py --top-n 5
 |OH-15|[Ohio Secretary of State公式結果ポータル](https://www.ohiosos.gov/data) / [2022年本選挙の認証公表](https://www.ohiosos.gov/office/media-center/categories/press-releases/2022-12-09) / [Clark County BOE](https://liveresults.boe.ohio.gov/ENR/clarkohenr/11/en/Index_11.html)|**Clark郡のPrimary/General票を部分照合（PR #37）**|州当局の全選挙区公式Primary/General票をまだ独立照合していない|
 |OH-09|[8郡の認証済みGeneral票（Lucas County BOE、Defiance郡保管）](https://www.boe.ohio.gov/defiance/c/elecres/20221108overlap.pdf)|**Generalの全8郡・全地区票をFECと照合済み（PR #38）**|2022年5月Primaryの州公式候補者票との独立照合が残る|
 |MI-03|[Michigan州議会公式公刊物](https://www.legislature.mi.gov/documents/2023-2024/michiganmanual/2023-MM-Chapter9.pdf)|**Primary/Generalの3郡合計でFECと独立一致（PR #36）**|予測誤差の要因は因果検証していない|
-|NH-01|[NH州2022年共和党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state) / [民主党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-democratic-state) / [General結果](https://www.sos.nh.gov/elections/2022-election-results/2022-general-election-results)|**公式Primary/General結果の参照先を特定**|地区1の候補者別PDF/Excelを抽出しFEC行と数値照合|
+|NH-01|[NH州2022年共和党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state) / [民主党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-democratic-state) / [General結果](https://www.sos.nh.gov/elections/2022-election-results/2022-general-election-results)|**民主党Primaryの党小計のみFECと一致（§10）**|共和党Primary票とGeneral票の州公式独立照合は未完了|
 
 ### RI-02：州政府資料とFECの照合が成立した事実
 
@@ -185,7 +185,35 @@ python scripts/verify_mi03_state_canvass.py
 | MI-03 | **地区全体の郡別R/D票照合済み** | **地区全体の郡別R/D票照合済み** | [§7と再現コード](../scripts/verify_mi03_state_canvass.py) | 完了（州原典の転記JSONとFECを比較） |
 | OH-09 | **未完了** | **全8郡の認証済み地区票とFECが完全一致** | [Ohio州認証canvassの8郡表](oh09-general-canvass.md)、[自動照合コード](../scripts/verify_oh09_general_canvass.py) | **Generalだけ完了**。Primary候補4対1の州公式票を未検証 |
 | OH-15 | **Clark郡のみ照合** | **Clark郡のみ照合** | [§8と再現コード](../scripts/audit_oh15_county.py) | **両選挙とも部分照合**。全選挙区の州公式結果は未完了 |
-| NH-01 | **未完了** | **未完了** | [NH州選管公式結果入口](https://www.sos.nh.gov/elections/2022-election-results) | 資料の所在確認のみ。候補者票の独立照合は未完了 |
+| NH-01 | **民主党側42,368票のみ照合済み**・共和党側75,401票は未完了 | **未完了** | [NH州公式民主党Primary PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-sp-congressional-district-1-democratic-remediated.pdf) / [§10](#10-nh-01民主党primary票の州公式集計との独立照合2026-10-17) | **Primary Dだけの部分照合**。R PrimaryとGeneralの公式票数は未検証 |
 
 **公開リポジトリの現行916件・2022年の238件・モデル精度・McNemar統計検定は、今回の外部照合の追加では変更しない。** 州公式Primaryとの独立照合が未完了なOH-09、地区全体の照合が未完了なOH-15、NH-01について、完了率を5/5と表記してはならない。
+
+## 10. NH-01：民主党Primary票の州公式集計との独立照合（2026-10-17）
+
+2022年9月13日の[NH州Secretary of State公式報告「Congressional District 1 - Democratic」](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-sp-congressional-district-1-democratic-remediated.pdf) の**Totals行**には、Chris Pappas 41,990票、候補者名つき書き込み票226票、その他Scattered 152票が記録される。
+
+|民主党Primaryの内訳|公式州集計|R/Dの研究用FEC|
+|---|---:|---:|
+|Chris Pappas（D）|41,990|FEC候補者票の内訳に対応|
+|他候補者名による書き込み票（10候補、合計）|226|党側の書き込み票へ算入される|
+|その他Scattered書き込み票|152|党側の書き込み票へ算入される|
+|**民主党Primary全票**|**42,368**|**42,368**|
+
+書き込み票の公式内訳: Tom Alciere 1、Tim Baxter 19、Gail Huff Brown 42、Mark Kilbane 0、Karoline Leavitt 72、Mary Maxwell 2、Matt Mowers 72、Russell Prescott 15、Kevin Rondeau 2、Gilead R. Towne 1、Scattered 152。**共和党候補者名のwrite-inが民主党Primaryに登場しても、この226票は共和党Primary票へ振り替えない。**
+
+**証拠範囲の制限:** 確認したのは**NH-01の民主党Primary総票だけ**。別の共和党Primary公式票との照合や、本選挙のPappas/Leavitt票の州公式原票照合はまだ行っていない。研究用FECにおける共和党Primary75,401票／本選挙D167,391票・R142,229票は、今回の州一次資料で検証できた値と混同しない。
+
+コードとテスト：
+- [州政府資料から転記したTotals行と出典](../data/sources/nh01_2022_democratic_primary.json)
+- [候補別write-inの合算、党小計、FEC正規化票との照合](../scripts/verify_nh01_democratic_primary.py)
+- [票の変化、R/Generalの照合完了誤認を防ぐテスト](../tests/test_nh01_democratic_primary.py)
+
+再現:
+
+    python scripts/download_fec.py --years 2022
+    python scripts/normalize_fec.py --years 2022
+    python scripts/verify_nh01_democratic_primary.py
+
+**再現性の限界:** NH州PDFはソースから手作業で固定JSONへ転記したもので、CIは州PDFを毎回自動取得・再パースしない。FEC公式2022 Excelは毎回再取得する。**予測値・現行916件・標本選択には変更なし。**
 
