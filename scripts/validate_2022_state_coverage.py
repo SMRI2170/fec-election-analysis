@@ -71,16 +71,44 @@ def validate_ledger(ledger: dict, root: Path, fec_2022_csv: Path | None = None) 
                         raise AssertionError(f"Independent district votes differ from FEC witness: {district} {stage} {party}")
                     if level == "partial_subdistrict" and votes >= expected:
                         raise AssertionError("Subdistrict votes cannot meet or exceed full-district votes")
-                    # OH-09 Primary is backed by two specific certified counties.
-                    # Generic less-than-district logic alone cannot detect a
-                    # mistaken edit to the partial witness or its county scope.
+                    # The OH-09 Primary remains a partial three-county witness.
+                    # Its R/D subtotal and each individual official source must
+                    # be retained before this stage may be called independently
+                    # verified at any higher level.
                     if district == "OH-09" and stage == "primary" and level == "partial_subdistrict":
-                        pinned = {"R": 11702, "D": 4521}[party]
-                        if votes != pinned or entry.get("included_counties") != ["Defiance", "Erie"]:
-                            raise AssertionError("OH-09 two-county Primary witness changed; verify both canvasses")
-                        second = entry.get("additional_county_source", {})
-                        if second.get("evidence") != "data/sources/oh09_defiance_2022_primary.json" or not (root / second["evidence"]).is_file():
-                            raise AssertionError("OH-09 Defiance certified county source must remain independently traced")
+                        pinned = {"R": 16959, "D": 6659}[party]
+                        if votes != pinned or entry.get("included_counties") != ["Defiance", "Erie", "Ottawa"]:
+                            raise AssertionError("OH-09 three-county Primary witness changed; check official results")
+                        expected_sources = [
+                            ("Defiance", "data/sources/oh09_defiance_2022_primary.json"),
+                            ("Erie", "data/sources/oh09_erie_2022_primary.json"),
+                        ]
+                        present = entry.get("additional_county_sources", [])
+                        if [(x.get("county"), x.get("evidence")) for x in present] != expected_sources:
+                            raise AssertionError("OH-09 source must preserve Defiance and Erie county evidence")
+                        if entry["evidence"] != "data/sources/oh09_ottawa_2022_amended_primary.json":
+                            raise AssertionError("OH-09 amended Ottawa evidence must remain the third county")
+                        sources = [root / x["evidence"] for x in present] + [root / entry["evidence"]]
+                        if not all(p.is_file() for p in sources):
+                            raise AssertionError("One of the three certified OH-09 source files is missing")
+                        raw = [json.loads(p.read_text(encoding="utf-8")) for p in sources]
+                        county_totals = (
+                            raw[0]["official_county_subtotals"],
+                            raw[1]["official_county_party_totals"],
+                            raw[2]["published_party_totals"],
+                        )
+                        for idx, row in enumerate(county_totals):
+                            expected_party_votes = (row["Republican"] if party == "R" else row["Democratic"])
+                            expected_county_sum = sum((
+                                raw[0]["official_county_candidate_votes"],
+                                raw[1]["primary_candidates"],
+                                raw[2]["candidates"],
+                            )[idx]["Republican" if party == "R" else "Democratic"].values())
+                            if expected_party_votes != expected_county_sum:
+                                raise AssertionError("OH-09 county candidate votes and published party sum diverged")
+                        three_sum = sum(row["Republican" if party == "R" else "Democratic"] for row in county_totals)
+                        if three_sum != pinned:
+                            raise AssertionError("OH-09 independent three-county evidence does not sum to the ledger")
                     if district == "NH-01" and level == "partial_subdistrict":
                         goffstown_path = "data/sources/nh01_goffstown_2022_primary_general.json"
                         if entry["evidence"] != goffstown_path:
