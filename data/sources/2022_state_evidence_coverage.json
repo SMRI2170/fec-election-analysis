@@ -148,10 +148,14 @@
     "NH-01": {
       "primary": {
         "R": {
-          "level": "not_verified",
-          "votes": null,
-          "evidence": null,
-          "source_url": null
+          "level": "partial_subdistrict",
+          "votes": 1947,
+          "evidence": "data/sources/nh01_goffstown_2022_primary_general.json",
+          "source_url": "https://www.goffstownnh.gov/Archive.aspx?ADID=108",
+          "included_municipalities": [
+            "Goffstown"
+          ],
+          "vote_definition": "ten named GOP candidate votes (1940) + write-ins on Republican ballot (7); does not transfer Chris Pappas write-in 5 to Democratic ballot"
         },
         "D": {
           "level": "district_verified",
@@ -163,15 +167,31 @@
       "general": {
         "R": {
           "level": "partial_subdistrict",
-          "votes": 1936,
-          "evidence": "data/sources/nh01_alton_2022_general_partial.json",
-          "source_url": "https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf"
+          "votes": 5656,
+          "evidence": "data/sources/nh01_goffstown_2022_primary_general.json",
+          "source_url": "https://www.goffstownnh.gov/Archive.aspx?ADID=108",
+          "included_municipalities": [
+            "Alton",
+            "Goffstown"
+          ],
+          "additional_town_source": {
+            "evidence": "data/sources/nh01_alton_2022_general_partial.json",
+            "source_url": "https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf"
+          }
         },
         "D": {
           "level": "partial_subdistrict",
-          "votes": 1224,
-          "evidence": "data/sources/nh01_alton_2022_general_partial.json",
-          "source_url": "https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf"
+          "votes": 5179,
+          "evidence": "data/sources/nh01_goffstown_2022_primary_general.json",
+          "source_url": "https://www.goffstownnh.gov/Archive.aspx?ADID=108",
+          "included_municipalities": [
+            "Alton",
+            "Goffstown"
+          ],
+          "additional_town_source": {
+            "evidence": "data/sources/nh01_alton_2022_general_partial.json",
+            "source_url": "https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf"
+          }
         }
       }
     }
@@ -187,7 +207,8 @@
       "district": "NH-01",
       "stage": "primary_R",
       "source_url": "https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state",
-      "status": "official_index_identified_but_no_independent_totals_transcribed"
+      "status": "official_goffstown_town_vote_counts_transcribed_but_no_whole_district_republican_primary_totals",
+      "note": "NH01 R primary Goffstown 1940 named+7 write-ins verified from municipality official 2022 Annual Report; state full NH01 primary remains unverified"
     },
     {
       "district": "OH-09",
