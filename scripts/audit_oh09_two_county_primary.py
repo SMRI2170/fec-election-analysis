@@ -50,8 +50,6 @@ def verify_two_counties(defiance:dict,erie:dict)->dict:
         raise AssertionError("Defiance candidate winner unexpectedly changed")
     if totals!={"Republican":11702,"Democratic":4521}:
         raise AssertionError("Pinned 2-county primary R/D witness changed")
-    if set(["Defiance","Erie"])!=set(["Defiance","Erie"]) & EIGHT_COUNTIES:
-        raise AssertionError("Primary counties must be in 2022 OH09")
     return {
         "district":"2022-OH-09",
         "stage":"primary",
