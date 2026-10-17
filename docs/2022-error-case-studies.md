@@ -94,3 +94,47 @@ python scripts/build_error_case_studies.py --top-n 5
 - 「州の公式ポータルを発見」は「FEC票数と州票数が一致」ではない。照合完了のフラグを地区ごとに更新する。
 - 2022年の誤差上位5件を**事後的に選んだ**ため、これらの例を代表性のある因果分析や独立の汎化テストとして扱わない。
 - 高誤差の候補者構成と他の2022年選挙区との対照分析は別の探索的検証とする。資料を確認できない政治的背景は「未検証」と明記する。
+
+## 7. MI-03：Michigan州議会公刊資料に基づく郡別票の独立照合（2026-10-17）
+
+**一次資料:** [Michigan Legislature, *Michigan Manual 2023–2024*, Chapter IX: Elections（公式PDF）](https://www.legislature.mi.gov/documents/2023-2024/michiganmanual/2023-MM-Chapter9.pdf)、2022年予備選の第3選挙区表は**印刷上の729ページ**、本選挙の第3選挙区表は**印刷上の767ページ**。別ソースとして[Kent County Clerk公式2022年共和党Primary District 3](https://electionstats.kentcountymi.gov/eng/contests/view/2881)、[Kent County Clerk公式2022年General District 3](https://electionstats.kentcountymi.gov/eng/contests/view/5950)を参照。州は[2022年8月Primaryの認証](https://www.michigan.gov/sos/resources/news/2022/08/19/board-of-state-canvassers-certifies-primary-elections)も公表している。
+
+### 州刊行物に記録された郡別Primary票（8月2日）
+
+| MI-03 | Kent County | Muskegon County | Ottawa County | 3郡計 |
+|---|---:|---:|---:|---:|
+| John Gibbs（R） | 36,597 | 5,866 | 11,673 | **54,136** |
+| Peter Meijer（R） | 35,623 | 5,118 | 9,699 | **50,440** |
+| Hillary Scholten（D） | 45,600 | 8,803 | 5,258 | **59,661** |
+
+- 共和党Primaryの候補者票合計は54,136＋50,440＝**104,576**、民主党は**59,661**。FEC起源のケーススタディに固定した**R=104,576、D=59,661**と一致。
+- **Kent郡**の一次資料にはGibbs=36,597、Meijer=35,623と記録されており、州刊行物のKent郡列と一致。これは州刊行物の単なる複写ではない郡集計の追加確認となる。
+
+### 州刊行物に記録された郡別General票（11月8日）
+
+| MI-03 | Kent County | Muskegon County | Ottawa County | 3郡計 |
+|---|---:|---:|---:|---:|
+| John Gibbs（R） | 98,016 | 16,420 | 27,793 | **142,229** |
+| Hillary Scholten（D） | 139,812 | 24,013 | 22,164 | **185,989** |
+| Jamie Lewis（Libertarian） | 4,726 | 856 | 1,052 | **6,634** |
+| Louis Palus（Working Class） | 2,733 | 793 | 610 | **4,136** |
+
+- 全候補者のGeneral合計は**338,988票**。R/D二大政党票を比較する研究では第三党10,770票をRまたはDへ配分しない。
+- FEC起源のGeneral R=142,229、D=185,989とも一致。したがって、2022 MI-03で**PrimaryはR優勢、GeneralはD優勢**だったことは州刊行物とFECの独立した集計が裏付ける。
+- Kent郡の一次資料にはGibbs=98,016、Scholten=139,812、Lewis=4,726、Palus=2,733と記録され、州刊行物の郡列と一致。
+
+### 証拠を再計算するコード
+
+- [州刊行物から転記した候補者・郡別の票数と出典](../data/sources/mi03_2022_state_canvass.json)
+- [郡別→州全体の再集計とFEC正規化結果の照合](../scripts/verify_mi03_state_canvass.py)
+- [転記間違い・未知の郡・FECとの不一致を検出するテスト](../tests/test_mi03_state_canvass.py)
+
+\`\`\`bash
+python scripts/download_fec.py --years 2022
+python scripts/normalize_fec.py --years 2022
+python scripts/verify_mi03_state_canvass.py
+\`\`\`
+
+**検証範囲の明示:** 公式Michigan Manualの郡別表は人手で構造化JSONへ転記したもので、CIはその転記値の総和、刊行物の州合計、および別に取得したFECの正規化数値を突合する。**CIがMichigan州公式PDFを毎回再ダウンロード・パースしているわけではない**。候補者交代、支持者層、地域要因の因果効果はこの票の一致からは断定できない。
+
+**#17の残件:** OH-09、OH-15、NH-01の州公式票数との独立した票数照合、ならびに背景に関する仮説の一次資料調査。
