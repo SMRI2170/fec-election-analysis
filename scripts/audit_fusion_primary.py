@@ -36,6 +36,15 @@ def inspect_district(group: pd.DataFrame, year: int, state: str, district: str) 
     candidates = group[group["_candidate"]]
     ids = [str(x).strip().upper() for x in candidates["FEC ID"] if pd.notna(x)]
     duplicate_ids = {identity for identity, n in Counter(ids).items() if n > 1}
+    id_occurrences: dict[str, list[dict]] = {}
+    for idx, row in candidates.iterrows():
+        fid = str(row["FEC ID"]).strip().upper()
+        id_occurrences.setdefault(fid, []).append({
+            "excel_row_approx": int(idx) + 2,
+            "party_code": str(row["_party"]),
+            "primary_votes": vote(row["PRIMARY VOTES"]),
+            "general_votes": vote(row.get("GENERAL VOTES")),
+        })
     result = []
     for party in ("R", "D"):
         direct = candidates[candidates["_party"].eq(party)]
@@ -62,6 +71,10 @@ def inspect_district(group: pd.DataFrame, year: int, state: str, district: str) 
                 "major_party_tokens": sorted(tokens),
                 "both_major_parties": len(tokens) > 1,
                 "duplicate_fec_id_in_district": fid in duplicate_ids,
+                "same_id_source_rows": id_occurrences[fid] if fid in duplicate_ids else [],
+                "multiple_positive_primary_rows_same_id": sum(
+                    (other["primary_votes"] or 0) > 0 for other in id_occurrences[fid]
+                ) > 1,
             })
         candidate_total = sum(e["primary_votes"] or 0 for e in evidence)
         exact = (
@@ -121,6 +134,12 @@ def inspect_all(excluded: pd.DataFrame, raw: dict[int, pd.DataFrame]) -> dict:
                     "missing_party_subtotal")},
         "fusion_matches_with_identity_ambiguity": sum(
             r["arithmetic_match"] and r["candidate_identity_or_party_ambiguity"] for r in out),
+        "fusion_matches_with_repeated_fec_id": sum(
+            r["arithmetic_match"] and any(e["duplicate_fec_id_in_district"]
+                                           for e in r["candidate_evidence"]) for r in out),
+        "fusion_matches_with_multiple_primary_rows_same_id": sum(
+            r["arithmetic_match"] and any(e["multiple_positive_primary_rows_same_id"]
+                                           for e in r["candidate_evidence"]) for r in out),
         "no_automatic_reallocation": True,
         "sides": out,
     }
@@ -178,6 +197,17 @@ def main() -> None:
         "party_sides": report["party_sides"],
         "counts": report["counts"],
         "fusion_matches_with_identity_ambiguity": report["fusion_matches_with_identity_ambiguity"],
+        "fusion_matches_with_repeated_fec_id": report["fusion_matches_with_repeated_fec_id"],
+        "fusion_matches_with_multiple_primary_rows_same_id": report["fusion_matches_with_multiple_primary_rows_same_id"],
+        "repeated_fec_id_details": [
+            {"district": f'{r["year"]}-{r["state"]}-{r["district"]}', "party": r["party"],
+             "candidate_rows": [
+                 {"id": e["fec_id"], "source_rows": e["same_id_source_rows"]}
+                 for e in r["candidate_evidence"] if e["duplicate_fec_id_in_district"]
+             ]}
+            for r in report["sides"] if r["arithmetic_match"] and any(
+                e["duplicate_fec_id_in_district"] for e in r["candidate_evidence"])
+        ],
         "fusion_match_details": [
             {"district": f'{r["year"]}-{r["state"]}-{r["district"]}', "party": r["party"],
              "gap": r["remaining_gap"],
