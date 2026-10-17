@@ -1,0 +1,38 @@
+name: NH-01 Alton 2022 partial general crosscheck
+
+on:
+  pull_request:
+    paths:
+      - data/sources/nh01_alton_2022_general_partial.json
+      - scripts/audit_nh01_alton_general.py
+      - tests/test_nh01_alton_general.py
+      - .github/workflows/nh01-alton-general.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-only-alton-town:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Check two-source Alton town evidence and district-level prohibition
+        run: python -m pytest -q tests/test_nh01_alton_general.py
+      - name: Download 2022 FEC official workbook
+        run: python scripts/download_fec.py --years 2022
+      - name: Normalize House rows without altering cohort definition
+        run: python scripts/normalize_fec.py --years 2022
+      - name: Audit independent NH01 General town-level evidence only
+        run: python scripts/audit_nh01_alton_general.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nh01-alton-partial-general
+          path: data/processed/nh01_alton_2022_general_partial_audit.json
+          retention-days: 3
