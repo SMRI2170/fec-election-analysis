@@ -138,3 +138,39 @@ python scripts/verify_mi03_state_canvass.py
 **検証範囲の明示:** 公式Michigan Manualの郡別表は人手で構造化JSONへ転記したもので、CIはその転記値の総和、刊行物の州合計、および別に取得したFECの正規化数値を突合する。**CIがMichigan州公式PDFを毎回再ダウンロード・パースしているわけではない**。候補者交代、支持者層、地域要因の因果効果はこの票の一致からは断定できない。
 
 **#17の残件:** OH-09、OH-15、NH-01の州公式票数との独立した票数照合、ならびに背景に関する仮説の一次資料調査。
+
+## 8. OH-15：Ohio Clark郡公式結果による部分照合（2026-10-17）
+
+**資料の範囲に注意。** オハイオ州の第15選挙区全体ではなく、そのうち **Clark Countyで投じられた票数** を、Clark County Board of Electionsの公式結果から確認した。これだけで「OH-15のFEC得票が州選管結果と全件一致」とは言えない。
+
+一次資料：
+- [Clark County BOE: May 3, 2022 Primary Election（Official Election Results、5月25日更新）](https://liveresults.boe.ohio.gov/clarkoh/LiveResults/en/Index_9.html)
+- [Clark County BOE: November 8, 2022 General Election（11月30日更新）](https://liveresults.boe.ohio.gov/ENR/clarkohenr/11/en/Index_11.html)
+- [Ohio Secretary of State: 2022年11月8日のGeneral選挙結果を12月9日に認証](https://www.ohiosos.gov/office/media-center/categories/press-releases/2022-12-09)。**認証の公表それ自体ではOH-15の候補者別地区全体票を独立照合したことにはならない。**
+
+| 投票と候補者 | Clark郡の公式候補者得票（第15区内） | 研究用FEC第15区全体票 | 差額（まだ独立照合していない票） |
+|---|---:|---:|---:|
+| Primary Mike Carey（共和党） | **3,398** | 48,938 | 45,540 |
+| Primary Gary Josephson（民主党） | **365** | 9,047 | 8,682 |
+| General Mike Carey（共和党） | **15,671** | 143,112 | 127,441 |
+| General Gary Josephson（民主党） | **5,407** | 108,139 | 102,732 |
+
+- PrimaryのClark郡集計では第15区に**21投票区**、Generalでは**33投票区**が報告されている。投票区範囲が同一だと仮定してPrimaryとGeneralの単純な投票率差を解釈しない。
+- 単独の郡で観測された票数が、FECで集計した選挙区全体の対応する票数以下であるという最低限の整合性を検証した。ただし、その差額の内訳を確定するには州当局の全郡集計を取得して突合する必要がある。
+- OH-15 Primary R比率84.40%、General R比率56.96%、回帰の誤差18.66ポイントは引き続きFECの選挙区全体票から計算する。Clark郡の票を混ぜたり、因果推論をしたりしない。
+
+### 再現可能な部分照合
+
+- [原票出典URLとClark郡公式公開値を記録したJSON](../data/sources/oh15_clark_2022_official_votes.json)
+- [Clark郡公式値とFEC OH-15全体票の不等式・固定値照合](../scripts/audit_oh15_county.py)
+- [部分照合を全件照合と誤認しない回帰テスト](../tests/test_oh15_county.py)
+
+再現コマンド：
+
+    python scripts/download_fec.py --years 2022
+    python scripts/normalize_fec.py --years 2022
+    python scripts/audit_oh15_county.py
+
+**結果の判定は county_only_not_district_complete とし、complete_district_reconciliation_verified=false を明示。** OH-15の州公認地区全体の候補者得票を独立照合するには、Ohio Secretary of Stateの認証済み全地区結果、または区域内各郡選管の認証済み公式票を足し合わせる必要がある。
+
+**Issue #17の進捗**：RI-02とMI-03は州公式全地区値との照合済み。OH-15はClark郡の部分照合段階。OH-09とNH-01およびOH-15全地区は未完了。
