@@ -77,9 +77,9 @@ python scripts/build_error_case_studies.py --top-n 5
 |選挙区|公式州資料|検証状況|残作業|
 |---|---|---|---|
 |RI-02|[RI 2022 statewide primary](https://www.ri.gov/election/results/2022/statewide_primary/) / [RI 2022 general election](https://www.ri.gov/election/results/2022/general_election/)|**一次資料の票数照合済み**（下記）|候補者選択・党派参加層について因果説明はしない|
-|OH-15|[Ohio Secretary of State公式結果ポータル](https://www.ohiosos.gov/data) / [2022年本選挙の認証公表](https://www.ohiosos.gov/office/media-center/categories/press-releases/2022-12-09)|**公式資料の参照先特定のみ**|2022年Primary/Generalの地区別公式票数を取得しFEC候補者行と照合|
-|OH-09|[Ohio Secretary of State公式結果ポータル](https://www.ohiosos.gov/data) / [2022年本選挙の認証公表](https://www.ohiosos.gov/office/media-center/categories/press-releases/2022-12-09)|**公式資料の参照先特定のみ**|地区別Primary/General票数、候補者4対1を照合|
-|MI-03|[Michigan Secretary of State Election results and data](https://www.michigan.gov/sos/elections/election-results-and-data)|**公式2022年Primary/General報告への入口を特定**|該当年度の州認証結果で候補者と得票を照合|
+|OH-15|[Ohio Secretary of State公式結果ポータル](https://www.ohiosos.gov/data) / [2022年本選挙の認証公表](https://www.ohiosos.gov/office/media-center/categories/press-releases/2022-12-09) / [Clark County BOE](https://liveresults.boe.ohio.gov/ENR/clarkohenr/11/en/Index_11.html)|**Clark郡のPrimary/General票を部分照合（PR #37）**|州当局の全選挙区公式Primary/General票をまだ独立照合していない|
+|OH-09|[8郡の認証済みGeneral票（Lucas County BOE、Defiance郡保管）](https://www.boe.ohio.gov/defiance/c/elecres/20221108overlap.pdf)|**Generalの全8郡・全地区票をFECと照合済み（PR #38）**|2022年5月Primaryの州公式候補者票との独立照合が残る|
+|MI-03|[Michigan州議会公式公刊物](https://www.legislature.mi.gov/documents/2023-2024/michiganmanual/2023-MM-Chapter9.pdf)|**Primary/Generalの3郡合計でFECと独立一致（PR #36）**|予測誤差の要因は因果検証していない|
 |NH-01|[NH州2022年共和党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-republican-state) / [民主党Primary](https://www.sos.nh.gov/elections/elections/election-results/2022-state-primary-election-results/2022-democratic-state) / [General結果](https://www.sos.nh.gov/elections/2022-election-results/2022-general-election-results)|**公式Primary/General結果の参照先を特定**|地区1の候補者別PDF/Excelを抽出しFEC行と数値照合|
 
 ### RI-02：州政府資料とFECの照合が成立した事実
@@ -174,3 +174,18 @@ python scripts/verify_mi03_state_canvass.py
 **結果の判定は county_only_not_district_complete とし、complete_district_reconciliation_verified=false を明示。** OH-15の州公認地区全体の候補者得票を独立照合するには、Ohio Secretary of Stateの認証済み全地区結果、または区域内各郡選管の認証済み公式票を足し合わせる必要がある。
 
 **Issue #17の進捗**：RI-02とMI-03は州公式全地区値との照合済み。OH-15はClark郡の部分照合段階。OH-09とNH-01およびOH-15全地区は未完了。
+
+## 9. 2026-10-17 時点の外部照合ステータス（研究論文引用時の基準）
+
+この表はFEC内部の候補者票照合（5選挙区とも実施済み）と、州公式資料を**別個に用いた独立照合**の範囲を分ける。州公式資料の入口だけを見つけた地区と、実際に全地区の票数を確認した地区を混同しない。
+
+| 地区 | 州公式Primary | 州公式General | 独立監査の証拠 | 研究上の扱い |
+|---|---|---|---|---|
+| RI-02 | **地区全体のR/D票照合済み** | **地区全体のR/D票照合済み** | 上記§6 | 完了（背景の因果説明は未検証） |
+| MI-03 | **地区全体の郡別R/D票照合済み** | **地区全体の郡別R/D票照合済み** | [§7と再現コード](../scripts/verify_mi03_state_canvass.py) | 完了（州原典の転記JSONとFECを比較） |
+| OH-09 | **未完了** | **全8郡の認証済み地区票とFECが完全一致** | [Ohio州認証canvassの8郡表](oh09-general-canvass.md)、[自動照合コード](../scripts/verify_oh09_general_canvass.py) | **Generalだけ完了**。Primary候補4対1の州公式票を未検証 |
+| OH-15 | **Clark郡のみ照合** | **Clark郡のみ照合** | [§8と再現コード](../scripts/audit_oh15_county.py) | **両選挙とも部分照合**。全選挙区の州公式結果は未完了 |
+| NH-01 | **未完了** | **未完了** | [NH州選管公式結果入口](https://www.sos.nh.gov/elections/2022-election-results) | 資料の所在確認のみ。候補者票の独立照合は未完了 |
+
+**公開リポジトリの現行916件・2022年の238件・モデル精度・McNemar統計検定は、今回の外部照合の追加では変更しない。** 州公式Primaryとの独立照合が未完了なOH-09、地区全体の照合が未完了なOH-15、NH-01について、完了率を5/5と表記してはならない。
+
