@@ -146,16 +146,16 @@
       },
       "general": {
         "R": {
-          "level": "not_verified",
-          "votes": null,
-          "evidence": null,
-          "source_url": null
+          "level": "partial_subdistrict",
+          "votes": 1936,
+          "evidence": "data/sources/nh01_alton_2022_general_partial.json",
+          "source_url": "https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf"
         },
         "D": {
-          "level": "not_verified",
-          "votes": null,
-          "evidence": null,
-          "source_url": null
+          "level": "partial_subdistrict",
+          "votes": 1224,
+          "evidence": "data/sources/nh01_alton_2022_general_partial.json",
+          "source_url": "https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf"
         }
       }
     }
@@ -165,7 +165,7 @@
       "district": "NH-01",
       "stage": "general",
       "source_url": "https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-ge-congressional-district-1-remediated.pdf",
-      "status": "official_document_identified_but_no_independent_totals_transcribed"
+      "status": "official_document_identified_but_no_full_district_totals_transcribed"
     },
     {
       "district": "NH-01",
