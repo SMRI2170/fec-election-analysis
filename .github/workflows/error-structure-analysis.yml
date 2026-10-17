@@ -1,0 +1,44 @@
+name: FEC out-of-year error structure analysis
+
+on:
+  pull_request:
+    paths:
+      - scripts/analyze_error_structure.py
+      - tests/test_error_structure.py
+      - .github/workflows/error-structure-analysis.yml
+      - docs/error-structure-analysis.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deep-error-diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Test no leakage, scope, fixed bins, state resampling
+        run: python -m pytest -q tests/test_error_structure.py
+      - name: Download 4 actual FEC House official Excel workbooks
+        run: python scripts/download_fec.py --years 2016 2018 2020 2022
+      - name: Reproduce conservative voting-House cohort
+        run: python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy attribute
+      - name: Reproduce held-out published model scores and FEC file hashes
+        run: |
+          python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022
+          python scripts/verify_reproducibility.py
+      - name: Measure real FEC residuals and state-cluster bootstrap
+        run: python scripts/analyze_error_structure.py --assert-baseline --iterations 4000
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fec-out-of-year-error-structure
+          path: |
+            data/processed/error-structure-summary.json
+            data/processed/error-structure-districts.csv
+          retention-days: 3
