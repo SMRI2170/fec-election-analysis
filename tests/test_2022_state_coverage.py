@@ -75,14 +75,26 @@ def test_stale_fec_normalization_rejected(tmp_path):
     with pytest.raises(AssertionError,match="Missing FEC baseline"):
         mod.validate_ledger(d,ROOT,path)
 
-def test_oh09_two_county_partial_sum_cannot_be_silently_changed():
+def test_oh09_three_county_partial_sum_cannot_be_silently_changed():
     d=fixture()
-    d["cases"]["OH-09"]["primary"]["R"]["votes"] = 11703
-    with pytest.raises(AssertionError, match="two-county Primary witness"):
+    d["cases"]["OH-09"]["primary"]["R"]["votes"] = 16960
+    with pytest.raises(AssertionError, match="three-county Primary witness"):
         mod.validate_ledger(d, ROOT)
 
 def test_oh09_missing_defiance_component_rejected():
     d=fixture()
-    d["cases"]["OH-09"]["primary"]["D"]["additional_county_source"]["evidence"]="data/sources/unknown_defiance.json"
-    with pytest.raises(AssertionError, match="Defiance certified county source"):
+    d["cases"]["OH-09"]["primary"]["D"]["additional_county_sources"][0]["evidence"]="data/sources/unknown_defiance.json"
+    with pytest.raises(AssertionError, match="preserve Defiance and Erie"):
+        mod.validate_ledger(d, ROOT)
+
+def test_oh09_ottawa_cannot_be_removed_from_county_coverage():
+    d=fixture()
+    d["cases"]["OH-09"]["primary"]["D"]["included_counties"]=["Defiance","Erie"]
+    with pytest.raises(AssertionError,match="three-county Primary witness"):
+        mod.validate_ledger(d, ROOT)
+
+def test_oh09_erie_source_must_remain_independently_traceable():
+    d=fixture()
+    d["cases"]["OH-09"]["primary"]["R"]["additional_county_sources"][1]["evidence"]="data/sources/unknown_erie.json"
+    with pytest.raises(AssertionError,match="preserve Defiance and Erie"):
         mod.validate_ledger(d, ROOT)
