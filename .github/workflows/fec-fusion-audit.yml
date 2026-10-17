@@ -1,0 +1,38 @@
+name: FEC fusion-party evidence audit
+
+on:
+  pull_request:
+    paths:
+      - scripts/audit_fusion_primary.py
+      - tests/test_fusion_primary.py
+      - .github/workflows/fec-fusion-audit.yml
+      - docs/residual-party-audit.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  official-fec-fusion-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Run boundary regression tests
+        run: python -m pytest -q tests/test_fusion_primary.py
+      - name: Download four official FEC workbooks
+        run: python scripts/download_fec.py --years 2016 2018 2020 2022
+      - name: Normalize without modifying the study baseline
+        run: python scripts/normalize_fec.py --years 2016 2018 2020 2022
+      - name: Audit all excluded districts against pinned FEC SHA256 and 21-district baseline
+        run: python scripts/audit_fusion_primary.py --assert-baseline
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue-14-fusion-evidence
+          path: data/processed/fusion-primary-evidence.json
+          retention-days: 3
