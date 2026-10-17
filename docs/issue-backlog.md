@@ -1,39 +1,52 @@
-# Issue台帳 — FEC Election Analysis
+# Issue台帳 — FEC Election Analysis（2026-10-17）
 
-**基準日: 2026-10-16。** 分析対象は米国50州Voting U.S. House **916件（2016=200、2018=241、2020=237、2022=238）**。旧921/738/740件は以前の採用条件での履歴値。数値・統計検定は[現行モデル評価](model-evaluation.md)、固定値は[`expected_analysis.json`](../data/sources/expected_analysis.json)を優先して参照する。
+**原課題からの優先度**: 講義資料 Rep1v1015.pdf p.5/7–10。PrimaryとGeneralの多角的分析、回帰・判別とベースライン比較、モデルの妥当性・エビデンス・独自性、指定DOCX/コード付録/感想/本人と他者の区分が必要。**2024年追加検証や上院追加は必須ではない。**
 
-## 研究の問い
-Primary共和党二大政党票率を用い、未知年度のGeneralの二大政党得票率・二大政党票優勢を予測できるか。入力の正規化と標本選択で結論は変わるか。
+詳細な講義要件、依存順、Codex作業契約は [課題整合ロードマップ](assignment-aligned-roadmap.md)。原資料は私有ファイルであり、公開リポジトリへアップロードしない。
 
-## 実タスクの最新状態
+## 研究の固定基準
 
-| Issue | 状態 | 成果と残作業 |
+- FEC公式2016, 2018, 2020, 2022年50州Voting House、**916件（200/241/237/238）**。歴史値921/738/740は旧採用条件であり比較時は区別する。
+- 2018/2020/2022の時間順の検証で、Generalの票と当選者ラベルを説明変数に混入しない。2022年は既に探索に使用したため完全独立な未使用テストと呼ばない。
+- [#49](https://github.com/SMRI2170/fec-election-analysis/issues/49)の公式FEC再分析で、報告**1,756→Primary互換919→最終916**を再現。primary側の採否も最終Excelからの事後再構成であり、選挙前の可用性は証明していない。
+- 生のFECデータ、本人情報、提出前レポート本文はpublic GitHubへコミットしない。
+
+## 既存の完了事項
+
+| Issue/PR | 確認済みの結果 |
+|---|---|
+| #2, #4 | FEC原典調査、単純規則・線形回帰・Logisticの年度外評価 |
+| #15, #16, #18 | 二党票多数派と当選者の分離、採用選択感度、4年度Excelハッシュ＋基準件数/指標の自動再現 |
+| [PR #48](https://github.com/SMRI2170/fec-election-analysis/pull/48) | 年度別の誤差分布、Primary得票率の条件別性能、州単位探索的再標本化 |
+| [#49](https://github.com/SMRI2170/fec-election-analysis/issues/49) / [PR #55](https://github.com/SMRI2170/fec-election-analysis/pull/55) | Primary列互換性とGeneral後採否を1,756行台帳で分離（919→916） |
+
+## P0：11月3日17時提出までに必要
+
+| 作業 | Issue | 先行 |
 |---|---|---|
-| [#2 出典監査](https://github.com/SMRI2170/fec-election-analysis/issues/2) | 完了 | 公式ファイル・年度構造調査 |
-| [#4 年度外予測](https://github.com/SMRI2170/fec-election-analysis/issues/4) | 完了 | 2018/2020/2022の年度外評価と単純規則比較 |
-| [#15 勝敗ターゲット](https://github.com/SMRI2170/fec-election-analysis/issues/15) | 完了 | 二大政党の得票優勢とFEC公式当選者の差を分離 |
-| [#16 標本選択](https://github.com/SMRI2170/fec-election-analysis/issues/16) | 完了 | 年・州別採否、共通テスト集合の比較、除外群の観測可能性 |
-| [#18 再現性](https://github.com/SMRI2170/fec-election-analysis/issues/18) | 完了（PR #30） | 4年度元XLSXのSHA-256・916件の採用数・9指標をCIで固定 |
-| [#14 Primary小計差](https://github.com/SMRI2170/fec-election-analysis/issues/14) | **進行中・P0** | 過去224地区の不一致を監査し、W(R)/W(D)を修正。残る21区・42党側のうち複合党表記18党側、小計差未説明5党側、小計欠損3党側を安全に調査 |
-| [#17 誤予測5事例](https://github.com/SMRI2170/fec-election-analysis/issues/17) | **進行中・P1** | PR #29でFEC照合済み。RI-02は州公式結果でも一致。OH-15、OH-09、MI-03、NH-01の州選管票数照合と背景検証が残る（PR #31参照） |
-| [#3 データ品質 親Issue](https://github.com/SMRI2170/fec-election-analysis/issues/3) | Open | #14の結論を引き継ぎ、採用/除外基準と照合の最新基準を統合 |
-| [#5 頑健性 親Issue](https://github.com/SMRI2170/fec-election-analysis/issues/5) | Open | 完了済み#16、進行中#17を統合。未検証の政治的因果関係を断定しない |
-| [#6 最終レポート](https://github.com/SMRI2170/fec-election-analysis/issues/6) | **進行中・P0** | 指定Wordテンプレート、論文構成・図表・再現手順・参考文献、提出確認 |
+| 元課題の採点/提出条件とv0.4との欠落比較 | [#56](https://github.com/SMRI2170/fec-election-analysis/issues/56) | なし |
+| 州×年度の実測特徴/採否/予測誤差分析 | [#57](https://github.com/SMRI2170/fec-election-analysis/issues/57) | 現行916件 |
+| 研究の問いと図表・一次データの証拠突合 | [#67](https://github.com/SMRI2170/fec-election-analysis/issues/67) | #56, #57 |
+| 指定IEICE Wordの本文化・容量/ページ/図表確認 | [#68](https://github.com/SMRI2170/fec-election-analysis/issues/68) | 正式テンプレート取得（ユーザーからの原本提供が必要な可能性） |
+| 全Pythonプログラム付録と再実行環境 | [#69](https://github.com/SMRI2170/fec-election-analysis/issues/69) | 実際に本文へ使ったコードの特定 |
+| 独自性・本人/他者/AIの区別・本人感想 | [#70](https://github.com/SMRI2170/fec-election-analysis/issues/70) | 本人の事実確認 |
+| 最終独立査読・Manaba提出確認 | [#71](https://github.com/SMRI2170/fec-election-analysis/issues/71) | #67–70完了 |
 
-## 推奨実施順序
+## P1：レポートの分析を厚くする（P0と並行して可能）
 
-1. **#14**: 残差5党側（2018 WI-07、2020 WI-01/02、2022 UT-02/04）を原票・州選管の制度資料で確認する。複合党コードの18党側についても個別の票の帰属を確認する。未確認なら現行916件を変えず除外理由を残す。
-2. **#17**: OH/MI/NH公式Primary/Generalファイルを確認し候補者票を突合。個別観測事実・制度・未検証仮説・予測上の失敗特性を比較表にまとめる。
-3. **#3/#5**: 子Issueの完了状態と現行916件基準を反映して親Issueを終了できるか判定。
-4. **#6**: **調査と並行**して論文の構成・結果節・図表を確定。11月3日17:00までに指定DOCX提出（締切の公式画面を最終確認）。
+- [#58](https://github.com/SMRI2170/fec-election-analysis/issues/58): Primary↔Generalの票比率・規模の記述。
+- [#50](https://github.com/SMRI2170/fec-election-analysis/issues/50)親: [#59](https://github.com/SMRI2170/fec-election-analysis/issues/59)候補者数・HHI等の原票特徴抽出 → [#60](https://github.com/SMRI2170/fec-election-analysis/issues/60)アブレーション比較。
+- [#51](https://github.com/SMRI2170/fec-election-analysis/issues/51)親: [#61](https://github.com/SMRI2170/fec-election-analysis/issues/61)非線形モデル固定 → [#62](https://github.com/SMRI2170/fec-election-analysis/issues/62)比較実行。
+- [#52](https://github.com/SMRI2170/fec-election-analysis/issues/52)親: [#63](https://github.com/SMRI2170/fec-election-analysis/issues/63)州構成を固定した残差分析（先行#57）、[#64](https://github.com/SMRI2170/fec-election-analysis/issues/64)Brier/校正。
 
-## AI開発エージェント向けルール
+## P2：発展研究（未完了でもレポート提出を止めない）
 
-- 原則**1 Issue=1 PR**。既存のPR・Issue・コードの有無を調べ、完了済み作業を重複実装しない。
-- **現行採用916件**を無断で変更しない。旧921/738/740件と現行結果は別基準の比較であり、学習集合とテスト集合の変化を区別する。
-- 複合党の票を推定配分しない。Primary党票とGeneral党票を合算しない。欠損・無対立をゼロ埋めしない。原票と合致しない票数は採用しない。
-- `general_rep_win`は二大政党優勢であって全選挙の公式当選者ではない。
-- 結論は**選別された標本での探索的・予測的関連**のみ。2022年の誤予測を観測後に行った対象修正や選別は確認的検定の成果と呼ばない。
-- 結果を動かす変更には`Python CI`と`FEC source audit`の成功、公式出典、採用数/除外数、年度外評価値、固定値の更新理由が必要。
-- 生のFEC Excel・処理CSV、個人情報、未公開レポートは公開Gitに追加しない。CIアーティファクトのみを唯一の再現性根拠にしない。
-- データ範囲の拡張（上院、2010–2014、追加モデル）は**レポート提出後**に検討する。
+[#65](https://github.com/SMRI2170/fec-election-analysis/issues/65)州外挿、[#66](https://github.com/SMRI2170/fec-election-analysis/issues/66)Senate/House比較の採否、[#53](https://github.com/SMRI2170/fec-election-analysis/issues/53)2024凍結→[#54](https://github.com/SMRI2170/fec-election-analysis/issues/54)2024評価、継続中の[#14](https://github.com/SMRI2170/fec-election-analysis/issues/14)複合政党票と[#17](https://github.com/SMRI2170/fec-election-analysis/issues/17)州選管の独立照合。
+
+## AI/Codex開発エージェントの操作規則
+
+1. 指定Issueとその依存Issue、最新main、[課題整合ロードマップ](assignment-aligned-roadmap.md)、既存実装を読む。**1 Issue = 原則1 PR**。別ブランチで作業し、ユーザー承認なしにmainにマージしない。
+2. 公式FEC元Excelの取得／SHA-256／既存916件と基準指標を検証、必要な実験のみ変更。pytestと実データCI、再現コマンドと限界をPRに記載。
+3. 未来年のGeneral情報を特徴・学習・モデル選択に混入させない。二党票優勢と公式勝者を混同しない。欠損や無対立をゼロ補完しない。
+4. **結果が改善しなくても正直に報告**する。州間の制度差・選別された標本・事後探索の限界を明記する。
+5. 並行可能：#57/#59/#61/#64。依存必須：#59→#60、#61→#62、#57→#63、#56/#57→#67、#67〜#70→#71。同じファイルを2つのPRで同時に編集しない。
