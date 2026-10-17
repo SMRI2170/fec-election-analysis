@@ -27,7 +27,7 @@ jobs:
       - name: Download 2020 FEC workbook (do not commit)
         run: python scripts/download_fec.py --years 2020
       - name: Verify SHA-256 and print WI-01/02 source rows
-        run: python scripts/audit_wi_2020_writeins.py
+        run: python scripts/audit_wi_2020_writeins.py --require-known-snapshot
       - uses: actions/upload-artifact@v4
         with:
           name: wi-2020-primary-audit
