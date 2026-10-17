@@ -20,6 +20,9 @@ KEY = ("year", "state", "district")
 YEARS = (2016, 2018, 2020, 2022)
 EXPECTED_YEAR_GROUPS = {2016: 438, 2018: 438, 2020: 441, 2022: 439}
 EXPECTED_SELECTED = {2016: 200, 2018: 241, 2020: 237, 2022: 238}
+# Independently reproduced from official FEC post-election source by CI #55.
+EXPECTED_PRIMARY_COMPATIBLE = {2016: 200, 2018: 243, 2020: 237, 2022: 239}
+EXPECTED_POST_GENERAL_REMOVED = {2016: 0, 2018: 2, 2020: 0, 2022: 1}
 SUBTOTAL_LABELS = frozenset({"party votes:", "district votes:", "total votes:"})
 
 
@@ -246,6 +249,12 @@ def build_ledger(included: pd.DataFrame, excluded: pd.DataFrame,
             raise AssertionError("FEC original report-group population changed")
         if {item["year"]: item["final_selected"] for item in years} != EXPECTED_SELECTED:
             raise AssertionError("916 frozen selected cohort changed")
+        if {item["year"]: item["retrospective_primary_compatible"] for item in years} != EXPECTED_PRIMARY_COMPATIBLE:
+            raise AssertionError("Official FEC Primary-only eligible counts changed")
+        if {item["year"]: item["post_general_rd_observed_but_not_final_selected"] for item in years} != EXPECTED_POST_GENERAL_REMOVED:
+            raise AssertionError("Post-General exclusion count changed")
+        if any(item["general_rd_not_observed_among_primary_compatible"] for item in years):
+            raise AssertionError("Unexpected missing General two-party label among Primary compatible")
         if len(table) != 1756 or len(kept) != 916 or len(dropped) != 840:
             raise AssertionError("Original FEC / frozen selection totals changed")
     return table, summary
