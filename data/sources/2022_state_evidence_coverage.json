@@ -73,15 +73,31 @@
       "primary": {
         "R": {
           "level": "partial_subdistrict",
-          "votes": 4854,
-          "evidence": "data/sources/oh09_defiance_2022_primary.json",
-          "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf"
+          "votes": 11702,
+          "evidence": "data/sources/oh09_erie_2022_primary.json",
+          "source_url": "https://www.boe.ohio.gov/erie/c/elecres/20220503results.pdf",
+          "included_counties": [
+            "Defiance",
+            "Erie"
+          ],
+          "additional_county_source": {
+            "evidence": "data/sources/oh09_defiance_2022_primary.json",
+            "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf"
+          }
         },
         "D": {
           "level": "partial_subdistrict",
-          "votes": 1133,
-          "evidence": "data/sources/oh09_defiance_2022_primary.json",
-          "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf"
+          "votes": 4521,
+          "evidence": "data/sources/oh09_erie_2022_primary.json",
+          "source_url": "https://www.boe.ohio.gov/erie/c/elecres/20220503results.pdf",
+          "included_counties": [
+            "Defiance",
+            "Erie"
+          ],
+          "additional_county_source": {
+            "evidence": "data/sources/oh09_defiance_2022_primary.json",
+            "source_url": "https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf"
+          }
         }
       },
       "general": {

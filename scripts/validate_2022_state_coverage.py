@@ -71,6 +71,16 @@ def validate_ledger(ledger: dict, root: Path, fec_2022_csv: Path | None = None) 
                         raise AssertionError(f"Independent district votes differ from FEC witness: {district} {stage} {party}")
                     if level == "partial_subdistrict" and votes >= expected:
                         raise AssertionError("Subdistrict votes cannot meet or exceed full-district votes")
+                    # OH-09 Primary is backed by two specific certified counties.
+                    # Generic less-than-district logic alone cannot detect a
+                    # mistaken edit to the partial witness or its county scope.
+                    if district == "OH-09" and stage == "primary" and level == "partial_subdistrict":
+                        pinned = {"R": 11702, "D": 4521}[party]
+                        if votes != pinned or entry.get("included_counties") != ["Defiance", "Erie"]:
+                            raise AssertionError("OH-09 two-county Primary witness changed; verify both canvasses")
+                        second = entry.get("additional_county_source", {})
+                        if second.get("evidence") != "data/sources/oh09_defiance_2022_primary.json" or not (root / second["evidence"]).is_file():
+                            raise AssertionError("OH-09 Defiance certified county source must remain independently traced")
                 counts[level] += 1
     if sum(counts.values()) != 20:
         raise AssertionError("Expected five cases x two elections x two parties = 20 cells")
