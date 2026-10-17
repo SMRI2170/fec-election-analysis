@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "year": 2022,
+  "state": "OH",
+  "district": "09",
+  "county": "Ottawa",
+  "stage": "primary",
+  "election_date": "2022-05-03",
+  "official_source": {
+    "authority": "Ottawa County Board of Elections",
+    "title": "2022 Primary Election — Amended Official Results",
+    "official_pdf": "https://boe.ottawa.oh.gov/wp-content/uploads/2022/06/Amended-Official-Summary.pdf",
+    "official_index": "https://boe.ottawa.oh.gov/past-results-election-summaries-absentee-ballot-request-totals/",
+    "report_timestamp": "2022-06-08 15:54",
+    "democratic_pdf_page_index": 2,
+    "republican_pdf_page_index": 7,
+    "pdf_page_numbering": "Zero-indexed PDF pages 2 and 7 (printed pages 3 and 8)",
+    "observation": "Official PDF published as amended, superseding initial unofficial summaries. Text version accessible; screenshot rendering endpoint returned 403. These values have NOT been checked against a screenshot.",
+    "evidence_method": "human transcription from indexed, extracted official PDF text; no automated Ohio PDF parsing in CI"
+  },
+  "candidates": {
+    "Republican": {
+      "Beth Deck": 208,
+      "Theresa Gavarone": 1639,
+      "J.R. Majewski": 2027,
+      "Craig S. Riedel": 1383
+    },
+    "Democratic": {
+      "Marcy Kaptur": 2138
+    }
+  },
+  "published_party_totals": {
+    "Republican": 5257,
+    "Democratic": 2138
+  },
+  "vote_issues": {
+    "Republican": {
+      "overvotes": 2,
+      "undervotes": 350,
+      "contest_totals": 5609
+    },
+    "Democratic": {
+      "overvotes": 0,
+      "undervotes": 129,
+      "contest_totals": 2267
+    },
+    "explanation": "Overvotes/undervotes are NOT valid candidate votes and are not added to party primary vote totals"
+  },
+  "scope": {
+    "amended_official_county_primary": true,
+    "eight_county_district_complete": false,
+    "county_subset_only": true,
+    "causality_established": false
+  }
+}
