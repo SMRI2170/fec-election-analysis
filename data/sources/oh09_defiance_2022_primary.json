@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "election": {
+    "year": 2022,
+    "state": "OH",
+    "district": "09",
+    "stage": "primary",
+    "date": "2022-05-03",
+    "county": "Defiance"
+  },
+  "source": {
+    "authority": "Defiance County Board of Elections",
+    "official_certified_canvass": "https://www.boe.ohio.gov/defiance/c/elecres/20220503results.pdf",
+    "republican_printed_page": 4,
+    "democratic_printed_page": 2,
+    "certification_date": "2022-05-24",
+    "note": "County's final official canvass; independently published county subset of Ohio congressional district 9; manually transcribed from document indexed text, not fetched/reparsed by CI"
+  },
+  "official_county_candidate_votes": {
+    "Republican": {
+      "Beth Deck": 226,
+      "Theresa Gavarone": 548,
+      "J.R. Majewski": 1315,
+      "Craig S. Riedel": 2765
+    },
+    "Democratic": {
+      "Marcy Kaptur": 1133
+    }
+  },
+  "official_county_subtotals": {
+    "Republican": 4854,
+    "Democratic": 1133
+  },
+  "district_fec_baseline_2022": {
+    "primary_rep_votes": 61090,
+    "primary_dem_votes": 32968
+  },
+  "observation": {
+    "county_republican_primary_winner": "Craig S. Riedel",
+    "district_republican_primary_winner": "J.R. Majewski",
+    "winner_differs_because_of_geographic_scope": true,
+    "primary_full_district_independently_verified": false,
+    "county_partial_only": true,
+    "not_causal_evidence": true
+  }
+}
