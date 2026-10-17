@@ -78,7 +78,7 @@ python scripts/build_error_case_studies.py --top-n 5
 |---|---|---|---|
 |RI-02|[RI 2022 statewide primary](https://www.ri.gov/election/results/2022/statewide_primary/) / [RI 2022 general election](https://www.ri.gov/election/results/2022/general_election/)|**一次資料の票数照合済み**（下記）|候補者選択・党派参加層について因果説明はしない|
 |OH-15|[Ohio Secretary of State公式結果ポータル](https://www.ohiosos.gov/data) / [2022年本選挙の認証公表](https://www.ohiosos.gov/office/media-center/categories/press-releases/2022-12-09) / [Clark County BOE](https://liveresults.boe.ohio.gov/ENR/clarkohenr/11/en/Index_11.html)|**Clark郡のPrimary/General票を部分照合（PR #37）**|州当局の全選挙区公式Primary/General票をまだ独立照合していない|
-|OH-09|[8郡の認証済みGeneral票（Lucas County BOE、Defiance郡保管）](https://www.boe.ohio.gov/defiance/c/elecres/20221108overlap.pdf)|**General全8郡を独立照合（PR #38）、PrimaryはDefiance・Erieの2郡を独立照合（PR #44/45）**|2022年5月Primaryの残り6郡を独立照合し、全地区を再計算する必要がある|
+|OH-09|[8郡の認証済みGeneral票（Lucas County BOE、Defiance郡保管）](https://www.boe.ohio.gov/defiance/c/elecres/20221108overlap.pdf)|**General全8郡を独立照合（PR #38）、PrimaryはDefiance・Erie・Ottawaの3郡を独立照合（PR #44/45/47）**|2022年5月Primaryの残り5郡を独立照合し、全地区を再計算する必要がある|
 |MI-03|[Michigan州議会公式公刊物](https://www.legislature.mi.gov/documents/2023-2024/michiganmanual/2023-MM-Chapter9.pdf)|**Primary/Generalの3郡合計でFECと独立一致（PR #36）**|予測誤差の要因は因果検証していない|
 |NH-01|[NH州公式Primary・General結果](https://www.sos.nh.gov/elections/2022-election-results) / [Goffstown町公式年報](https://www.goffstownnh.gov/Archive.aspx?ADID=108)|**民主党Primaryは全区照合（§10）、共和党PrimaryはGoffstown町のみ照合（§16）、GeneralはAlton＋Goffstownの2町分を部分照合（§13・§16）**|共和党Primary75,401票とGeneral全区のR/D票数の独立総計は未完了|
 
@@ -183,11 +183,11 @@ python scripts/verify_mi03_state_canvass.py
 |---|---|---|---|---|
 | RI-02 | **地区全体のR/D票照合済み** | **地区全体のR/D票照合済み** | 上記§6 | 完了（背景の因果説明は未検証） |
 | MI-03 | **地区全体の郡別R/D票照合済み** | **地区全体の郡別R/D票照合済み** | [§7と再現コード](../scripts/verify_mi03_state_canvass.py) | 完了（州原典の転記JSONとFECを比較） |
-| OH-09 | **Defiance・Erieの2郡候補者別R/D票を独立照合、全地区未完了** | **全8郡の認証済み地区票とFECが完全一致** | [Ohio州認証canvassの8郡表](oh09-general-canvass.md)、[自動照合コード](../scripts/verify_oh09_general_canvass.py) | **Generalだけ全地区完了**。PrimaryはDefiance・Erieの2郡のみ独立照合 |
+| OH-09 | **Defiance・Erie・Ottawaの3郡候補者別R/D票を独立照合、全地区未完了** | **全8郡の認証済み地区票とFECが完全一致** | [Ohio州認証canvassの8郡表](oh09-general-canvass.md)、[自動照合コード](../scripts/verify_oh09_general_canvass.py) | **Generalだけ全地区完了**。PrimaryはDefiance・Erie・Ottawaの3郡のみ独立照合 |
 | OH-15 | **Clark郡のみ照合** | **Clark郡のみ照合** | [§8と再現コード](../scripts/audit_oh15_county.py) | **両選挙とも部分照合**。全選挙区の州公式結果は未完了 |
 | NH-01 | **民主党側42,368票を全区照合済み**・共和党側はGoffstown町1,947票のみ部分照合 | **Alton＋Goffstownの2町のR/D候補者票を部分照合、全選挙区未完了** | [NH州公式民主党Primary PDF](https://www.sos.nh.gov/sites/g/files/ehbemt561/files/inline-documents/sonh/2022-sp-congressional-district-1-democratic-remediated.pdf) / [§10](#10-nh-01民主党primary票の州公式集計との独立照合2026-10-17) | **Primary Dだけの部分照合**。R PrimaryとGeneralの公式票数は未検証 |
 
-**公開リポジトリの現行916件・2022年の238件・モデル精度・McNemar統計検定は、外部照合の追加では変更しない。** 下記§10の追加検証により、NH-01は民主党PrimaryのD側だけ全区照合できたほか、Goffstown町の共和党PrimaryとAlton＋GoffstownのGeneral票を**部分照合**できた。OH-09のPrimary残り6郡を含む全地区、OH-15の全選挙区、NH-01共和党Primary・General全地区の独立照合は依然未完了。**5/5地区が完全検証済みとは表記しない**。
+**公開リポジトリの現行916件・2022年の238件・モデル精度・McNemar統計検定は、外部照合の追加では変更しない。** 下記§10の追加検証により、NH-01は民主党PrimaryのD側だけ全区照合できたほか、Goffstown町の共和党PrimaryとAlton＋GoffstownのGeneral票を**部分照合**できた。OH-09のPrimary残り5郡を含む全地区、OH-15の全選挙区、NH-01共和党Primary・General全地区の独立照合は依然未完了。**5/5地区が完全検証済みとは表記しない**。
 
 ## 10. NH-01：民主党Primary票の州公式集計との独立照合（2026-10-17）
 
@@ -251,7 +251,7 @@ python scripts/verify_mi03_state_canvass.py
 |判定|党×選挙段階|説明|
 |---|---:|---|
 |地区全体の党側の州公式票を独立照合済み|**11/20**|RI-02 Primary/GeneralのR,D＝4、MI-03の4、OH-09 Generalの2、NH-01民主党Primaryの1|
-|一部の郡・町の公式票のみ確認|**9/20**|OH-15のClark郡Primary/General R/D計4側、NH-01 GeneralのAlton＋Goffstownの2町R/D計2側、**NH-01共和党PrimaryのGoffstown町1側**、OH-09 PrimaryのDefiance＋Erieの2郡R/D計2側。全地区の証明ではない|
+|一部の郡・町の公式票のみ確認|**9/20**|OH-15のClark郡Primary/General R/D計4側、NH-01 GeneralのAlton＋Goffstownの2町R/D計2側、**NH-01共和党PrimaryのGoffstown町1側**、OH-09 PrimaryのDefiance＋Erie＋Ottawaの3郡R/D計2側。全地区の証明ではない|
 |公式資料から党側の票数を一切照合していない項目|**0/20**|ただし完全照合は11/20にとどまり、**9/20は部分照合にすぎない**。NH-01共和党PrimaryはGoffstownのみ、NH-01 GeneralはAlton＋Goffstownのみ|
 |**選挙区全体のPrimaryとGeneralのR/D双方を確認済み**|**2/5地区**|RI-02とMI-03|
 
@@ -398,4 +398,36 @@ Goffstown町の本選挙には他党へのwrite-in 9、overvote1、undervote88�
     python scripts/validate_2022_state_coverage.py --fec-2022-csv data/processed/elections.csv
 
 **残件：NH州公式共和党Primaryの全区75,401票の独立再集計、NH General全区のR142,229／D167,391票の独立再集計。** 町票から投票者属性やモデル予測誤差の因果関係を断定しない。現在の916研究対象、2022年238件テスト、モデル・McNemar検定は一切変更しない。
+
+## 17. OH-09 Primary：Ottawa郡のAmended Official Resultsを追加し、3/8郡を独立照合（2026-10-17）
+
+**一次資料:** [Ottawa County Board of Elections公式過去選挙結果](https://boe.ottawa.oh.gov/past-results-election-summaries-absentee-ballot-request-totals/) が掲載する [2022年5月3日Primary・Amended Official Results（2022年6月8日訂正版PDF）](https://boe.ottawa.oh.gov/wp-content/uploads/2022/06/Amended-Official-Summary.pdf)。州の集計ではなく**郡選管が公表した訂正済み公式結果**を採用する。PDFの**ゼロ始まりページindex2（印刷3ページ）**が民主党、**index7（印刷8ページ）**が共和党第9区候補者票の集計表に相当する。
+
+|候補者|Defiance郡|Erie郡|Ottawa郡（Amended）|3郡合計|
+|---|---:|---:|---:|---:|
+|共和党 Beth Deck|226|434|208|**868**|
+|共和党 Theresa Gavarone|548|1,987|1,639|**4,174**|
+|共和党 J.R. Majewski|1,315|2,510|2,027|**5,852**|
+|共和党 Craig S. Riedel|2,765|1,917|1,383|**6,065**|
+|**共和党有効票合計**|**4,854**|**6,848**|**5,257**|**16,959**|
+|民主党 Marcy Kaptur|1,133|3,388|2,138|**6,659**|
+
+**Ottawa郡の訂正済み公式表では**共和党の4候補者票208＋1,639＋2,027＋1,383＝**5,257票**で、同郡の公表`Total Votes Cast`と一致。**共和党overvote2、undervote350**を票数へ加算せず、5,257＋2＋350＝5,609票という`Contest Totals`と区別する。民主党もKaptur **2,138票**、undervote129、Contest Totals2,267票。訂正版の集計は報告日時2022年6月8日15時54分に固定した。
+
+**3郡のR/D合計**はR=**16,959**、D=**6,659**。FEC公式2022年ExcelのOH-09全選挙区Primary **R61,090／D32,968**と比べると、**まだ5郡（Fulton、Lucas、Sandusky、Williams、Wood）の独立確認が必要**。Ottawa郡内の共和党最多候補はMajewskiの2,027票だが、Defiance郡ではRiedelが最多。候補者支持の地域差は**観測結果**に限り、予測誤差の原因として断定しない。
+
+再現可能な監査：
+- [Ottawa郡の訂正版に記録された候補者別票とPDFページを転記](../data/sources/oh09_ottawa_2022_amended_primary.json)
+- [Defiance＋Erie＋Ottawaの3郡の候補者票合算とFEC公式2022 Excelを照合](../scripts/audit_oh09_three_county_primary.py)
+- [訂正版PDF版の誤交換、転記ずれ、undervote誤加算、全地区への誤格上げを検出](../tests/test_oh09_three_county_primary.py)
+- [5選挙区の20党側の出典台帳](../data/sources/2022_state_evidence_coverage.json)はOH-09 Primary R/Dの部分票を16,959／6,659へ更新。**全地区11、部分9、完全未照合0という区分数は不変**。
+
+```bash
+python scripts/download_fec.py --years 2022
+python scripts/normalize_fec.py --years 2022
+python scripts/audit_oh09_three_county_primary.py
+python scripts/validate_2022_state_coverage.py --fec-2022-csv data/processed/elections.csv
+```
+
+**資料確認方法の限界:** Ottawa公式PDFの解析済みテキストから候補者票数・印刷ページ・報告日時を確認した。PDFのページ画像表示はアクセス制限のため成功しなかった。GitHub Actionsでは公式Ohio PDFを再取得・画像検証するのではなく**転記固定JSONの郡別算術と、毎回再取得するFEC原Excelの二党得票を突合**する。この差異を「一次資料の完全自動再検証」とは表現しない。標本916件、2022年テスト238件、回帰・McNemarの数値は変更しない。
 
