@@ -1,0 +1,38 @@
+name: 2022 OH-15 official county crosscheck
+
+on:
+  pull_request:
+    paths:
+      - data/sources/oh15_clark_2022_official_votes.json
+      - scripts/audit_oh15_county.py
+      - tests/test_oh15_county.py
+      - .github/workflows/oh15-clark-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-partial-county-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Verify official Clark County source snapshots
+        run: python -m pytest -q tests/test_oh15_county.py
+      - name: Download official FEC 2022 Excel
+        run: python scripts/download_fec.py --years 2022
+      - name: Normalize official FEC voting House districts
+        run: python scripts/normalize_fec.py --years 2022
+      - name: Compare partial Clark totals to OH-15 district baseline
+        run: python scripts/audit_oh15_county.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oh15-clark-county-audit
+          path: data/processed/oh15_clark_county_fec_audit.json
+          retention-days: 3
