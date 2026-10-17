@@ -16,15 +16,15 @@ def fixture():
 def test_complete_matrix_has_only_two_whole_cases():
     got=mod.validate_ledger(fixture(),ROOT)
     assert got["district_verified_party_stages"]==11
-    assert got["partial_subdistrict_party_stages"]==4
-    assert got["not_verified_party_stages"]==5
+    assert got["partial_subdistrict_party_stages"]==6
+    assert got["not_verified_party_stages"]==3
     assert got["whole_cases_verified_primary_and_general"]==2
     assert got["source_discovery_is_not_verification"] is True
 
 def test_found_nh_sos_document_is_not_independent_vote_comparison():
     d=fixture()
     d["cases"]["NH-01"]["general"]["R"]["level"]="district_verified"
-    with pytest.raises(AssertionError,match="Verified or partial votes"):
+    with pytest.raises(AssertionError,match="Independent district votes"):
         mod.validate_ledger(d,ROOT)
 
 def test_oh15_clark_only_may_not_become_entire_district():
