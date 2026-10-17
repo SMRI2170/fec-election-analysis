@@ -1,0 +1,39 @@
+name: 2022 external-source verification coverage
+
+on:
+  pull_request:
+    paths:
+      - data/sources/2022_state_evidence_coverage.json
+      - scripts/validate_2022_state_coverage.py
+      - tests/test_2022_state_coverage.py
+      - .github/workflows/2022-state-source-coverage.yml
+      - docs/2022-error-case-studies.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  independently-verified-scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Reject false promotion of incomplete source evidence
+        run: python -m pytest -q tests/test_2022_state_coverage.py
+      - name: Download official FEC 2022 workbook
+        run: python scripts/download_fec.py --years 2022
+      - name: Normalize official FEC 2022 House election data
+        run: python scripts/normalize_fec.py --years 2022
+      - name: Verify case evidence against 2022 FEC baseline, without modifying research records
+        run: python scripts/validate_2022_state_coverage.py --fec-2022-csv data/processed/elections.csv
+      - uses: actions/upload-artifact@v4
+        with:
+          name: state-evidence-coverage-2022
+          path: data/processed/2022_state_evidence_coverage_summary.json
+          retention-days: 3
