@@ -118,3 +118,29 @@ def test_timewise_metrics_never_use_future_training_data():
     assert [(f["test_year"],f["train_max_year"]) for f in fits]==[
         (2018,2016),(2020,2018),(2022,2020)]
     assert pred.groupby("year").size().to_dict()=={2018:2,2020:2,2022:2}
+
+
+def test_unknown_state_not_counted_as_voting_state():
+    selected,excluded=sample()
+    broken=excluded.copy()
+    broken.loc[broken.state.eq("CA"),"state"]="ZZ"
+    with pytest.raises(ValueError,match="Unknown FEC jurisdiction"):
+        summarize_coverage(selected,broken)
+
+
+def test_selected_district_vs_equal_state_weights_can_differ():
+    selected,_=sample()
+    extras=pd.DataFrame([
+        election(2022,"AL",str(n).zfill(2),primary_r=60,primary_d=40,
+                 general_r=80,general_d=20)
+        for n in (3,4,5,6)])
+    bigger=pd.concat([selected,extras],ignore_index=True)
+    predictions,_=heldout(bigger)
+    states,years=summarize_predictions(predictions)
+    latest=next(x for x in years if x["year"]==2022)
+    assert latest["n_districts"]==6
+    assert latest["states_with_n_ge_5"]==1
+    assert abs(latest["district_weighted_linear_mae"]-
+               latest["equal_selected_state_linear_mae"])>1e-3
+    assert abs(latest["equal_selected_state_n_ge_5_linear_mae"] -
+               states[(states.year.eq(2022)) & states.state.eq("AL")].iloc[0].linear_mae) < 1e-12
