@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "disclaimer": "Only retrospective observations for FEC-selected US voting House contests. FEC Excel files are post-election publications, and 2022 outcomes were used exploratorily in earlier research.",
+  "official_source_url": "https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/",
+  "source_sha256_reference": "data/sources/expected_analysis.json",
+  "official_xlsx_sha256": {
+    "2016": "b4a1d1383602bc388cfbdf1fbea2476476d32e0b44b44236d3a3910fa9782eb6",
+    "2018": "f2c42311862b4927df2ca5908c5f9c8f8da6221a8db88fd00434a22ec1e0e303",
+    "2020": "5073b6d2c76c86c941508dfb1a11cc497e8529b0068c5132aceb0f385c19352e",
+    "2022": "cdb258ea23803e50d752bcea19faa39b3c201eb960094bcb556c3a38c2350897"
+  },
+  "frozen_cohort": {
+    "all_fec_report_groups": 1756,
+    "retrospective_primary_compatible": 919,
+    "selected": 916,
+    "selected_by_year": {
+      "2016": 200,
+      "2018": 241,
+      "2020": 237,
+      "2022": 238
+    }
+  },
+  "evidence": [
+    {
+      "id": "EV-001",
+      "rq": "data-quality",
+      "label": "FEC916件の正規化と時点別標本選択",
+      "status": "verified_main",
+      "unit": "報告グループ・区年",
+      "n": 1756,
+      "year_scope": [
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "script_paths": [
+        "scripts/normalize_fec.py",
+        "scripts/audit_prediction_time_eligibility.py",
+        "scripts/verify_reproducibility.py"
+      ],
+      "source_docs": [
+        "docs/normalization-audit.md",
+        "docs/prediction-time-cohort.md"
+      ],
+      "ci": "https://github.com/SMRI2170/fec-election-analysis/actions/runs/39015017776",
+      "important_limit": "原FEC選挙結果の後日公刊資料からの事後再構成。一次的な選挙前公開可用性は未証明。"
+    },
+    {
+      "id": "EV-002",
+      "rq": "RQ1",
+      "label": "2018/2020/2022年の定数予測／Primary持越し／線形回帰MAE",
+      "status": "verified_main",
+      "unit": "MAE in fraction; table presents percentage points",
+      "n": 716,
+      "year_scope": [
+        2018,
+        2020,
+        2022
+      ],
+      "script_paths": [
+        "scripts/analyze_error_structure.py",
+        "scripts/run_backtests.py"
+      ],
+      "source_docs": [
+        "docs/model-evaluation.md",
+        "docs/error-structure-analysis.md"
+      ],
+      "ci": "https://github.com/SMRI2170/fec-election-analysis/actions/runs/39004069145",
+      "important_limit": "2018/2020/2022テスト年の対象地区241/237/238件。モデルの年度外評価であって全米への外挿ではない。"
+    },
+    {
+      "id": "EV-003",
+      "rq": "RQ2",
+      "label": "Primary多数派規則vsLogisticの分類正解率とMcNemar",
+      "status": "verified_main",
+      "unit": "accuracy fraction and p-value",
+      "n": 716,
+      "year_scope": [
+        2018,
+        2020,
+        2022
+      ],
+      "script_paths": [
+        "scripts/analyze.py",
+        "scripts/paired_accuracy.py"
+      ],
+      "source_docs": [
+        "docs/model-evaluation.md"
+      ],
+      "ci": "https://github.com/SMRI2170/fec-election-analysis/actions/runs/39004069145",
+      "important_limit": "二党票優勢は公式当選者と同一ではない。McNemar検定p=0.09229は2022年238区の探索的結果。"
+    },
+    {
+      "id": "EV-004",
+      "rq": "RQ3",
+      "label": "州×年度の採用率・MAEの地区/州等重み比較・二党票比率差",
+      "status": "verified_ci_unmerged_pr",
+      "unit": "州、区年、percentage points",
+      "n": 916,
+      "year_scope": [
+        2016,
+        2018,
+        2020,
+        2022
+      ],
+      "script_paths": [
+        "scripts/analyze_state_year.py"
+      ],
+      "source_docs": [
+        "docs/state-year-findings.md"
+      ],
+      "ci": "https://github.com/SMRI2170/fec-election-analysis/actions/runs/39086627384",
+      "pr": "https://github.com/SMRI2170/fec-election-analysis/pull/73",
+      "important_limit": "PR #73は未マージ。50州1,734報告グループから916採用、非投票権管轄22件は別枠。採用州等重みは全米全州重みではない。"
+    },
+    {
+      "id": "EV-005",
+      "rq": "RQ3",
+      "label": "旧552/新678学習を共通2022年186区で比較",
+      "status": "verified_main",
+      "unit": "classification accuracy and MAE",
+      "n": 186,
+      "year_scope": [
+        2022
+      ],
+      "script_paths": [
+        "scripts/audit_selection_bias.py"
+      ],
+      "source_docs": [
+        "docs/selection-bias.md"
+      ],
+      "ci": "https://github.com/SMRI2170/fec-election-analysis/actions/runs/38853445992",
+      "important_limit": "選択条件と学習集合が同時に異なる。処理ルールのみの因果的改善とは言えない。"
+    },
+    {
+      "id": "EV-006",
+      "rq": "reliability",
+      "label": "2022年誤差上位5区の州一次資料照合範囲",
+      "status": "partially_verified_main",
+      "unit": "20 party-stage cells",
+      "n": 20,
+      "year_scope": [
+        2022
+      ],
+      "script_paths": [
+        "scripts/build_error_case_studies.py"
+      ],
+      "source_docs": [
+        "docs/2022-error-case-studies.md"
+      ],
+      "ci": "https://github.com/SMRI2170/fec-election-analysis/actions/runs/39004069145",
+      "important_limit": "地区全体で11セル、部分的に9セルのみ。5区選択は事後的、因果解釈禁止。"
+    }
+  ],
+  "report_figure_budget": [
+    {
+      "id": "T1",
+      "title": "年度外の回帰・分類モデル比較",
+      "evidence_ids": [
+        "EV-002",
+        "EV-003"
+      ],
+      "status": "ready"
+    },
+    {
+      "id": "F1",
+      "title": "Primary持越しと線形回帰の年度別MAE",
+      "evidence_ids": [
+        "EV-002"
+      ],
+      "status": "ready"
+    },
+    {
+      "id": "T2",
+      "title": "州・年度の採用・平均誤差と重み付けの違い",
+      "evidence_ids": [
+        "EV-004"
+      ],
+      "status": "pending_pr_73_review"
+    },
+    {
+      "id": "F2",
+      "title": "50州の地区採用率と報告件数",
+      "evidence_ids": [
+        "EV-004"
+      ],
+      "status": "pending_pr_73_review"
+    },
+    {
+      "id": "A1",
+      "title": "旧新共通186地区の標本感度",
+      "evidence_ids": [
+        "EV-005"
+      ],
+      "status": "appendix"
+    },
+    {
+      "id": "A2",
+      "title": "2022年誤予測5地区の州外部照合範囲",
+      "evidence_ids": [
+        "EV-006"
+      ],
+      "status": "appendix"
+    }
+  ]
+}
