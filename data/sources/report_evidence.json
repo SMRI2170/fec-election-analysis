@@ -125,7 +125,7 @@
         2022
       ],
       "script_paths": [
-        "scripts/compare_selection_cohorts.py"
+        "scripts/audit_selection_bias.py"
       ],
       "source_docs": [
         "docs/selection-bias.md"
