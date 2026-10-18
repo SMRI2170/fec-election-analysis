@@ -24,6 +24,11 @@ FROZEN = {2016: (200, 238), 2018: (241, 197),
           2020: (237, 204), 2022: (238, 201)}
 MIN_VISIBLE_N = 5
 YEAR_TESTS = (2018, 2020, 2022)
+VOTING_STATES = frozenset(
+    "AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD "
+    "MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC "
+    "SD TN TX UT VT VA WA WV WI WY".split()
+)
 
 
 def _normalized_keys(df: pd.DataFrame, label: str) -> pd.DataFrame:
@@ -42,6 +47,10 @@ def summarize_coverage(selected: pd.DataFrame, excluded: pd.DataFrame):
     """Count every source report group; split out non-voting jurisdictions."""
     sel = _normalized_keys(selected, "selected")
     exc = _normalized_keys(excluded, "excluded")
+    if not (set(sel.state.dropna()) | set(exc.state.dropna())).issubset(
+        VOTING_STATES | NONVOTING_DELEGATE_JURISDICTIONS
+    ):
+        raise ValueError("Unknown FEC jurisdiction; do not count as a voting state")
     if set(map(tuple,sel[KEY].itertuples(index=False,name=None))) & set(
         map(tuple,exc[KEY].itertuples(index=False,name=None))):
         raise AssertionError("A FEC group is simultaneously included and excluded")
@@ -136,6 +145,8 @@ def check_frozen(groups: pd.DataFrame, predictions: pd.DataFrame, fit: list[dict
             raise AssertionError(f"{year} frozen FEC cohort changed")
     if groups.report_groups.sum() != 1756 or groups.selected.sum() != 916:
         raise AssertionError("FEC 1756 / selected 916 frozen cohort changed")
+    if set(groups.loc[groups.population.eq("50-state-voting-House"),"state"]) != VOTING_STATES:
+        raise AssertionError("FEC expected 50 voting states in report groups")
     for year in YEAR_TESTS:
         x=predictions[predictions.year.eq(year)]
         if len(x)!=FROZEN[year][0]:
@@ -154,15 +165,13 @@ def charts(coverage: pd.DataFrame, metrics: pd.DataFrame, output: Path) -> None:
     fig,ax=plt.subplots(figsize=(9,4.7))
     ax.scatter(four_years.report_groups,four_years.fraction*100,
                s=30+four_years.report_groups*1.5,alpha=.7)
-    for state in four_years.loc[four_years.fraction.eq(0),"state"]:
-        row=four_years[four_years.state.eq(state)].iloc[0]
-        ax.annotate(state,(row.report_groups,row.fraction*100),
-                    xytext=(2,4),textcoords="offset points",fontsize=7)
+    zeros = sorted(four_years.loc[four_years.selected.eq(0),"state"].tolist())
+    fig.text(.06,.015,"No included records: " + ", ".join(zeros),fontsize=7)
     ax.set_xlabel("FEC report groups in 2016–2022 (4 elections)")
     ax.set_ylabel("Included in fixed 916-record cohort (%)")
     ax.set_title("Selection varies by state; observations are not a national sample")
     ax.set_ylim(-4,104);ax.grid(alpha=.2)
-    fig.tight_layout()
+    fig.tight_layout(rect=(0,.065,1,1))
     fig.savefig(output/"fig_state_coverage.png",dpi=170)
     fig.savefig(output/"fig_state_coverage.svg")
     plt.close(fig)
