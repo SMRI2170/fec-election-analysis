@@ -1,0 +1,130 @@
+name: Selective primary analysis
+
+# Official-FEC workflow for Issues #80-#82. It re-downloads the four official
+# workbooks, verifies their SHA-256 against the pinned catalogue, rebuilds the
+# normalized cohort, audits the frozen cohort contract, and then evaluates the
+# Primary-only abstention rule over the full 3 years x 5 thresholds grid.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/fec_analysis/selective.py'
+      - 'scripts/selective_primary_rule.py'
+      - 'scripts/evaluate_selective_primary.py'
+      - 'scripts/compare_random_abstention.py'
+      - 'scripts/plot_selective_primary.py'
+      - 'scripts/inspect_selective_cohort.py'
+      - 'scripts/download_fec.py'
+      - 'scripts/normalize_fec.py'
+      - 'scripts/analyze.py'
+      - 'scripts/run_backtests.py'
+      - 'tests/test_selective_cohort.py'
+      - 'tests/test_selective_primary_rule.py'
+      - 'tests/test_selective_primary.py'
+      - 'tests/test_random_abstention.py'
+      - 'tests/test_selective_plot.py'
+      - 'data/sources/expected_analysis.json'
+      - '.github/workflows/selective-cohort-audit.yml'
+      - '.github/workflows/selective-primary-analysis.yml'
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: selective-primary-analysis-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  official-fec-selective-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install project dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Download official FEC 2016-2022 workbooks
+        run: python scripts/download_fec.py --years 2016 2018 2020 2022
+
+      - name: Verify official source SHA-256 against the pinned catalogue
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+
+          expected = json.loads(Path("data/sources/expected_analysis.json").read_text(encoding="utf-8"))["official_source_sha256"]
+          manifest = json.loads(Path("data/raw/download-manifest.json").read_text(encoding="utf-8"))
+          assert len(manifest) == 4, f"expected 4 official workbooks, got {len(manifest)}"
+          for record in manifest:
+              year = str(record["year"])
+              digest = hashlib.sha256(Path(record["path"]).read_bytes()).hexdigest()
+              assert digest == record["sha256"], f"downloader hash mismatch for {year}"
+              assert digest == expected[year], (
+                  f"official FEC {year} workbook hash changed: {digest} != {expected[year]}"
+              )
+          print("official FEC SHA-256 verified for 2016/2018/2020/2022")
+          PY
+
+      - name: Normalize the conservative 50-state voting House cohort
+        run: python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy attribute
+
+      - name: Audit the frozen evaluation cohort
+        run: python scripts/inspect_selective_cohort.py --output data/processed/selective-cohort-audit.json
+
+      - name: Evaluate the abstention rule over the 15-condition grid
+        run: |
+          python scripts/evaluate_selective_primary.py \
+            --csv-output data/processed/selective-primary-grid.csv \
+            --json-output data/processed/selective-primary-grid.json
+
+      - name: Assert the frozen baseline inside the grid
+        run: |
+          python - <<'PY'
+          import pandas as pd
+
+          grid = pd.read_csv("data/processed/selective-primary-grid.csv")
+          assert len(grid) == 15, f"expected 15 conditions, got {len(grid)}"
+          expected = {
+              2018: (241, 24, 0.9004),
+              2020: (237, 24, 0.8987),
+              2022: (238, 24, 0.8992),
+          }
+          for year, (eligible, wrong, accuracy) in expected.items():
+              row = grid[(grid["test_year"] == year) & (grid["t_pct"] == 0)]
+              assert len(row) == 1, f"missing t=0 row for {year}"
+              row = row.iloc[0]
+              assert int(row["eligible"]) == eligible, f"eligible changed for {year}"
+              assert int(row["wrong_accepted"]) == wrong, f"t=0 errors changed for {year}"
+              assert abs(float(row["conditional_accuracy"]) - accuracy) <= 0.0001, (
+                  f"t=0 accuracy changed for {year}"
+              )
+          for year, group in grid.groupby("test_year"):
+              accepted = group.sort_values("t_pct")["accepted"].tolist()
+              for previous, current in zip(accepted, accepted[1:]):
+                  assert current <= previous, f"accepted grew in {year}"
+              for row in group.itertuples(index=False):
+                  assert row.accepted + row.abstained == row.eligible
+                  assert row.correct_accepted + row.wrong_accepted == row.accepted
+                  assert row.correct_abstained + row.wrong_abstained == row.abstained
+          print("15-condition grid reproduces the frozen baseline and the conservation laws")
+          PY
+
+      - name: Run the unit test suite
+        run: python -m pytest -q
+
+      - name: Upload the grid and the cohort audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: selective-primary-grid
+          path: |
+            data/processed/selective-primary-grid.csv
+            data/processed/selective-primary-grid.json
+            data/processed/selective-cohort-audit.json
+          retention-days: 14
