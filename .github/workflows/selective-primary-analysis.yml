@@ -116,6 +116,38 @@ jobs:
           print("15-condition grid reproduces the frozen baseline and the conservation laws")
           PY
 
+      - name: Compare with random abstention of the same size
+        run: |
+          python scripts/compare_random_abstention.py \
+            --csv-output data/processed/selective-primary-random-baseline.csv \
+            --json-output data/processed/selective-primary-random-baseline.json
+
+      - name: Assert the random-abstention reference
+        run: |
+          python - <<'PY'
+          import pandas as pd
+
+          grid = pd.read_csv("data/processed/selective-primary-random-baseline.csv")
+          assert len(grid) == 15, f"expected 15 conditions, got {len(grid)}"
+          for row in grid[grid["t_pct"] == 0].itertuples(index=False):
+              assert abs(row.random_abstention_expected_wrong - row.wrong_accepted) < 1e-9, (
+                  f"t=0 must reproduce the observed error count in {row.test_year}"
+              )
+              assert abs(row.error_avoidance_vs_random) < 1e-9
+          # The margin rule must leave fewer errors than random abstention of
+          # the same size in every thresholded condition.
+          thresholded = grid[grid["t_pct"] > 0]
+          assert len(thresholded) == 12, f"expected 12 thresholded conditions, got {len(thresholded)}"
+          for row in thresholded.itertuples(index=False):
+              assert row.wrong_accepted < row.random_abstention_expected_wrong, (
+                  f"{row.test_year} t={row.t_pct}: no better than random abstention"
+              )
+              assert row.wrong_accepted < row.random_abstention_p05, (
+                  f"{row.test_year} t={row.t_pct}: not below the random 5th percentile"
+              )
+          print("the abstention rule beats same-size random abstention in all 12 conditions")
+          PY
+
       - name: Run the unit test suite
         run: python -m pytest -q
 
@@ -126,5 +158,7 @@ jobs:
           path: |
             data/processed/selective-primary-grid.csv
             data/processed/selective-primary-grid.json
+            data/processed/selective-primary-random-baseline.csv
+            data/processed/selective-primary-random-baseline.json
             data/processed/selective-cohort-audit.json
           retention-days: 14
