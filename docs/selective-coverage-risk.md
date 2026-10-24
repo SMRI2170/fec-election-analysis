@@ -62,6 +62,8 @@ t=20では 2018: 24件、2020: 24件、2022: 24件 — つまり**全24件の誤
 
 **このIssueの結果だけでは「Primary の拮抗度は誤答を識別する情報になる」とは言えない。** 保留すれば誤答が減るのは自明である。 同数のランダム保留したときの期待誤答（K·E/N）との比較は[#81](https://github.com/SMRI2170/fec-election-analysis/issues/81)で行う。上の表が「-random より良い」ことを示すまでは、主張は**保留による見かけの精度向上**の可能性がある。
 
+> **更新（[#81](https://github.com/SMRI2170/fec-election-analysis/issues/81)で回答済み）:** 同数のランダム保留との比較の結果、**t>0の全12条件**で観測誤答数がランダム期待値を7.75〜15.53件下回り、ランダム保留の5パーセンタイル未満となった。すなわち拮抗度は**同数ランダム保留より明らかに多く誤答を排除する**。ただし回答率40〜52%という代償は残る。詳細は[同Issueのノート](selective-random-baseline.md)。本Issueの集計表自体は変更していない。
+
 ## 実装と検証
 
 - `scripts/evaluate_selective_primary.py` — 15条件の評価器。`evaluate_grid()` がCSV/JSONを生成し、`check_baseline()` と `check_monotonicity()` が契約を検証する。違反時は終了コード1。
