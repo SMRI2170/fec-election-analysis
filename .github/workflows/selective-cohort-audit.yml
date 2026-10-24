@@ -1,0 +1,110 @@
+name: Selective cohort audit
+
+# Official-FEC workflow for Issue #78. It re-downloads the four official
+# workbooks, verifies their SHA-256 against the pinned catalogue, rebuilds the
+# normalized cohort, and proves that the frozen evaluation cohort of the
+# selective-prediction study is still 241 / 237 / 238 with 24 errors each.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/fec_analysis/selective.py'
+      - 'scripts/inspect_selective_cohort.py'
+      - 'scripts/download_fec.py'
+      - 'scripts/normalize_fec.py'
+      - 'scripts/analyze.py'
+      - 'tests/test_selective_cohort.py'
+      - 'data/sources/expected_analysis.json'
+      - '.github/workflows/selective-cohort-audit.yml'
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: selective-cohort-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  official-fec-cohort-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install project dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Download official FEC 2016-2022 workbooks
+        run: python scripts/download_fec.py --years 2016 2018 2020 2022
+
+      - name: Verify official source SHA-256 against the pinned catalogue
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+
+          expected = json.loads(Path("data/sources/expected_analysis.json").read_text(encoding="utf-8"))["official_source_sha256"]
+          manifest = json.loads(Path("data/raw/download-manifest.json").read_text(encoding="utf-8"))
+          assert len(manifest) == 4, f"expected 4 official workbooks, got {len(manifest)}"
+          for record in manifest:
+              year = str(record["year"])
+              digest = hashlib.sha256(Path(record["path"]).read_bytes()).hexdigest()
+              assert digest == record["sha256"], f"downloader hash mismatch for {year}"
+              assert digest == expected[year], (
+                  f"official FEC {year} workbook hash changed: {digest} != {expected[year]}"
+              )
+          print("official FEC SHA-256 verified for 2016/2018/2020/2022")
+          PY
+
+      - name: Normalize the conservative 50-state voting House cohort
+        run: python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy attribute
+
+      - name: Audit the frozen selective-evaluation cohort
+        run: |
+          python scripts/inspect_selective_cohort.py \
+            --output data/processed/selective-cohort-audit.json
+
+      - name: Re-derive the no-fit majority rule through the existing backtests
+        run: |
+          python scripts/run_backtests.py \
+            --input data/processed/elections.csv \
+            --test-years 2018 2020 2022 \
+            --output data/processed/backtest_metrics.csv
+          python - <<'PY'
+          import pandas as pd
+
+          metrics = pd.read_csv("data/processed/backtest_metrics.csv")
+          expected = {
+              2018: (241, 0.9004),
+              2020: (237, 0.8987),
+              2022: (238, 0.8992),
+          }
+          for year, (n_test, score) in expected.items():
+              row = metrics[
+                  (metrics["test_year"] == year)
+                  & (metrics["model"] == "primary-winner rule")
+                  & (metrics["metric"] == "accuracy")
+              ]
+              assert len(row) == 1, f"missing primary-winner rule for {year}"
+              assert int(row.iloc[0]["n_test"]) == n_test, f"n_test changed for {year}"
+              assert abs(float(row.iloc[0]["score"]) - score) <= 0.0001, f"accuracy changed for {year}"
+          print("primary-winner rule reproduces 241/237/238 at 90.04/89.87/89.92%")
+          PY
+
+      - name: Run the unit test suite
+        run: python -m pytest -q
+
+      - name: Upload the cohort audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: selective-cohort-audit
+          path: |
+            data/processed/selective-cohort-audit.json
+            data/processed/backtest_metrics.csv
+          retention-days: 14
