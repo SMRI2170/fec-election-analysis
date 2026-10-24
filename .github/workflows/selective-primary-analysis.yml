@@ -148,10 +148,41 @@ jobs:
           print("the abstention rule beats same-size random abstention in all 12 conditions")
           PY
 
+      - name: Render the coverage-risk figures
+        run: |
+          python scripts/plot_selective_primary.py \
+            --grid data/processed/selective-primary-grid.csv \
+            --random-baseline data/processed/selective-primary-random-baseline.csv \
+            --output-dir outputs/figures \
+            --description-output data/processed/selective-figure-description.json
+
+      - name: Assert the figure agrees with the 15-row grid
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          description = json.loads(
+              Path("data/processed/selective-figure-description.json").read_text(encoding="utf-8")
+          )
+          conditions = sum(item["conditions"] for item in description["series"])
+          plotted = description["total_points_plotted"]
+          assert conditions == 15, f"expected 15 conditions, got {conditions}"
+          assert plotted == 15, f"expected 15 plotted points, got {plotted}"
+          for series in description["series"]:
+              assert series["eligible"] in (241, 237, 238)
+              assert len(series["coverage_percent"]) == series["conditions"]
+              assert len(series["selective_risk_percent"]) == series["conditions"]
+          for name in ("selective_coverage_risk.png", "selective_coverage_risk.svg"):
+              path = Path("outputs/figures") / name
+              assert path.exists() and path.stat().st_size > 1000, f"{name} was not rendered"
+          print("the figures agree with the 15-row grid")
+          PY
+
       - name: Run the unit test suite
         run: python -m pytest -q
 
-      - name: Upload the grid and the cohort audit
+      - name: Upload the grid, the audit and the figures
         uses: actions/upload-artifact@v4
         with:
           name: selective-primary-grid
@@ -160,5 +191,9 @@ jobs:
             data/processed/selective-primary-grid.json
             data/processed/selective-primary-random-baseline.csv
             data/processed/selective-primary-random-baseline.json
+            data/processed/selective-figure-description.json
             data/processed/selective-cohort-audit.json
+            outputs/figures/selective_coverage_risk.png
+            outputs/figures/selective_coverage_risk.svg
+            outputs/figures/selective_random_abstention_comparison.png
           retention-days: 14
