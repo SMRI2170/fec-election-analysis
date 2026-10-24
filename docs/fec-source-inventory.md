@@ -14,10 +14,15 @@
 | 2010 | [FEC 2010](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2010/) | [公式Excel](https://www.fec.gov/documents/1675/federalelections2010.xls) | xls | 未実施 |
 | 2012 | [FEC 2012](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2012/) | [公式Excel](https://www.fec.gov/documents/1691/federalelections2012.xls) | xls | 未実施 |
 | 2014 | [FEC 2014](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2014/) | [公式Excel](https://www.fec.gov/documents/1700/federalelections2014.xls) | xls | 未実施 |
-| 2016 | [FEC 2016](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2016/) | [公式Excel](https://www.fec.gov/documents/1890/federalelections2016.xlsx) | xlsx | 未実施 |
-| 2018 | [FEC 2018](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2018/) | [公式Excel](https://www.fec.gov/documents/2706/federalelections2018.xlsx) | xlsx | 未実施 |
-| 2020 | [FEC 2020](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2020/) | [公式Excel](https://www.fec.gov/documents/4228/federalelections2020.xlsx) | xlsx | **実取得・下院シート初期監査済** |
-| 2022 | [FEC 2022](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2022/) | [公式Excel](https://www.fec.gov/documents/5676/federalelections2022.xlsx) | xlsx | **実取得・下院シート初期監査済** |
+| 2016 | [FEC 2016](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2016/) | [公式Excel](https://www.fec.gov/documents/1890/federalelections2016.xlsx) | xlsx | **実取得・SHA-256照合済** |
+| 2018 | [FEC 2018](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2018/) | [公式Excel](https://www.fec.gov/documents/2706/federalelections2018.xlsx) | xlsx | **実取得・SHA-256照合済** |
+| 2020 | [FEC 2020](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2020/) | [公式Excel](https://www.fec.gov/documents/4228/federalelections2020.xlsx) | xlsx | **実取得・SHA-256照合済** |
+| 2022 | [FEC 2022](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2022/) | [公式Excel](https://www.fec.gov/documents/5676/federalelections2022.xlsx) | xlsx | **実取得・SHA-256照合済** |
+
+2016/2018/2020/2022の4ファイルは実際にダウンロードし、バイト数とSHA-256が
+`data/sources/expected_analysis.json` の固定値と一致することを確認済み。
+数値とURLの対応は [report-citation-audit.md](report-citation-audit.md) に、
+本文・付録の対応は [report-final-figure-selection.md](report-final-figure-selection.md) に記録する。
 
 取得時のSHA256・容量は `scripts/download_fec.py` が `data/raw/download-manifest.json` に保存する。**リンク確認はダウンロード・中身の検証を意味しない**。
 
