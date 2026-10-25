@@ -1,0 +1,52 @@
+name: FEC Non-linear comparison
+
+on:
+  pull_request:
+    paths:
+      - scripts/evaluate_nonlinear_primary.py
+      - scripts/nonlinear_protocol.py
+      - configs/nonlinear-comparison.json
+      - tests/test_nonlinear_primary.py
+      - tests/test_nonlinear_protocol.py
+      - docs/nonlinear-primary-vs-general.md
+      - .github/workflows/nonlinear-comparison.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nonlinear-comparison:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install project requirements
+        run: python -m pip install -r requirements.txt
+      - name: Synthetic tests of the protocol and of the comparison
+        run: |
+          python -m pytest -q tests/test_nonlinear_protocol.py
+          python -m pytest -q tests/test_nonlinear_primary.py
+      - name: Download official FEC 2016-2022 House Excel sources
+        run: python scripts/download_fec.py --years 2016 2018 2020 2022
+      - name: Normalize fixed 916 voting-House contests
+        run: python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy attribute
+      - name: Verify frozen cohort, baseline metrics and source hashes
+        run: |
+          python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022
+          python scripts/verify_reproducibility.py
+      - name: Run the frozen non-linear comparison and check the frozen baseline
+        run: python scripts/evaluate_nonlinear_primary.py --assert-baseline
+      - name: Save short-lived per-district tables and aggregates
+        uses: actions/upload-artifact@v4
+        with:
+          name: fec-nonlinear-comparison
+          path: |
+            data/processed/nonlinear_comparison/nonlinear_comparison.csv
+            data/processed/nonlinear_comparison/nonlinear_comparison_paired.csv
+            data/processed/nonlinear_comparison/nonlinear_comparison.json
+          retention-days: 7
