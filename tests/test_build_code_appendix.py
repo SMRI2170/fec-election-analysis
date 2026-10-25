@@ -36,11 +36,21 @@ def test_every_listed_file_exists():
 def test_the_appendix_covers_the_pipeline_in_reproduction_order():
     paths = [item.path for item in builder.APPENDIX_FILES]
     assert paths[0] == "scripts/download_fec.py"
-    assert paths[-1] == "scripts/plot_selective_primary.py"
+    assert paths[-1] == "scripts/analyze_probability_calibration.py"
     assert "scripts/normalize_fec.py" in paths
     assert "scripts/evaluate_selective_primary.py" in paths
     assert "scripts/compare_random_abstention.py" in paths
     assert "scripts/selective_primary_rule.py" in paths
+    # The state/year analysis (#57) and the two audits that the report cites
+    # (#63, #64) must ship with the source appendix as well.
+    assert "scripts/analyze_state_year.py" in paths
+    assert "scripts/audit_state_residual_composition.py" in paths
+    assert "scripts/analyze_probability_calibration.py" in paths
+    # Reproduction order: the state/year pipeline runs before the audits
+    # that consume its output.
+    assert paths.index("scripts/analyze_state_year.py") < paths.index(
+        "scripts/audit_state_residual_composition.py"
+    )
 
 
 def test_collect_reports_checksums_and_lines():

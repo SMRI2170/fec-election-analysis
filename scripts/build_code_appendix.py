@@ -112,6 +112,23 @@ APPENDIX_FILES: tuple[AppendixFile, ...] = (
         "判定率–誤答率図とランダム保留比較図",
         "outputs/figures/selective_coverage_risk.png/.svg, selective_random_abstention_comparison.png",
     ),
+    AppendixFile(
+        "scripts/analyze_state_year.py",
+        "州×年度の採用数・年度外残差・重み付け別のMAE",
+        "data/processed/state_year/state_year_summary.json, state_year_error_metrics.csv, "
+        "state_year_coverage.csv, fig_state_coverage.png/.svg",
+    ),
+    AppendixFile(
+        "scripts/audit_state_residual_composition.py",
+        "符号付き残差の構成効果と標本数の監査",
+        "data/processed/state_year/state_residual_composition.csv / .json",
+    ),
+    AppendixFile(
+        "scripts/analyze_probability_calibration.py",
+        "予備選挙得票率の確率出力の校正評価",
+        "data/processed/calibration/calibration_bins.csv / calibration_metrics.json, "
+        "outputs/figures/calibration_reliability.png/.svg",
+    ),
 )
 
 
