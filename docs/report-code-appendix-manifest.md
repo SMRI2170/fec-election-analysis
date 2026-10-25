@@ -19,7 +19,7 @@
 |**図1**|判定率–誤答率図（2018/2020/2022＋同数ランダム保留の期待risk水平線）|`scripts/plot_selective_primary.py`|`python scripts/plot_selective_primary.py`|
 |**図2**|観測誤答数と同数ランダム保留の期待値の比較|`scripts/plot_selective_primary.py`|`python scripts/plot_selective_primary.py`|
 |**図3**|予備選挙得票率の確率出力の校正図|`scripts/analyze_probability_calibration.py`|`python scripts/analyze_probability_calibration.py --input data/processed/elections.csv --test-years 2018 2020 2022`|
-|**（本文に不使用）**|予備選挙比率と本選挙比率の散布（2022年）および年度外MAE比較、`scripts/plot_results.py`|`python scripts/plot_results.py --input data/processed/elections.csv --metrics data/processed/backtest_metrics.csv`|
+|**（本文に不使用）**|予備選挙比率と本選挙比率の散布（2022年）および年度外MAE比較|`scripts/plot_results.py`|`python scripts/plot_results.py --input data/processed/elections.csv --metrics data/processed/backtest_metrics.csv`|
 
 ### 付録に収録する19ファイル（全文）
 
@@ -44,7 +44,7 @@
 |17|`scripts/audit_winners.py`|勝者例外の監査（normalize_fec.pyが使う）|97|5,263|
 |18|`scripts/audit_state_residual_composition.py`|符号付き残差の構成効果と標本数の監査|235|8,813|
 |19|`scripts/analyze_probability_calibration.py`|予備選挙得票率の確率出力の校正評価|228|8,959|
-|**合計**||||**3,514**|**150,988**|
+|**合計**|||**3,514**|**150,988**|
 
 （行数・バイト数は実測値。`python scripts/build_code_appendix.py` が毎回再計算する。合計行は19ファイルの和 3,514行 / 150,988バイト、付録テキスト全体はヘッダ行を含めて 3,646行 / 157,026バイト。）
 
