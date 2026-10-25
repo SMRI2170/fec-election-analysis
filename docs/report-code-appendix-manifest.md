@@ -6,37 +6,43 @@
 
 ## 1. レポート表・図 → ソース全文 → 実行コマンド → 出力
 
-|レポート内の表・図|内容|生成スクリプト（全文収録）|実行コマンド|出力|
-|---|---|---|---|---|
-|**表1**|母数の3段階（1,756報告グループ→1,734 50州Voting House→916件）と年度別内訳|`scripts/inspect_selective_cohort.py`（`src/fec_analysis/selective.py`を使用）|307|11,736|
-|**表2**|既存ベースラインの年度外評価（線形回帰MAE・多数派規則accuracy・Logistic accuracy）|`scripts/run_backtests.py`（`scripts/analyze.py`を使用）|81|4,124|
-|**表3**|判定保留15条件のcoverage–risk（accepted/abstained/risk/放棄した正答）|`scripts/evaluate_selective_primary.py`（`src/fec_analysis/selective.py`, `scripts/selective_primary_rule.py`を使用）|307|11,736|
-|**表4**|同数ランダム保留との比較（期待誤答・回避件数・探索的p値）|`scripts/compare_random_abstention.py`|364|13,169|
-|**図1**|予備選挙比率と本選挙比率の散布（2022年）＋線形予測線|`scripts/plot_results.py`|108|4,423|
-|**図2**|年度外MAE比較（2018/2020/2022）|`scripts/plot_results.py`|108|4,423|
-|**図3**|判定率–誤答率図（2018/2020/2022＋同数ランダム保留の期待risk水平線）|`scripts/plot_selective_primary.py`|312|11,338|
-|**図4**|観測誤答数と同数ランダム保留の期待値の比較|`scripts/plot_selective_primary.py`|312|11,338|
+|レポート内の表・図|内容|生成スクリプト（全文収録）|実行コマンド|
+|---|---|---|---|
+|**表1**|母数の3段階（1,756報告グループ→1,734 50州Voting House→916件）と年度別内訳|`scripts/inspect_selective_cohort.py`（`src/fec_analysis/selective.py`を使用）|`python scripts/inspect_selective_cohort.py --output data/processed/selective-cohort-audit.json`|
+|**表2**|既存ベースラインの年度外評価（線形回帰MAE・多数派規則accuracy・Logistic accuracy）|`scripts/run_backtests.py`（`scripts/analyze.py`を使用）|`python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022`|
+|**表3**|州と年度の差異（同一の固定線形回帰，重み付け方の違い）|`scripts/analyze_state_year.py`|`python scripts/analyze_state_year.py --assert-baseline`|
+|**表A1**|判定保留15条件のcoverage–risk（accepted/abstained/risk/放棄した正答）|`scripts/evaluate_selective_primary.py`（`src/fec_analysis/selective.py`, `scripts/selective_primary_rule.py`を使用）|`python scripts/evaluate_selective_primary.py`|
+|**表A2**|同数ランダム保留との比較（期待誤答・回避件数・探索的p値）|`scripts/compare_random_abstention.py`|`python scripts/compare_random_abstention.py`|
+|**表A3**|符号付き残差の構成効果と標本数（州×年度）|`scripts/audit_state_residual_composition.py`|`python scripts/audit_state_residual_composition.py`|
+|**表A4**|予備選挙得票率の確率出力の校正（年度×確率ビン）|`scripts/analyze_probability_calibration.py`|`python scripts/analyze_probability_calibration.py --input data/processed/elections.csv --test-years 2018 2020 2022`|
+|**図1**|判定率–誤答率図（2018/2020/2022＋同数ランダム保留の期待risk水平線）|`scripts/plot_selective_primary.py`|`python scripts/plot_selective_primary.py`|
+|**図2**|観測誤答数と同数ランダム保留の期待値の比較|`scripts/plot_selective_primary.py`|`python scripts/plot_selective_primary.py`|
+|**図3**|予備選挙得票率の確率出力の校正図|`scripts/analyze_probability_calibration.py`|`python scripts/analyze_probability_calibration.py --input data/processed/elections.csv --test-years 2018 2020 2022`|
+|**（本文に不使用）**|予備選挙比率と本選挙比率の散布（2022年）および年度外MAE比較、`scripts/plot_results.py`|`python scripts/plot_results.py --input data/processed/elections.csv --metrics data/processed/backtest_metrics.csv`|
 
-### 付録に収録する13ファイル（全文）
+### 付録に収録する16ファイル（全文）
 
 |#|ファイル|役割|行数|バイト|
 |---:|---|---|---:|---:|
-|1|`scripts/download_fec.py`|公式FECワークブック取得とSHA-256記録|82|3,618|
-|2|`src/fec_analysis/core.py`|正規化レコードの検証と二党得票率|61|2,786|
-|3|`scripts/normalize_fec.py`|保守的な選別（1,756→916）|209|11,786|
+|1|`scripts/download_fec.py`|公式FECワークブックの取得とSHA-256記録|82|3,618|
+|2|`src/fec_analysis/core.py`|正規化レコードの検証と二党得票率の計算|61|2,786|
+|3|`scripts/normalize_fec.py`|保守的な選別（1,756報告グループ→916件）|209|11,786|
 |4|`scripts/analyze.py`|ベースライン評価（回帰・分類・多数派規則）|81|4,124|
-|5|`scripts/run_backtests.py`|年度外バックテスト実行|42|1,576|
-|6|`scripts/verify_reproducibility.py`|再現マニフェスト作成と固定値照合|101|5,458|
+|5|`scripts/run_backtests.py`|年度外バックテストの実行|42|1,576|
+|6|`scripts/verify_reproducibility.py`|再現マニフェストの作成と固定値の照合|101|5,458|
 |7|`src/fec_analysis/selective.py`|評価母数の凍結契約と監査|307|11,736|
 |8|`scripts/inspect_selective_cohort.py`|母数監査CLI|137|4,856|
 |9|`scripts/selective_primary_rule.py`|判定保留の純粋関数（General非参照）|154|6,047|
 |10|`scripts/evaluate_selective_primary.py`|15条件のcoverage–risk評価|418|15,728|
-|11|`scripts/compare_random_abstention.py`|同数ランダム保留との比較|364|13,169|
-|12|`scripts/plot_results.py`|散布図・年度外MAE図|108|4,423|
-|13|`scripts/plot_selective_primary.py`|判定率–誤答率図・ランダム保留比較図|312|11,338|
-|**合計**||||**2,466**|**100,646**|
+|11|`scripts/compare_random_abstention.py`|同数ランダム保留との比較（超幾何分布）|364|13,169|
+|12|`scripts/plot_results.py`|予備選挙比率と本選挙比率の散布図・年度外MAE図|108|4,423|
+|13|`scripts/plot_selective_primary.py`|判定率–誤答率図とランダム保留比較図|312|11,338|
+|14|`scripts/analyze_state_year.py`|州×年度の採用数・年度外残差・重み付け別のMAE|257|13,631|
+|15|`scripts/audit_state_residual_composition.py`|符号付き残差の構成効果と標本数の監査|235|8,813|
+|16|`scripts/analyze_probability_calibration.py`|予備選挙得票率の確率出力の校正評価|228|8,959|
+|**合計**||||**3,096**|**128,048**|
 
-（バイト数は実測値。`python scripts/build_code_appendix.py` が毎回再計算する。）
+（行数・バイト数は実測値。`python scripts/build_code_appendix.py` が毎回再計算する。合計行は16ファイルの和 3,096行 / 128,048バイト、付録テキスト全体はヘッダ行を含めて 3,207行 / 133,164バイト。）
 
 ### 収録**しない**もの（理由）
 
@@ -68,6 +74,9 @@ python scripts/verify_reproducibility.py
 python scripts/inspect_selective_cohort.py --output data/processed/selective-cohort-audit.json
 python scripts/evaluate_selective_primary.py
 python scripts/compare_random_abstention.py
+python scripts/analyze_state_year.py --assert-baseline
+python scripts/audit_state_residual_composition.py
+python scripts/analyze_probability_calibration.py --input data/processed/elections.csv --test-years 2018 2020 2022
 python scripts/plot_results.py --input data/processed/elections.csv --metrics data/processed/backtest_metrics.csv
 python scripts/plot_selective_primary.py
 python -m pytest -q
@@ -83,13 +92,16 @@ python -m pytest -q
 |`scripts/analyze.py`|`1f6e05fb5ba8bed28a7c79945b791399d6583b5e`|
 |`scripts/run_backtests.py`|`1f6e05fb5ba8bed28a7c79945b791399d6583b5e`|
 |`scripts/verify_reproducibility.py`|`65b63d00b37b95dfc0e9609e893b53ca63b42ad7`|
-|`src/fec_analysis/selective.py`|`3ba30f6e181b28c6da8ca9bacf78812fea293db2`|
-|`scripts/inspect_selective_cohort.py`|`3ba30f6e181b28c6da8ca9bacf78812fea293db2`|
-|`scripts/selective_primary_rule.py`|`5772283960e25cda3dc11fed1cd17524e6421adc`|
-|`scripts/evaluate_selective_primary.py`|`b80971589f68e018d40aed9a5a1d96a81e172cfd`|
-|`scripts/compare_random_abstention.py`|`9d996a1ff89aba6c885307ae80e6c97e4f58ff7c`|
+|`src/fec_analysis/selective.py`|`66bb6618053e16e5ce2eb8bf1d858147fbc8c936`|
+|`scripts/inspect_selective_cohort.py`|`66bb6618053e16e5ce2eb8bf1d858147fbc8c936`|
+|`scripts/selective_primary_rule.py`|`50bfbcaf3501ed50469bcb3933f3ae28d26ca1f6`|
+|`scripts/evaluate_selective_primary.py`|`9b1a2416ab75c783b369041a5100db496fe2d5be`|
+|`scripts/compare_random_abstention.py`|`977234db3e8332be2898cb8862ac33b7674aee52`|
 |`scripts/plot_results.py`|`da1c8feaae88454349afa3f6819a317e7039b302`|
-|`scripts/plot_selective_primary.py`|`da7a8d372361790f9b550564a0a60c34054bdd6c`|
+|`scripts/plot_selective_primary.py`|`4970892ff0e2ce2825beb1567dfa401e30ae6c35`|
+|`scripts/analyze_state_year.py`|`3f2d35058ddf12d66487b7fe8de96f83235141af`|
+|`scripts/audit_state_residual_composition.py`|`692da0c8bd0548ddce15102eaac6749b720eb2e2`|
+|`scripts/analyze_probability_calibration.py`|`400b7db7a387e41799b0036f90889abb94abbcd7`|
 
 （`scripts/build_code_appendix.py` が実行時に`git log`から自動取得するため、commitが変われば付録も更新される。）
 
@@ -97,18 +109,20 @@ python -m pytest -q
 
 |項目|値|判定|
 |---|---|---|
-|付録ソース全文|2,466行 / 100,646バイト|—|
+|付録ソース本体（16ファイルの行数・バイトの和）|3,096行 / 128,048バイト|—|
+|付録テキスト全体（ヘッダ行を含む）|3,207行 / 133,164バイト|—|
 |テンプレート原本|84,056バイト|—|
-|付録に含める画像（図1・図3）|PNG 各60〜90KB程度|本文2〜4頁に収めるなら、画像は**本文の図として**2枚まで。付録には**画像を再掲しない**|
-|**想定DOCX総サイズ**|**約350〜450KB**|**500KB以下推奨を満たす**（1.5MB以上減点には届かない）|
-|付録のページ数（推定）|**約50〜55頁**（8.5pt・1段組・1行≈48行/頁）|**本文の頁数制限（2〜4頁、最大8頁、付録別）には含まれない**|
+|本文の図（図1・図2）|PNG 各60〜90KB程度|本文4頁に収めるため**本文の図は2枚**。図3（校正図）は付録Cに置き本文には載せない|
+|付録の図（図3）|PNG 1枚|付録Cに再掲する（本文には再掲しない）|
+|**想定DOCX総サイズ**|**約360〜470KB**|**500KB以下推奨を満たす**（1.5MB以上減点には届かない。実測はprivate原稿で管理する）|
+|付録のページ数（推定）|**約47頁**（付録テキスト3,207行・8.5pt・1段組。13ファイル・2,466行で実測36頁、差分741行で約11頁増の見込み。付録C/Dの表・図を含む確定値はprivate原稿で実測する）|**本文の頁数制限（2〜4頁、最大8頁、付録別）には含まれない**|
 
 ページ数は**本文と別カウント**する（#88で実際にレンダリングして確定させる）。
 
 ## 4. 確認事項
 
 - [x] 表・図 → ソース → コマンド → 出力が漏なく紐付いている（上記1）。
-- [x] 13ファイルの全文を収録する（抜粋なし）。
+- [x] 16ファイルの全文を収録する（抜粋なし）。
 - [x] 各ファイルにSHA-256とcommit SHAを付録見出しに付す。
 - [x] Python版・pip依存・FEC出典SHA・seed・実行順・期待出力をmanifest化。
 - [x] 容量とページ影響を事前に算定。
@@ -116,6 +130,6 @@ python -m pytest -q
 
 ## 5. 未達・要判断
 
-- [ ] **本文の表・図の最終選択**は[#67](https://github.com/SMRI2170/fec-election-analysis/issues/67)で確定する。表4を図表枠削減のために表3へ列統合する案もある。
+- [x] **本文の表・図の最終選択**は確定済み（[#67](https://github.com/SMRI2170/fec-election-analysis/issues/67)、[#86](https://github.com/SMRI2170/fec-election-analysis/issues/86)）。本文は図1・図2と表1〜表3、付録は表A1〜A4と図3で確定し、番号の台帳は `docs/report-final-figure-selection.md` に記録する。
 - [ ] **本人と生成AIの成果区分**（[#89](https://github.com/SMRI2170/fec-election-analysis/issues/89)）は本Issueの対象外。
 - [ ] 付録を**1段組**で組むには、テンプレートの2セクション構成に1段セクションを追加する必要がある（#84で確定）。
