@@ -2,13 +2,13 @@
 
 **Issue:** [#53](https://github.com/SMRI2170/fec-election-analysis/issues/53)（親 [#5](https://github.com/SMRI2170/fec-election-analysis/issues/5)）　**次工程:** [#54](https://github.com/SMRI2170/fec-election-analysis/issues/54)
 
-**この文書は、2024年の 任何人も見ないうちに作成した事前登録である。** 計画固定日 2026-10-26。
+**この文書は、2024年の 任何人も見ないうちに作成した事前登録である。** 計画固定日 2026-10-25。
 
 ## 1. なぜ凍結が必要か
 
 2016～2022年を通して探索を重ねた結果、モデルと正規化条件を度々改訂してきた。したがって**2022年は独立した確認用の年としては呼べない**。2024年のFEC本選挙結果を**確認してから**モデルや採否規則を調整することは、方法論として許されない。
 
-本Issueの作業は**評価計画の固定だけ**である。**2024年の本選挙得票・勝敗・誤差・地区別結果は、この文書の確定前に一切見ていない。** 実際、**2024年の公式資料は2026-10-26時点で未公開**であり、存在しない結果を見ることもできなかった。
+本Issueの作業は**評価計画の固定だけ**である。**2024年の本選挙得票・勝敗・誤差・地区別結果は、この文書の確定前に一切見ていない。** 実際、**2024年の公式資料は2026-10-25時点で未公開**であり、存在しない結果を見ることもできなかった。
 
 **未公開であることはむしろ最強の事前登録である。** 結果がまだ存在しない段階で評価設計を固定したために、計画が結果に影響された可能性が構造的に排除される。
 
@@ -16,7 +16,7 @@
 
 #53の指示どおり、**資料の所在と版だけ**を確認し、**党別票・勝敗・精度・地区別結果は見ていない**。
 
-| 確認項目 | 2026-10-26 の結果 |
+| 確認項目 | 2026-10-25 の結果 |
 | --- | --- |
 | FECの選挙結果カタログページ | https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/ を取得（37,667バイト）。双年刊「Federal Elections」の版のリンクは**2022年が最新**で、2024年の記載はない |
 | 2024年版のページ | `…/election-results-and-voting-information/federal-elections-2024/` は **HTTP 404**。別slug（`election-and-voting-information` 配下、`federal-elections-2024-results`、`federalelections2024`）もすべて **HTTP 404** |
@@ -155,7 +155,7 @@ python scripts/evaluate_frozen_2024.py --assert-frozen-config
 ```json
 {
   "protocol_version": "1.0",
-  "frozen_at": "2026-10-26",
+  "frozen_at": "2026-10-25",
   "issue": "#53",
   "parent_issue": "#5",
   "purpose": "Pre-registration of the 2024 out-of-year evaluation. The plan is fixed before the 2024 source is even published, so that no model, rule or metric can be chosen with knowledge of the 2024 outcome.",
@@ -163,7 +163,7 @@ python scripts/evaluate_frozen_2024.py --assert-frozen-config
     "confirmation_state": "the 2024 year is the first evaluation year that was never inspected during the 2016-2022 exploration",
     "no_2024_result_viewed": true,
     "source_published_at_freeze_time": false,
-    "source_availability_check": "the FEC catalogue page https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/ lists the biennial Federal Elections editions only up to 2022 on 2026-10-26, and https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2024/ returns HTTP 404",
+    "source_availability_check": "the FEC catalogue page https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/ lists the biennial Federal Elections editions only up to 2022 on 2026-10-25, and https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2024/ returns HTTP 404",
     "consequence": "if the publication is still unavailable when the evaluation is attempted, the evaluation ends with a documented reason and no value is produced"
   },
   "data": {
@@ -347,7 +347,7 @@ python scripts/evaluate_frozen_2024.py --assert-frozen-config
 
 1. **2024年の出典が未公開**であり、本計画は**実行可能性が未確認**である。#54の着手時に未公開なら、**理由を記録して終了し、値を作らない**。
 2. **出典の仕様（シート構成）が未確認**である。2022年版との差異（シート名・列名・境界ラベル）は未検証であり、取得時に記録する。
-3. **2024年の母集団規模が未知**である。区割変更・特别選挙・無対立の規模が2026-10-26の時点では分からない。
+3. **2024年の母集団規模が未知**である。区割変更・特别選挙・無対立の規模が2026-10-25の時点では分からない。
 4. **除外規則は2016～2022年で開発した**ものであり、2024年の制度差に完全には対応していない可能性が残る（固定後に変更はしない）。
 5. **州単位ブートストラップは探索的**である。
 6. **「2024年で確認できる」ことと「全米で正しい」ことは別**である。評価対象は選択された選挙区集合であり、母集団は非無作為である。

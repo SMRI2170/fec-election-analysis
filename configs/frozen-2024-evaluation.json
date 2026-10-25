@@ -1,6 +1,6 @@
 {
   "protocol_version": "1.0",
-  "frozen_at": "2026-10-26",
+  "frozen_at": "2026-10-25",
   "issue": "#53",
   "parent_issue": "#5",
   "purpose": "Pre-registration of the 2024 out-of-year evaluation. The plan is fixed before the 2024 source is even published, so that no model, rule or metric can be chosen with knowledge of the 2024 outcome.",
@@ -8,7 +8,7 @@
     "confirmation_state": "the 2024 year is the first evaluation year that was never inspected during the 2016-2022 exploration",
     "no_2024_result_viewed": true,
     "source_published_at_freeze_time": false,
-    "source_availability_check": "the FEC catalogue page https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/ lists the biennial Federal Elections editions only up to 2022 on 2026-10-26, and https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2024/ returns HTTP 404",
+    "source_availability_check": "the FEC catalogue page https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/ lists the biennial Federal Elections editions only up to 2022 on 2026-10-25, and https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2024/ returns HTTP 404",
     "consequence": "if the publication is still unavailable when the evaluation is attempted, the evaluation ends with a documented reason and no value is produced"
   },
   "data": {
