@@ -147,6 +147,11 @@ def state_bootstrap_interval(
 
 def load_frozen_cohort(path: Path) -> pd.DataFrame:
     """Load the frozen 916-record cohort of 2016-2022."""
+    if not path.exists():
+        raise EvaluationUnavailable(
+            "there is no normalised cohort file; run scripts/normalize_fec.py "
+            "for 2016, 2018, 2020 and 2022 first"
+        )
     raw = pd.read_csv(path, dtype={"state": str, "district": str})
     frame = prepare_elections(raw)
     frame = frame[frame["chamber"].eq("House")].copy()
