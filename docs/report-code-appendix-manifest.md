@@ -39,14 +39,14 @@
 |12|`scripts/plot_results.py`|予備選挙比率と本選挙比率の散布図・年度外MAE図|108|4,423|
 |13|`scripts/plot_selective_primary.py`|判定率–誤答率図とランダム保留比較図|312|11,338|
 |14|`scripts/analyze_state_year.py`|州×年度の採用数・年度外残差・重み付け別のMAE|257|13,631|
-|15|`scripts/analyze_error_structure.py`|誤答構造の分析（analyze_state_year.pyが使うheldoutの出所）|140|7,950|
+|15|`scripts/analyze_error_structure.py`|誤答構造の分析（analyze_state_year.pyが依存する補助スクリプト）|140|7,950|
 |16|`scripts/source_reconcile.py`|FEC党別小計と候補者票の突合（normalize_fec.pyが使う）|181|9,727|
 |17|`scripts/audit_winners.py`|勝者例外の監査（normalize_fec.pyが使う）|97|5,263|
 |18|`scripts/audit_state_residual_composition.py`|符号付き残差の構成効果と標本数の監査|235|8,813|
 |19|`scripts/analyze_probability_calibration.py`|予備選挙得票率の確率出力の校正評価|228|8,959|
 |**合計**||||**3,514**|**150,988**|
 
-（行数・バイト数は実測値。`python scripts/build_code_appendix.py` が毎回再計算する。合計行は19ファイルの和 3,514行 / 150,988バイト、付録テキスト全体はヘッダ行を含めて 3,646行 / 157,015バイト。）
+（行数・バイト数は実測値。`python scripts/build_code_appendix.py` が毎回再計算する。合計行は19ファイルの和 3,514行 / 150,988バイト、付録テキスト全体はヘッダ行を含めて 3,646行 / 157,026バイト。）
 
 ### 収録**しない**もの（理由）
 
@@ -117,7 +117,7 @@ python -m pytest -q
 |項目|値|判定|
 |---|---|---|
 |付録ソース本体（19ファイルの行数・バイトの和）|3,514行 / 150,988バイト|—|
-|付録テキスト全体（ヘッダ行を含む）|3,646行 / 157,015バイト|—|
+|付録テキスト全体（ヘッダ行を含む）|3,646行 / 157,026バイト|—|
 |テンプレート原本|84,056バイト|—|
 |本文の図（図1・図2）|PNG 各60〜90KB程度|本文は5頁で収まるため**本文の図は2枚**。図3（校正図）は付録Dに置き本文には載せない|
 |付録の図（図3）|PNG 1枚|付録Dに再掲する（本文には再掲しない）|

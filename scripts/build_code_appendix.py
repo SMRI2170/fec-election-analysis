@@ -120,7 +120,7 @@ APPENDIX_FILES: tuple[AppendixFile, ...] = (
     ),
     AppendixFile(
         "scripts/analyze_error_structure.py",
-        "誤答構造の分析（analyze_state_year.pyが使うheldoutの出所）",
+        "誤答構造の分析（analyze_state_year.pyが依存する補助スクリプト）",
         "data/processed/error_structure_summary.json",
     ),
     AppendixFile(
