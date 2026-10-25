@@ -1,0 +1,52 @@
+name: FEC selected House state-year analysis
+
+on:
+  pull_request:
+    paths:
+      - scripts/analyze_state_year.py
+      - tests/test_state_year.py
+      - docs/state-year-findings.md
+      - .github/workflows/state-year-analysis.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  state-year-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install project requirements
+        run: python -m pip install -r requirements.txt
+      - name: Synthetic tests of coverage, sparse states and time leakage
+        run: python -m pytest -q tests/test_state_year.py
+      - name: Download official FEC 2016–2022 House Excel sources
+        run: python scripts/download_fec.py --years 2016 2018 2020 2022
+      - name: Normalize fixed 916 voting-House contests
+        run: python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy attribute
+      - name: Verify frozen cohort, baseline metrics and source hashes
+        run: |
+          python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022
+          python scripts/verify_reproducibility.py
+      - name: Generate real state/year counts, errors and two figures
+        run: python scripts/analyze_state_year.py --assert-baseline
+      - name: Save short-lived numerical findings and figures
+        uses: actions/upload-artifact@v4
+        with:
+          name: fec-state-year-analysis
+          path: |
+            data/processed/state_year/state_year_coverage.csv
+            data/processed/state_year/state_year_exclusion_reasons.csv
+            data/processed/state_year/state_year_error_metrics.csv
+            data/processed/state_year/state_year_summary.json
+            data/processed/state_year/fig_state_coverage.png
+            data/processed/state_year/fig_state_coverage.svg
+            data/processed/state_year/fig_state_year_bias.png
+            data/processed/state_year/fig_state_year_bias.svg
+          retention-days: 7
