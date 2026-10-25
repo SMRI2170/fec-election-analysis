@@ -181,15 +181,37 @@ def frozen_catalogue_years(path: Path | None = None) -> list[int]:
     return sorted(int(item["year"]) for item in catalog["publications"])
 
 
+def is_shallow_repository(repo: Path | None = None) -> bool:
+    """Tell whether the local clone has only a shallow history.
+
+    A shallow clone cannot contain the freeze commit, so the existence check
+    would fail for a reason that has nothing to do with the freeze. The
+    dedicated workflow checks out the full history and therefore verifies the
+    commit.
+    """
+    location = Path(repo) if repo is not None else REPO
+    result = subprocess.run(
+        ["git", "rev-parse", "--is-shallow-repository"],
+        cwd=location,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.strip() == "true"
+
+
 def check_freeze_commit(sha: str, repo: Path | None = None) -> str:
     """Check that the recorded freeze commit exists and is an ancestor.
 
     The freeze commit is the commit that introduced the frozen configuration.
     It has to be part of the history, otherwise the note points at nothing.
+    A shallow clone cannot answer the question, so the check is skipped there
+    and reported as skipped.
     """
     if not sha or sha.upper().startswith("PENDING"):
         return "PENDING"
     location = Path(repo) if repo is not None else REPO
+    if is_shallow_repository(location):
+        return "skipped: the local clone has a shallow history"
     exists = subprocess.run(
         ["git", "cat-file", "-e", f"{sha}^{{commit}}"],
         cwd=location,
@@ -229,7 +251,8 @@ def run_checks() -> dict:
     return {
         "protocol_version": plan.protocol_version,
         "frozen_at": plan.frozen_at,
-        "freeze_commit_sha": sha,
+        "freeze_commit_sha": plan.freeze_commit_sha,
+        "freeze_commit_check": sha,
         "evaluation_year": plan.evaluation_year,
         "training_years": list(plan.training_years),
         "models": list(plan.models),

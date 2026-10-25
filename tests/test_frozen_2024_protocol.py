@@ -29,6 +29,7 @@ from frozen_2024_protocol import (  # noqa: E402
     compare_config_and_note,
     extract_note_block,
     frozen_catalogue_years,
+    is_shallow_repository,
     load_config,
     run_checks,
 )
@@ -203,8 +204,19 @@ def test_the_checks_of_the_freeze_pass(config: dict) -> None:
     assert result["training_years"] == [2016, 2018, 2020, 2022]
     assert result["source_published_at_freeze_time"] is False
     assert 2024 not in result["frozen_catalogue_years"]
+    # The freeze commit is verified when the history is complete. A shallow
+    # clone cannot answer the question, and the dedicated workflow checks out
+    # the full history.
+    if is_shallow_repository():
+        assert result["freeze_commit_check"].startswith("skipped")
+    else:
+        assert result["freeze_commit_check"] == result["freeze_commit_sha"]
 
 
+@pytest.mark.skipif(
+    is_shallow_repository(),
+    reason="a shallow clone cannot contain the freeze commit",
+)
 def test_a_missing_freeze_commit_is_refused() -> None:
     with pytest.raises(ValueError):
         check_freeze_commit("0" * 40)
