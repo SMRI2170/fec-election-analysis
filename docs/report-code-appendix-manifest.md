@@ -14,7 +14,8 @@
 |**表A1**|判定保留15条件のcoverage–risk（accepted/abstained/risk/放棄した正答）|`scripts/evaluate_selective_primary.py`（`src/fec_analysis/selective.py`, `scripts/selective_primary_rule.py`を使用）|`python scripts/evaluate_selective_primary.py`|
 |**表A2**|同数ランダム保留との比較（期待誤答・回避件数・探索的p値）|`scripts/compare_random_abstention.py`|`python scripts/compare_random_abstention.py`|
 |**表A3**|符号付き残差の構成効果と標本数（州×年度）|`scripts/audit_state_residual_composition.py`|`python scripts/audit_state_residual_composition.py`|
-|**表A4**|予備選挙得票率の確率出力の校正（年度×確率ビン）|`scripts/analyze_probability_calibration.py`|`python scripts/analyze_probability_calibration.py --input data/processed/elections.csv --test-years 2018 2020 2022`|
+|**表A4**|予備選挙得票率の確率出力の校正指標（検証年別）|`scripts/analyze_probability_calibration.py`|`python scripts/analyze_probability_calibration.py --input data/processed/elections.csv --test-years 2018 2020 2022`|
+|**表A5**|確率ビンごとの予測平均確率と観測率|`scripts/analyze_probability_calibration.py`|`python scripts/analyze_probability_calibration.py --input data/processed/elections.csv --test-years 2018 2020 2022`|
 |**図1**|判定率–誤答率図（2018/2020/2022＋同数ランダム保留の期待risk水平線）|`scripts/plot_selective_primary.py`|`python scripts/plot_selective_primary.py`|
 |**図2**|観測誤答数と同数ランダム保留の期待値の比較|`scripts/plot_selective_primary.py`|`python scripts/plot_selective_primary.py`|
 |**図3**|予備選挙得票率の確率出力の校正図|`scripts/analyze_probability_calibration.py`|`python scripts/analyze_probability_calibration.py --input data/processed/elections.csv --test-years 2018 2020 2022`|
@@ -112,12 +113,12 @@ python -m pytest -q
 |付録ソース本体（16ファイルの行数・バイトの和）|3,096行 / 128,048バイト|—|
 |付録テキスト全体（ヘッダ行を含む）|3,207行 / 133,164バイト|—|
 |テンプレート原本|84,056バイト|—|
-|本文の図（図1・図2）|PNG 各60〜90KB程度|本文4頁に収めるため**本文の図は2枚**。図3（校正図）は付録Cに置き本文には載せない|
-|付録の図（図3）|PNG 1枚|付録Cに再掲する（本文には再掲しない）|
+|本文の図（図1・図2）|PNG 各60〜90KB程度|本文は5頁で収まるため**本文の図は2枚**。図3（校正図）は付録Dに置き本文には載せない|
+|付録の図（図3）|PNG 1枚|付録Dに再掲する（本文には再掲しない）|
 |**想定DOCX総サイズ**|**約360〜470KB**|**500KB以下推奨を満たす**（1.5MB以上減点には届かない。実測はprivate原稿で管理する）|
-|付録のページ数（推定）|**約47頁**（付録テキスト3,207行・8.5pt・1段組。13ファイル・2,466行で実測36頁、差分741行で約11頁増の見込み。付録C/Dの表・図を含む確定値はprivate原稿で実測する）|**本文の頁数制限（2〜4頁、最大8頁、付録別）には含まれない**|
+|付録のページ数|**49頁**（実測。付録A〜E：15条件表とランダム比較表，出典URLとSHA-256，符号付き残差の構成効果（表A3），確率出力の校正（表A4・表A5・図3），および16ファイル3,207行のPythonソース全文）|**本文の頁数制限（2〜4頁、最大8頁、付録別）には含まれない**|
 
-ページ数は**本文と別カウント**する（#88で実際にレンダリングして確定させる）。
+ページ数は**本文と別カウント**する（本文5頁・付録49頁・合計54頁。実測値）。
 
 ## 4. 確認事項
 
