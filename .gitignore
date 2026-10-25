@@ -16,3 +16,5 @@ report/*.pdf
 .env
 .env.*
 .DS_Store
+# macOS AppleDouble metadata created on non-native filesystems
+._*

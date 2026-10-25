@@ -38,6 +38,7 @@
 - [#50](https://github.com/SMRI2170/fec-election-analysis/issues/50)親: [#59](https://github.com/SMRI2170/fec-election-analysis/issues/59)候補者数・HHI等の原票特徴抽出 → [#60](https://github.com/SMRI2170/fec-election-analysis/issues/60)アブレーション比較。
 - [#51](https://github.com/SMRI2170/fec-election-analysis/issues/51)親: [#61](https://github.com/SMRI2170/fec-election-analysis/issues/61)非線形モデル固定 → [#62](https://github.com/SMRI2170/fec-election-analysis/issues/62)比較実行。
 - [#52](https://github.com/SMRI2170/fec-election-analysis/issues/52)親: [#63](https://github.com/SMRI2170/fec-election-analysis/issues/63)州構成を固定した残差分析（先行#57）、[#64](https://github.com/SMRI2170/fec-election-analysis/issues/64)Brier/校正。
+- [#76](https://github.com/SMRI2170/fec-election-analysis/issues/76)親: [#78](https://github.com/SMRI2170/fec-election-analysis/issues/78)評価母数と基準24誤答の凍結 → [#79](https://github.com/SMRI2170/fec-election-analysis/issues/79)General非参照の判定保留純粋関数 → [#80](https://github.com/SMRI2170/fec-election-analysis/issues/80)3年×5閾値15条件 → [#81](https://github.com/SMRI2170/fec-election-analysis/issues/81)同数ランダム保留比較 → [#82](https://github.com/SMRI2170/fec-election-analysis/issues/82)図表と研究解釈。**#80/#81/#82は#78/#79のPRに積み重なるため、マージ承認後にmainへ取り込む。**
 
 ## P2：発展研究（未完了でもレポート提出を止めない）
 

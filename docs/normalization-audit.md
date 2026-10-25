@@ -8,12 +8,12 @@
 
 ## 対象と未対応範囲
 
-確認した2016年・2018年・2020年・2022年のFEC公式Excelの \`US House Results by State\` シートのみを入力とする。2010〜2014年の旧XLSは**未対応**。モデル性能を優先して都合よくサンプルを選ぶことは避け、全ての除外理由を追跡できるようにする。
+確認した2016年・2018年・2020年・2022年のFEC公式Excelの `US House Results by State` シートのみを入力とする。2010〜2014年の旧XLSは**未対応**。モデル性能を優先して都合よくサンプルを選ぶことは避け、全ての除外理由を追跡できるようにする。
 
 - 候補者行をFEC ID（Hから始まる識別子）で特定する。
-- \`Party Votes:\` はPrimaryの小計行であり、候補者票と重複合計しない。小計と候補者票の和が一致しない場合は除外する。
-- \`District Votes:\` は小計行であり、候補者ではない。
-- \`Unopposed\`、Primary票欠損、二大政党候補の片側欠損、0票は補完せず除外。
+- `Party Votes:` はPrimaryの小計行であり、候補者票と重複合計しない。小計と候補者票の和が一致しない場合は除外する。
+- `District Votes:` は小計行であり、候補者ではない。
+- `Unopposed`、Primary票欠損、二大政党候補の片側欠損、0票は補完せず除外。
 - 現段階で AK, CA, CT, LA, NY, WA は選挙制度や複数政党記載の個別確認が必要なため保守的に除外する（**州全体の善し悪しの評価ではない**）。
 - General runoff / 順位選択投票の結果が含まれるイベントは別途分析が必要なため除外。
 - PrimaryとGeneralの二大政党票から、独自の比率を定義する。FEC原表の得票率とは分母が異なる。
@@ -21,16 +21,16 @@
 
 ## 実行
 
-\`\`\`bash
+```bash
 python scripts/download_fec.py --years 2016 2018 2020 2022
 python scripts/normalize_fec.py --years 2016 2018 2020 2022
 python scripts/analyze.py --input data/processed/elections.csv --test-year 2022
-\`\`\`
+```
 
 成果物（Git管理対象外）:
-- \`data/processed/elections.csv\` — 比較可能と判定した下院区×年レコード
-- \`data/processed/exclusions.csv\` — 解析対象から外れた区と理由
-- \`data/processed/normalization-summary.json\` — 年別件数と除外理由別内訳
+- `data/processed/elections.csv` — 比較可能と判定した下院区×年レコード
+- `data/processed/exclusions.csv` — 解析対象から外れた区と理由
+- `data/processed/normalization-summary.json` — 年別件数と除外理由別内訳
 
 ## 確認が必要な論点
 
@@ -63,7 +63,7 @@ python scripts/analyze.py --input data/processed/elections.csv --test-year 2022
 
 [4年度の実データ監査・正規化が成功したActionsログ](https://github.com/SMRI2170/fec-election-analysis/actions/runs/38687141206)。
 
-2016年には \`D\`（district）、\`FEC ID#\`（candidate ID）が使われ、2018年には \`DISTRICT\` と \`FEC ID#\` が使われる。2020・2022年には \`DISTRICT\` と \`FEC ID\` が使われる。**一次データの実ヘッダーを確認したうえで、これらの列名のみ互換化した。**
+2016年には `D`（district）、`FEC ID#`（candidate ID）が使われ、2018年には `DISTRICT` と `FEC ID#` が使われる。2020・2022年には `DISTRICT` と `FEC ID` が使われる。**一次データの実ヘッダーを確認したうえで、これらの列名のみ互換化した。**
 
 | 年度 | 保守的な基準を満たすレコード | 除外した選挙区 | Primary小計不整合 |
 |---|---:|---:|---:|

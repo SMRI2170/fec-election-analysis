@@ -66,11 +66,11 @@
 
 ### 実行方法
 
-\`\`\`bash
+```bash
 python scripts/download_fec.py --years 2016 2018 2020 2022
 python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy attribute
 python scripts/verify_reproducibility.py
 python scripts/analyze_error_structure.py --assert-baseline --iterations 4000
-\`\`\`
+```
 
-出力：\`data/processed/error-structure-summary.json\`（統計集計、固定区間、州再標本化）、\`data/processed/error-structure-districts.csv\`（各テスト年・区の予測、誤差、診断指標）。両ファイルはGitHub Actionsの3日間Artifactとして保持。**入力のFEC 4年度Excelや予測コホート916件そのものをGitへ追加しない。**
+出力：`data/processed/error-structure-summary.json`（統計集計、固定区間、州再標本化）、`data/processed/error-structure-districts.csv`（各テスト年・区の予測、誤差、診断指標）。両ファイルはGitHub Actionsの3日間Artifactとして保持。**入力のFEC 4年度Excelや予測コホート916件そのものをGitへ追加しない。**
