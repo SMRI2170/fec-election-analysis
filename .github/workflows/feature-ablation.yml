@@ -1,0 +1,50 @@
+name: FEC Primary feature ablation
+
+on:
+  pull_request:
+    paths:
+      - scripts/evaluate_feature_ablation.py
+      - scripts/build_primary_features.py
+      - tests/test_feature_ablation.py
+      - docs/primary-feature-ablation.md
+      - .github/workflows/feature-ablation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  feature-ablation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install project requirements
+        run: python -m pip install -r requirements.txt
+      - name: Synthetic tests of the ablation design and the leak checks
+        run: python -m pytest -q tests/test_feature_ablation.py
+      - name: Download official FEC 2016-2022 House Excel sources
+        run: python scripts/download_fec.py --years 2016 2018 2020 2022
+      - name: Normalize fixed 916 voting-House contests
+        run: python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy attribute
+      - name: Verify frozen cohort, baseline metrics and source hashes
+        run: |
+          python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022
+          python scripts/verify_reproducibility.py
+      - name: Build the Primary candidate features from the official workbooks
+        run: python scripts/build_primary_features.py
+      - name: Run the feature ablation and check the frozen baseline
+        run: python scripts/evaluate_feature_ablation.py --assert-baseline
+      - name: Save short-lived per-district tables and aggregates
+        uses: actions/upload-artifact@v4
+        with:
+          name: fec-feature-ablation
+          path: |
+            data/processed/feature_ablation/feature_ablation.csv
+            data/processed/feature_ablation/feature_ablation_paired.csv
+            data/processed/feature_ablation/feature_ablation.json
+          retention-days: 7
