@@ -4,18 +4,18 @@
 
 ## 再現コマンド
 
-\`\`\`bash
+```bash
 python scripts/download_fec.py --years 2016 2018 2020 2022
 python scripts/normalize_fec.py --years 2016 2018 2020 2022
 python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022
 python scripts/plot_results.py --input data/processed/elections.csv --metrics data/processed/backtest_metrics.csv
-\`\`\`
+```
 
 実行後の図（リポジトリの追跡対象外）:
-- \`outputs/figures/primary_vs_general_2022.png\`: 2022年の予備/本選挙の二大政党得票比率散布図。点は**選別した下院レコード**であり全国集計・国民支持率ではない。線形回帰線は2016〜2020年のレコードで学習したもの。
-- \`outputs/figures/chronological_share_mae.png\`: 2018・2020・2022年を年度外テストとしたMAE比較。**小さいほど予測誤差が小さい**。
+- `outputs/figures/primary_vs_general_2022.png`: 2022年の予備/本選挙の二大政党得票比率散布図。点は**選別した下院レコード**であり全国集計・国民支持率ではない。線形回帰線は2016〜2020年のレコードで学習したもの。
+- `outputs/figures/chronological_share_mae.png`: 2018・2020・2022年を年度外テストとしたMAE比較。**小さいほど予測誤差が小さい**。
 
-GitHub Actionsの\`FEC source audit\`が公式Excelから毎回生成し、PNGとメトリクスを短期間のArtifactとして公開する。
+GitHub Actionsの`FEC source audit`が公式Excelから毎回生成し、PNGとメトリクスを短期間のArtifactとして公開する。
 
 ## レポートへの組込み
 

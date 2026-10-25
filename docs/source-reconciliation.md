@@ -7,26 +7,26 @@
 # FEC元Excelとの二重照合（2026-10-15）
 
 ## 検証データと目的
-2016・2018・2020・2022年のFEC連邦選挙結果Excel（下院の\`US House Results by State\`）を、\`scripts/normalize_fec.py\`で保守的に抽出した**740レコード**と直接突合した。
+2016・2018・2020・2022年のFEC連邦選挙結果Excel（下院の`US House Results by State`）を、`scripts/normalize_fec.py`で保守的に抽出した**740レコード**と直接突合した。
 
 **照合は、分析対象が正しく数値として集計されているかの検査である。分析対象の選定・投票率の比較可能性・因果関係・全国代表性を保証するものではない。**
 
 ## 独立した照合の手順
 
-1. 公式Excelの候補者行を \`STATE ABBREVIATION\` × \`DISTRICT\` × \`FEC ID\` × \`PARTY\` から検索。
+1. 公式Excelの候補者行を `STATE ABBREVIATION` × `DISTRICT` × `FEC ID` × `PARTY` から検索。
 2. 各政党（R/D）のPrimary・Generalの候補者票合計を、正規化済みの4得票列と一致照合。
-3. FECが示す \`District Votes:\` のGeneral合計を、**候補者IDのない少数政党候補・Scattered書き込み票を含む全政党候補行**から算出した総票数と一致照合。
+3. FECが示す `District Votes:` のGeneral合計を、**候補者IDのない少数政党候補・Scattered書き込み票を含む全政党候補行**から算出した総票数と一致照合。
 4. 予測誤差が大きい2022年の上位5選挙区、および既知の2020年AL-01について、候補者名・FEC ID・政党・票数・脚注を別ファイルに保存。
-5. 除外されている\`primary-subtotal-mismatch\`の事例について、候補者票合計と政党別小計の差を保存。未確認の原因を推測で修正しない。
+5. 除外されている`primary-subtotal-mismatch`の事例について、候補者票合計と政党別小計の差を保存。未確認の原因を推測で修正しない。
 
 再実行:
 
-\`\`\`bash
+```bash
 python scripts/download_fec.py --years 2016 2018 2020 2022
 python scripts/normalize_fec.py --years 2016 2018 2020 2022
 python scripts/error_cases.py --input data/processed/elections.csv --test-year 2022
 python scripts/source_reconcile.py
-\`\`\`
+```
 
 ## 公式データでの実測結果
 
@@ -52,8 +52,8 @@ python scripts/source_reconcile.py
 ## 再現可能な成果物
 
 GitHub ActionsのArtifact（保存期間3日）:
-- \`data/processed/source-reconciliation.csv\`: 740件すべての候補者票・選挙区総票の照合ステータス
-- \`data/processed/case-evidence.json\`: 2022年誤差上位5件・2020年AL-01の候補者行、除外されたPrimary小計不整合の例
+- `data/processed/source-reconciliation.csv`: 740件すべての候補者票・選挙区総票の照合ステータス
+- `data/processed/case-evidence.json`: 2022年誤差上位5件・2020年AL-01の候補者行、除外されたPrimary小計不整合の例
 
 生のExcelをGitに登録せず、取得URLとファイルSHA256は別の台帳に残す。
 
