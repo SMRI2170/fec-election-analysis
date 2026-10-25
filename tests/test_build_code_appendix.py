@@ -1,6 +1,7 @@
 """Unit tests for the code-appendix builder (Issue #87)."""
 from __future__ import annotations
 
+import ast
 import importlib.util
 import sys
 from pathlib import Path
@@ -36,11 +37,61 @@ def test_every_listed_file_exists():
 def test_the_appendix_covers_the_pipeline_in_reproduction_order():
     paths = [item.path for item in builder.APPENDIX_FILES]
     assert paths[0] == "scripts/download_fec.py"
-    assert paths[-1] == "scripts/plot_selective_primary.py"
+    assert paths[-1] == "scripts/analyze_probability_calibration.py"
     assert "scripts/normalize_fec.py" in paths
     assert "scripts/evaluate_selective_primary.py" in paths
     assert "scripts/compare_random_abstention.py" in paths
     assert "scripts/selective_primary_rule.py" in paths
+    # The state/year analysis (#57) and the two audits that the report cites
+    # (#63, #64) must ship with the source appendix as well.
+    assert "scripts/analyze_state_year.py" in paths
+    assert "scripts/audit_state_residual_composition.py" in paths
+    assert "scripts/analyze_probability_calibration.py" in paths
+    # Reproduction order: the state/year pipeline runs before the audits
+    # that consume its output.
+    assert paths.index("scripts/analyze_state_year.py") < paths.index(
+        "scripts/audit_state_residual_composition.py"
+    )
+
+
+def test_the_appendix_is_closed_under_first_party_imports():
+    """Every first-party module an appendix file imports must also be listed.
+
+    The appendix claims to carry the *complete* source that reproduces the
+    reported numbers. That claim only holds if the import graph is closed:
+    a listed script that imports a helper which is not listed cannot be run
+    from the appendix alone.
+    """
+    listed = {Path(item.path).stem for item in builder.APPENDIX_FILES}
+    listed.add("fec_analysis")
+    third_party = {
+        "pandas",
+        "numpy",
+        "sklearn",
+        "matplotlib",
+        "openpyxl",
+        "xlrd",
+        "pytest",
+    }
+    missing: dict[str, set[str]] = {}
+    for item in builder.APPENDIX_FILES:
+        tree = ast.parse(item.absolute.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            modules: list[str] = []
+            if isinstance(node, ast.Import):
+                modules = [alias.name for alias in node.names]
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                modules = [node.module]
+            for module in modules:
+                top = module.split(".")[0]
+                if top in third_party or top in sys.stdlib_module_names:
+                    continue
+                if top not in listed:
+                    missing.setdefault(item.path, set()).add(module)
+    assert not missing, (
+        "appendix files import first-party modules that are not in the "
+        f"appendix: {sorted(missing.items())}"
+    )
 
 
 def test_collect_reports_checksums_and_lines():

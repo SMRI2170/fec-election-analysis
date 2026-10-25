@@ -89,3 +89,42 @@ def test_no_unexpected_ascii_inside_japanese(path: Path) -> None:
         f"{path.relative_to(REPO)} contains unexpected Latin words inside "
         f"Japanese text: {sorted(set(unexpected))}"
     )
+
+
+def _table_blocks(lines: list[str]) -> list[list[str]]:
+    """Return the rows of every Markdown table in ``lines``."""
+    blocks: list[list[str]] = []
+    current: list[str] = []
+    for line in lines:
+        if line.startswith("|"):
+            current.append(line)
+        elif current:
+            blocks.append(current)
+            current = []
+    if current:
+        blocks.append(current)
+    return blocks
+
+
+@pytest.mark.parametrize(
+    "path", markdown_files(), ids=lambda p: str(p.relative_to(REPO))
+)
+def test_markdown_tables_have_a_consistent_column_count(path: Path) -> None:
+    """Every row of a table must have the same number of cells.
+
+    A pipe character inside a code span (`` `a|b` ``) silently splits the
+    cell and the table renders with the wrong number of columns. The pipe
+    has to be escaped (`` `a\\|b` ``) for the table to stay intact.
+    """
+    lines = path.read_text(encoding="utf-8").split("\n")
+    broken = []
+    for block in _table_blocks(lines):
+        # A pipe that is escaped (`` \| ``) belongs to the cell content and
+        # must not be counted as a column separator.
+        counts = {len(re.split(r"(?<!\\)\|", row)) - 2 for row in block}
+        if len(counts) > 1:
+            broken.append((block[0][:60], sorted(counts)))
+    assert not broken, (
+        f"{path.relative_to(REPO)} has tables with inconsistent column counts: "
+        f"{broken}"
+    )

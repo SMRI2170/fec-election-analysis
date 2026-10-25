@@ -112,6 +112,38 @@ APPENDIX_FILES: tuple[AppendixFile, ...] = (
         "判定率–誤答率図とランダム保留比較図",
         "outputs/figures/selective_coverage_risk.png/.svg, selective_random_abstention_comparison.png",
     ),
+    AppendixFile(
+        "scripts/analyze_state_year.py",
+        "州×年度の採用数・年度外残差・重み付け別のMAE",
+        "data/processed/state_year/state_year_summary.json, state_year_error_metrics.csv, "
+        "state_year_coverage.csv, fig_state_coverage.png/.svg",
+    ),
+    AppendixFile(
+        "scripts/analyze_error_structure.py",
+        "誤答構造の分析（analyze_state_year.pyが依存する補助スクリプト）",
+        "data/processed/error_structure_summary.json",
+    ),
+    AppendixFile(
+        "scripts/source_reconcile.py",
+        "FEC党別小計と候補者票の突合（normalize_fec.pyが使う）",
+        "data/processed/source-reconciliation.json",
+    ),
+    AppendixFile(
+        "scripts/audit_winners.py",
+        "勝者例外の監査（normalize_fec.pyが使う）",
+        "data/processed/winner-exceptions.json",
+    ),
+    AppendixFile(
+        "scripts/audit_state_residual_composition.py",
+        "符号付き残差の構成効果と標本数の監査",
+        "data/processed/state_year/state_residual_composition.csv / .json",
+    ),
+    AppendixFile(
+        "scripts/analyze_probability_calibration.py",
+        "予備選挙得票率の確率出力の校正評価",
+        "data/processed/calibration/calibration_bins.csv / calibration_metrics.json, "
+        "outputs/figures/calibration_reliability.png/.svg",
+    ),
 )
 
 
