@@ -119,6 +119,21 @@ APPENDIX_FILES: tuple[AppendixFile, ...] = (
         "state_year_coverage.csv, fig_state_coverage.png/.svg",
     ),
     AppendixFile(
+        "scripts/analyze_error_structure.py",
+        "誤答構造の分析（analyze_state_year.pyが使うheldoutの出所）",
+        "data/processed/error_structure_summary.json",
+    ),
+    AppendixFile(
+        "scripts/source_reconcile.py",
+        "FEC党別小計と候補者票の突合（normalize_fec.pyが使う）",
+        "data/processed/source-reconciliation.json",
+    ),
+    AppendixFile(
+        "scripts/audit_winners.py",
+        "勝者例外の監査（normalize_fec.pyが使う）",
+        "data/processed/winner-exceptions.json",
+    ),
+    AppendixFile(
         "scripts/audit_state_residual_composition.py",
         "符号付き残差の構成効果と標本数の監査",
         "data/processed/state_year/state_residual_composition.csv / .json",

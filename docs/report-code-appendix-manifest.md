@@ -21,7 +21,7 @@
 |**図3**|予備選挙得票率の確率出力の校正図|`scripts/analyze_probability_calibration.py`|`python scripts/analyze_probability_calibration.py --input data/processed/elections.csv --test-years 2018 2020 2022`|
 |**（本文に不使用）**|予備選挙比率と本選挙比率の散布（2022年）および年度外MAE比較、`scripts/plot_results.py`|`python scripts/plot_results.py --input data/processed/elections.csv --metrics data/processed/backtest_metrics.csv`|
 
-### 付録に収録する16ファイル（全文）
+### 付録に収録する19ファイル（全文）
 
 |#|ファイル|役割|行数|バイト|
 |---:|---|---|---:|---:|
@@ -39,11 +39,14 @@
 |12|`scripts/plot_results.py`|予備選挙比率と本選挙比率の散布図・年度外MAE図|108|4,423|
 |13|`scripts/plot_selective_primary.py`|判定率–誤答率図とランダム保留比較図|312|11,338|
 |14|`scripts/analyze_state_year.py`|州×年度の採用数・年度外残差・重み付け別のMAE|257|13,631|
-|15|`scripts/audit_state_residual_composition.py`|符号付き残差の構成効果と標本数の監査|235|8,813|
-|16|`scripts/analyze_probability_calibration.py`|予備選挙得票率の確率出力の校正評価|228|8,959|
-|**合計**||||**3,096**|**128,048**|
+|15|`scripts/analyze_error_structure.py`|誤答構造の分析（analyze_state_year.pyが使うheldoutの出所）|140|7,950|
+|16|`scripts/source_reconcile.py`|FEC党別小計と候補者票の突合（normalize_fec.pyが使う）|181|9,727|
+|17|`scripts/audit_winners.py`|勝者例外の監査（normalize_fec.pyが使う）|97|5,263|
+|18|`scripts/audit_state_residual_composition.py`|符号付き残差の構成効果と標本数の監査|235|8,813|
+|19|`scripts/analyze_probability_calibration.py`|予備選挙得票率の確率出力の校正評価|228|8,959|
+|**合計**||||**3,514**|**150,988**|
 
-（行数・バイト数は実測値。`python scripts/build_code_appendix.py` が毎回再計算する。合計行は16ファイルの和 3,096行 / 128,048バイト、付録テキスト全体はヘッダ行を含めて 3,207行 / 133,164バイト。）
+（行数・バイト数は実測値。`python scripts/build_code_appendix.py` が毎回再計算する。合計行は19ファイルの和 3,514行 / 150,988バイト、付録テキスト全体はヘッダ行を含めて 3,646行 / 157,015バイト。）
 
 ### 収録**しない**もの（理由）
 
@@ -101,6 +104,9 @@ python -m pytest -q
 |`scripts/plot_results.py`|`da1c8feaae88454349afa3f6819a317e7039b302`|
 |`scripts/plot_selective_primary.py`|`4970892ff0e2ce2825beb1567dfa401e30ae6c35`|
 |`scripts/analyze_state_year.py`|`3f2d35058ddf12d66487b7fe8de96f83235141af`|
+|`scripts/analyze_error_structure.py`|`94b9e3e02e1283a26c89ce78932c7a44b18d1961`|
+|`scripts/source_reconcile.py`|`7cf88ce21771c59238e4e5803f24af59a4067412`|
+|`scripts/audit_winners.py`|`083681c8150d4dc028e9284fb628ffc0e2763917`|
 |`scripts/audit_state_residual_composition.py`|`692da0c8bd0548ddce15102eaac6749b720eb2e2`|
 |`scripts/analyze_probability_calibration.py`|`400b7db7a387e41799b0036f90889abb94abbcd7`|
 
@@ -110,20 +116,20 @@ python -m pytest -q
 
 |項目|値|判定|
 |---|---|---|
-|付録ソース本体（16ファイルの行数・バイトの和）|3,096行 / 128,048バイト|—|
-|付録テキスト全体（ヘッダ行を含む）|3,207行 / 133,164バイト|—|
+|付録ソース本体（19ファイルの行数・バイトの和）|3,514行 / 150,988バイト|—|
+|付録テキスト全体（ヘッダ行を含む）|3,646行 / 157,015バイト|—|
 |テンプレート原本|84,056バイト|—|
 |本文の図（図1・図2）|PNG 各60〜90KB程度|本文は5頁で収まるため**本文の図は2枚**。図3（校正図）は付録Dに置き本文には載せない|
 |付録の図（図3）|PNG 1枚|付録Dに再掲する（本文には再掲しない）|
 |**想定DOCX総サイズ**|**約360〜470KB**|**500KB以下推奨を満たす**（1.5MB以上減点には届かない。実測はprivate原稿で管理する）|
-|付録のページ数|**49頁**（実測。付録A〜E：15条件表とランダム比較表，出典URLとSHA-256，符号付き残差の構成効果（表A3），確率出力の校正（表A4・表A5・図3），および16ファイル3,207行のPythonソース全文）|**本文の頁数制限（2〜4頁、最大8頁、付録別）には含まれない**|
+|付録のページ数|**55頁**（実測。付録A〜E：15条件表とランダム比較表，出典URLとSHA-256，符号付き残差の構成効果（表A3），確率出力の校正（表A4・表A5・図3），および19ファイル3,646行のPythonソース全文）|**本文の頁数制限（2〜4頁、最大8頁、付録別）には含まれない**|
 
-ページ数は**本文と別カウント**する（本文5頁・付録49頁・合計54頁。実測値）。
+ページ数は**本文と別カウント**する（本文5頁・付録55頁・合計60頁。実測値）。
 
 ## 4. 確認事項
 
 - [x] 表・図 → ソース → コマンド → 出力が漏なく紐付いている（上記1）。
-- [x] 16ファイルの全文を収録する（抜粋なし）。
+- [x] 19ファイルの全文を収録する（抜粋なし）。
 - [x] 各ファイルにSHA-256とcommit SHAを付録見出しに付す。
 - [x] Python版・pip依存・FEC出典SHA・seed・実行順・期待出力をmanifest化。
 - [x] 容量とページ影響を事前に算定。
