@@ -1,0 +1,48 @@
+name: FEC Primary candidate features
+
+on:
+  pull_request:
+    paths:
+      - scripts/build_primary_features.py
+      - scripts/source_reconcile.py
+      - tests/test_primary_features.py
+      - docs/primary-feature-schema.md
+      - .github/workflows/primary-features.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  primary-features:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install project requirements
+        run: python -m pip install -r requirements.txt
+      - name: Synthetic tests of the feature definitions and the leak checks
+        run: python -m pytest -q tests/test_primary_features.py
+      - name: Download official FEC 2016-2022 House Excel sources
+        run: python scripts/download_fec.py --years 2016 2018 2020 2022
+      - name: Normalize fixed 916 voting-House contests
+        run: python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy attribute
+      - name: Verify frozen cohort, baseline metrics and source hashes
+        run: |
+          python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022
+          python scripts/verify_reproducibility.py
+      - name: Build the Primary candidate features from the official workbooks
+        run: python scripts/build_primary_features.py
+      - name: Save short-lived per-district tables and aggregates
+        uses: actions/upload-artifact@v4
+        with:
+          name: fec-primary-features
+          path: |
+            data/processed/primary_features/primary_features.csv
+            data/processed/primary_features/excluded_district_diagnostic.csv
+            data/processed/primary_features/primary_features_summary.json
+          retention-days: 7
