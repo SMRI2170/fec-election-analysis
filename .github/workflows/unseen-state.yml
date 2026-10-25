@@ -1,0 +1,46 @@
+name: FEC unseen state stress test
+
+on:
+  pull_request:
+    paths:
+      - scripts/evaluate_unseen_state.py
+      - tests/test_unseen_state.py
+      - docs/unseen-state-robustness.md
+      - .github/workflows/unseen-state.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unseen-state:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install project requirements
+        run: python -m pip install -r requirements.txt
+      - name: Synthetic tests of the exclusion rule and the time-leak check
+        run: python -m pytest -q tests/test_unseen_state.py
+      - name: Download official FEC 2016-2022 House Excel sources
+        run: python scripts/download_fec.py --years 2016 2018 2020 2022
+      - name: Normalize fixed 916 voting-House contests
+        run: python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy attribute
+      - name: Verify frozen cohort, baseline metrics and source hashes
+        run: |
+          python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022
+          python scripts/verify_reproducibility.py
+      - name: Run the leave-one-state-out stress test on the official data
+        run: python scripts/evaluate_unseen_state.py
+      - name: Save short-lived aggregates
+        uses: actions/upload-artifact@v4
+        with:
+          name: fec-unseen-state
+          path: |
+            data/processed/unseen_state/unseen_state.csv
+            data/processed/unseen_state/unseen_state_summary.json
+          retention-days: 7
