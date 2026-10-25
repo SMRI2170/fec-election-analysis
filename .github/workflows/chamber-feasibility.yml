@@ -1,0 +1,38 @@
+name: FEC chamber feasibility
+
+on:
+  pull_request:
+    paths:
+      - scripts/inspect_senate_feasibility.py
+      - tests/test_senate_feasibility.py
+      - docs/chamber-feasibility.md
+      - .github/workflows/chamber-feasibility.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chamber-feasibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install project requirements
+        run: python -m pip install -r requirements.txt
+      - name: Synthetic tests of the chamber inspection
+        run: python -m pytest -q tests/test_senate_feasibility.py
+      - name: Download official FEC 2016-2022 workbooks
+        run: python scripts/download_fec.py --years 2016 2018 2020 2022
+      - name: Measure what a Senate study would have to work with
+        run: python scripts/inspect_senate_feasibility.py
+      - name: Save the aggregate feasibility figures
+        uses: actions/upload-artifact@v4
+        with:
+          name: fec-chamber-feasibility
+          path: data/processed/chamber_feasibility/chamber_feasibility.json
+          retention-days: 7
