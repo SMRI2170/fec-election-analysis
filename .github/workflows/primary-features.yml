@@ -31,8 +31,10 @@ jobs:
         run: python scripts/download_fec.py --years 2016 2018 2020 2022
       - name: Normalize fixed 916 voting-House contests
         run: python scripts/normalize_fec.py --years 2016 2018 2020 2022 --writein-policy attribute
-      - name: Verify frozen cohort and source hashes
-        run: python scripts/verify_reproducibility.py
+      - name: Verify frozen cohort, baseline metrics and source hashes
+        run: |
+          python scripts/run_backtests.py --input data/processed/elections.csv --test-years 2018 2020 2022
+          python scripts/verify_reproducibility.py
       - name: Build the Primary candidate features from the official workbooks
         run: python scripts/build_primary_features.py
       - name: Save short-lived per-district tables and aggregates
