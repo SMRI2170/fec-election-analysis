@@ -1,0 +1,114 @@
+{
+  "protocol_version": "1.0",
+  "frozen_at": "2026-10-25",
+  "issue": "#61",
+  "parent_issue": "#51",
+  "purpose": "Pre-registered setup of the non-linear comparison. The configuration is fixed before any evaluation of the test years, so that the model form is compared under identical conditions and no model can be preferred with hindsight.",
+  "data": {
+    "input": "data/processed/elections.csv",
+    "cohort": "frozen 916 House voting contests (2016=200, 2018=241, 2020=237, 2022=238)",
+    "cohort_years": [2016, 2018, 2020, 2022],
+    "chamber": "House",
+    "feature_column": "primary_rep_share",
+    "feature_definition": "R votes divided by R plus D votes in the Primary of the same contest",
+    "target_column": "general_rep_share",
+    "target_definition": "R votes divided by R plus D votes in the General election of the same contest; a two-party share, not a certified winner",
+    "tie_handling": "no contest is dropped; a General share of exactly 0.5 is a valid regression target",
+    "forbidden_columns_during_tuning": [
+      "general_rep_share",
+      "general_rep_votes",
+      "general_dem_votes",
+      "general_two_party_rep_lead",
+      "general_rep_win",
+      "general_tie",
+      "general_rep_share_actual",
+      "residual"
+    ]
+  },
+  "models": [
+    {
+      "name": "constant-mean",
+      "family": "constant",
+      "description": "the training-set mean of the target",
+      "hyperparameters": {},
+      "fitted": true
+    },
+    {
+      "name": "primary-carryover",
+      "family": "identity",
+      "description": "the Primary share is used as the prediction without fitting",
+      "hyperparameters": {},
+      "fitted": false
+    },
+    {
+      "name": "linear",
+      "family": "linear",
+      "description": "ordinary least squares of the General share on the Primary share",
+      "hyperparameters": {},
+      "fitted": true
+    },
+    {
+      "name": "polynomial2-ridge",
+      "family": "polynomial_ridge",
+      "description": "quadratic polynomial in the Primary share, standardized, with a ridge penalty",
+      "hyperparameters": {
+        "degree": 2,
+        "alpha": 1.0,
+        "standardize": true
+      },
+      "fitted": true
+    },
+    {
+      "name": "cubic-spline-ridge",
+      "family": "spline_ridge",
+      "description": "cubic B-spline basis on fixed knot positions, standardized, with a ridge penalty",
+      "hyperparameters": {
+        "degree": 3,
+        "n_knots": 5,
+        "knots": [0.0, 0.25, 0.5, 0.75, 1.0],
+        "alpha": 1.0,
+        "standardize": true,
+        "include_bias": false
+      },
+      "fitted": true
+    }
+  ],
+  "evaluation": {
+    "test_years": [2018, 2020, 2022],
+    "training_rule": "every cohort row whose year is strictly smaller than the test year",
+    "prediction_clip": [0.0, 1.0],
+    "clip_reason": "the target is a share; predictions outside the unit interval are impossible and are clipped before scoring",
+    "metrics": ["mae_points", "rmse_points", "p95_abs_error_points"],
+    "metric_unit": "percentage points, that is the share multiplied by 100",
+    "primary_metric": "mae_points",
+    "reference_model": "linear",
+    "paired_comparison": "per-contest absolute error difference against the reference model, bootstrapped over states",
+    "bootstrap": {
+      "repetitions": 10000,
+      "seed": 20261025,
+      "unit": "state",
+      "interval": "percentile 95%",
+      "reason_for_state_unit": "contests of one state share electoral rules and candidate pools, so the districts are not independent"
+    },
+    "test_year_2022_status": "2022 was already used for exploration in earlier issues and is therefore not an independent confirmatory test; it is reported as an exploratory year"
+  },
+  "hyperparameters": {
+    "selection": "fixed constants; no search, grid or tuning step is performed",
+    "fixed_value_rationale": "alpha = 1.0 is the library default and is applied to standardized features, so it does not depend on the scale of the design; the comparison measures model form, not hyperparameter search",
+    "inner_validation_rule": "if a value ever had to be chosen, only years strictly before the test year may be used, and the choice must be written down before the test year is scored",
+    "inner_validation_years": {
+      "2018": [],
+      "2020": [2018],
+      "2022": [2018, 2020]
+    },
+    "note_for_2018": "only 2016 precedes 2018, so no inner time-series validation is possible; the fixed constants are used and this is not called out-of-year validation",
+    "standardization": "the polynomial and spline designs are centered and scaled with the training mean and standard deviation only; the test year never contributes to the scaling"
+  },
+  "reporting_rules": [
+    "the configuration file is committed before the comparison is run and is not edited afterwards",
+    "every metric is reported for every model and every test year, including results that are worse than the reference model",
+    "the number of contests, the training years and the training size are reported with every metric",
+    "results are not described as confirmatory for 2022",
+    "a change to this configuration is a new protocol version and requires a separate pull request"
+  ]
+}
