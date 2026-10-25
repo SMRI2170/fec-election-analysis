@@ -123,7 +123,8 @@
 
 - 機械可読な設定は `configs/frozen-2024-evaluation.json` に置く。
 - 本書 第8節 には**同一内容**のJSONブロックを埋め込む。**両者が1項目でも違えばCIが失敗する**（`scripts/frozen_2024_protocol.py --check`）。
-- **凍結コミット**（この設定を追加したコミット）を記録し、CIがそのコミットがリポジトリに存在し `HEAD` の祖先であることを確認する。記録は `freeze_commit_sha` にあり、確定前は `PENDING` である。
+- **凍結コミット**（この設定を追加したコミット）を記録し、CIがそのコミットがリポジトリに存在し `HEAD` の祖先であることを確認する。記録は `freeze_commit_sha` にある。確定前は `PENDING` であり、確定後は `main` 上のコミット番号を記す。
+- **設定内容のダイジェスト**（SHA-256）を `configs/frozen-2024-evaluation.sha256` に記録し、CIが照合する。**コミット番号は履歴の整理（rebase・squash）で変わるが、計画の*内容*は変えてはならない**ため、履歴に依存しない保証はダイジェストで担う。凍結後に設定を書き換えるとダイジェスト照合が失敗する。
 
 ## 6. 実行コマンド（将来の実評価）
 
@@ -339,7 +340,7 @@ python scripts/evaluate_frozen_2024.py --assert-frozen-config
     "python scripts/normalize_fec_2024.py --writein-policy attribute",
     "python scripts/evaluate_frozen_2024.py --assert-frozen-config"
   ],
-  "freeze_commit_sha": "0e9ec6dd4900a58893ea04bc1156d6b12d745cd7"
+  "freeze_commit_sha": "4f5da467a5a37bec4cbfa8e2bea810007db65256"
 }
 ```
 

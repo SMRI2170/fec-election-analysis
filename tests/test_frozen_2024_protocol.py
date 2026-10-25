@@ -19,14 +19,17 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts"))
 
 from frozen_2024_protocol import (  # noqa: E402
+    CONFIG_DIGEST_PATH,
     CONFIG_PATH,
     NOTE_PATH,
     SOURCE_CATALOG_PATH,
     LabelAccessError,
     assert_no_label_access,
     build_plan,
+    check_config_digest,
     check_freeze_commit,
     compare_config_and_note,
+    config_digest,
     extract_note_block,
     frozen_catalogue_years,
     is_shallow_repository,
@@ -195,6 +198,30 @@ def test_the_freeze_commit_is_recorded(config: dict) -> None:
     sha = str(config["freeze_commit_sha"])
     assert sha
     assert sha.upper().startswith("PENDING") or len(sha) == 40
+
+
+def test_the_frozen_configuration_has_the_recorded_digest() -> None:
+    """The digest does not depend on the history, so it survives a rebase."""
+    measured = check_config_digest()
+    recorded = CONFIG_DIGEST_PATH.read_text(encoding="utf-8").split()[0].strip()
+    assert measured == recorded
+    assert len(measured) == 64
+
+
+def test_a_changed_configuration_is_refused_by_the_digest(tmp_path: Path) -> None:
+    """Editing the frozen plan after the freeze has to be detected."""
+    changed = tmp_path / "frozen-2024-evaluation.json"
+    changed.write_text(
+        CONFIG_PATH.read_text(encoding="utf-8").replace('"frozen_at"', '"frozen_at_x"'),
+        encoding="utf-8",
+    )
+    recorded = tmp_path / "frozen-2024-evaluation.sha256"
+    recorded.write_text(
+        config_digest(CONFIG_PATH) + "  configs/frozen-2024-evaluation.json\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(AssertionError):
+        check_config_digest(changed, recorded)
 
 
 def test_the_checks_of_the_freeze_pass(config: dict) -> None:
