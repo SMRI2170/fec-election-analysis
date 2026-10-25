@@ -20,6 +20,7 @@ influenced by the result, because the result did not exist yet.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -28,6 +29,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 CONFIG_PATH = REPO / "configs" / "frozen-2024-evaluation.json"
+CONFIG_DIGEST_PATH = REPO / "configs" / "frozen-2024-evaluation.sha256"
 NOTE_PATH = REPO / "docs" / "2024-frozen-evaluation-protocol.md"
 SOURCE_CATALOG_PATH = REPO / "data" / "sources" / "fec_publications.json"
 
@@ -181,6 +183,37 @@ def frozen_catalogue_years(path: Path | None = None) -> list[int]:
     return sorted(int(item["year"]) for item in catalog["publications"])
 
 
+def config_digest(path: Path | None = None) -> str:
+    """Return the SHA-256 of the frozen configuration file."""
+    location = Path(path) if path is not None else CONFIG_PATH
+    return hashlib.sha256(location.read_bytes()).hexdigest()
+
+
+def check_config_digest(
+    path: Path | None = None, digest_path: Path | None = None
+) -> str:
+    """Check that the frozen configuration still has the recorded digest.
+
+    The commit pointer of the freeze can be rewritten by a rebase or a squash
+    merge, but the *content* of the plan must not change after the freeze.
+    The digest is therefore the guarantee that does not depend on the history.
+    """
+    location = Path(path) if path is not None else CONFIG_PATH
+    recorded_path = Path(digest_path) if digest_path is not None else CONFIG_DIGEST_PATH
+    if not recorded_path.exists():
+        raise AssertionError(
+            f"the frozen configuration has no recorded digest: {recorded_path}"
+        )
+    recorded = recorded_path.read_text(encoding="utf-8").split()[0].strip()
+    measured = config_digest(location)
+    if recorded != measured:
+        raise AssertionError(
+            "the frozen configuration was changed after the freeze: "
+            f"recorded {recorded}, measured {measured}"
+        )
+    return measured
+
+
 def is_shallow_repository(repo: Path | None = None) -> bool:
     """Tell whether the local clone has only a shallow history.
 
@@ -240,6 +273,7 @@ def run_checks() -> dict:
             + "; ".join(differences)
         )
     plan = build_plan(config)
+    digest = check_config_digest()
     sha = check_freeze_commit(plan.freeze_commit_sha)
     years = frozen_catalogue_years()
     if plan.evaluation_year in years:
@@ -253,6 +287,7 @@ def run_checks() -> dict:
         "frozen_at": plan.frozen_at,
         "freeze_commit_sha": plan.freeze_commit_sha,
         "freeze_commit_check": sha,
+        "config_digest": digest,
         "evaluation_year": plan.evaluation_year,
         "training_years": list(plan.training_years),
         "models": list(plan.models),
