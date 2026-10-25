@@ -1,0 +1,55 @@
+name: FEC Frozen 2024 holdout
+
+on:
+  pull_request:
+    paths:
+      - scripts/download_fec_2024.py
+      - scripts/normalize_fec_2024.py
+      - scripts/evaluate_frozen_2024.py
+      - scripts/frozen_2024_protocol.py
+      - configs/frozen-2024-evaluation.json
+      - tests/test_frozen_2024.py
+      - tests/test_frozen_2024_protocol.py
+      - docs/frozen-2024-holdout-results.md
+      - docs/2024-frozen-evaluation-protocol.md
+      - data/sources/fec2024_publication.json
+      - .github/workflows/frozen-2024-holdout.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frozen-2024-holdout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The freeze commit has to be reachable, so the whole history is needed.
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install project requirements
+        run: python -m pip install -r requirements.txt
+      - name: Unit tests of the frozen plan and of the evaluation
+        run: |
+          python -m pytest -q tests/test_frozen_2024_protocol.py
+          python -m pytest -q tests/test_frozen_2024.py
+      - name: Check that the frozen plan and the note agree
+        run: python scripts/frozen_2024_protocol.py --check
+      - name: Record the availability of the 2024 publication
+        run: python scripts/download_fec_2024.py
+      - name: The pipeline has to refuse to produce a value without the source
+        run: |
+          python scripts/normalize_fec_2024.py --writein-policy attribute --expect-unavailable
+          python scripts/evaluate_frozen_2024.py --assert-frozen-config --expect-unavailable
+      - name: Save the availability record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fec-2024-availability
+          path: data/sources/fec2024_publication.json
+          retention-days: 7

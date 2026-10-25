@@ -1,0 +1,18 @@
+{
+  "year": 2024,
+  "retrieved_at": "2026-10-25",
+  "catalogue_page": "https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/",
+  "edition_page": "https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2024/",
+  "status": "not-published",
+  "workbook_url": null,
+  "bytes": null,
+  "sha256": null,
+  "sheet_names": [],
+  "house_sheet": null,
+  "notes": [
+    "the 2024 edition page returned HTTP 404 on 2026-10-25"
+  ],
+  "catalogue_page_status": 200,
+  "catalogue_lists_2024": false,
+  "edition_page_status": 404
+}
