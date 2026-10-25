@@ -13,7 +13,12 @@
   },
   "data": {
     "cohort": "the frozen 916 House voting contests of 2016/2018/2020/2022 are the training material and are not modified",
-    "training_years": [2016, 2018, 2020, 2022],
+    "training_years": [
+      2016,
+      2018,
+      2020,
+      2022
+    ],
     "training_n": 916,
     "evaluation_year": 2024,
     "evaluation_n": "unknown; the count is declared unknown in advance and the actual count is reported with the exclusion breakdown",
@@ -68,7 +73,13 @@
       "hyperparameters": {
         "degree": 3,
         "n_knots": 5,
-        "knots": [0.0, 0.25, 0.5, 0.75, 1.0],
+        "knots": [
+          0.0,
+          0.25,
+          0.5,
+          0.75,
+          1.0
+        ],
         "alpha": 1.0,
         "standardize": true,
         "include_bias": false
@@ -87,7 +98,10 @@
     "refit_rationale": "the model form and the hyperparameters are fixed, and the whole pre-2024 cohort is available; re-fitting is the same measurement as the frozen backtests, which refit on every year before the test year",
     "hyperparameter_search": "none; the hyperparameters are fixed constants and no search, grid or inner validation is performed",
     "standardization": "the polynomial and the spline designs are centred and scaled with the training mean and standard deviation only",
-    "prediction_clip": [0.0, 1.0]
+    "prediction_clip": [
+      0.0,
+      1.0
+    ]
   },
   "metrics": {
     "primary": [
@@ -170,5 +184,5 @@
     "python scripts/normalize_fec_2024.py --writein-policy attribute",
     "python scripts/evaluate_frozen_2024.py --assert-frozen-config"
   ],
-  "freeze_commit_sha": "PENDING; replaced by the commit that introduces this file, and checked by the CI"
+  "freeze_commit_sha": "0e9ec6dd4900a58893ea04bc1156d6b12d745cd7"
 }

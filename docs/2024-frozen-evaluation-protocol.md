@@ -339,7 +339,7 @@ python scripts/evaluate_frozen_2024.py --assert-frozen-config
     "python scripts/normalize_fec_2024.py --writein-policy attribute",
     "python scripts/evaluate_frozen_2024.py --assert-frozen-config"
   ],
-  "freeze_commit_sha": "PENDING; replaced by the commit that introduces this file, and checked by the CI"
+  "freeze_commit_sha": "0e9ec6dd4900a58893ea04bc1156d6b12d745cd7"
 }
 ```
 
