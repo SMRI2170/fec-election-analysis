@@ -1,0 +1,174 @@
+{
+  "protocol_version": "1.0",
+  "frozen_at": "2026-10-26",
+  "issue": "#53",
+  "parent_issue": "#5",
+  "purpose": "Pre-registration of the 2024 out-of-year evaluation. The plan is fixed before the 2024 source is even published, so that no model, rule or metric can be chosen with knowledge of the 2024 outcome.",
+  "status": {
+    "confirmation_state": "the 2024 year is the first evaluation year that was never inspected during the 2016-2022 exploration",
+    "no_2024_result_viewed": true,
+    "source_published_at_freeze_time": false,
+    "source_availability_check": "the FEC catalogue page https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/ lists the biennial Federal Elections editions only up to 2022 on 2026-10-26, and https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2024/ returns HTTP 404",
+    "consequence": "if the publication is still unavailable when the evaluation is attempted, the evaluation ends with a documented reason and no value is produced"
+  },
+  "data": {
+    "cohort": "the frozen 916 House voting contests of 2016/2018/2020/2022 are the training material and are not modified",
+    "training_years": [2016, 2018, 2020, 2022],
+    "training_n": 916,
+    "evaluation_year": 2024,
+    "evaluation_n": "unknown; the count is declared unknown in advance and the actual count is reported with the exclusion breakdown",
+    "chamber": "House",
+    "prediction_unit": "one House contest, that is one state and one district; district numbers are not comparable across the 2022 and 2024 boundaries, and no cross-year district continuity is assumed",
+    "feature_column": "primary_rep_share",
+    "feature_definition": "the Republican two-party share of the Primary of the same contest",
+    "target_column": "general_rep_share",
+    "target_definition": "the Republican two-party share of the General election of the same contest; a two-party vote lead, NOT a certified winner",
+    "label_definition": "the classification label is the two-party vote lead, not the certified election winner",
+    "forbidden_columns_during_tuning": [
+      "general_rep_share",
+      "general_rep_votes",
+      "general_dem_votes",
+      "general_two_party_rep_lead",
+      "general_rep_win",
+      "general_tie",
+      "general_rep_share_actual",
+      "residual"
+    ]
+  },
+  "models": [
+    {
+      "name": "primary-carryover",
+      "family": "identity",
+      "role": "pre-registered reference for the Primary-to-General relation",
+      "hyperparameters": {},
+      "fitted": false
+    },
+    {
+      "name": "linear",
+      "family": "linear",
+      "role": "the primary evaluation candidate, the frozen baseline form",
+      "hyperparameters": {},
+      "fitted": true
+    },
+    {
+      "name": "polynomial2-ridge",
+      "family": "polynomial_ridge",
+      "role": "pre-registered challenger, kept although the 2016-2022 comparison found no stable improvement",
+      "hyperparameters": {
+        "degree": 2,
+        "alpha": 1.0,
+        "standardize": true
+      },
+      "fitted": true
+    },
+    {
+      "name": "cubic-spline-ridge",
+      "family": "spline_ridge",
+      "role": "pre-registered challenger, kept although the 2016-2022 comparison found no stable improvement",
+      "hyperparameters": {
+        "degree": 3,
+        "n_knots": 5,
+        "knots": [0.0, 0.25, 0.5, 0.75, 1.0],
+        "alpha": 1.0,
+        "standardize": true,
+        "include_bias": false
+      },
+      "fitted": true
+    }
+  ],
+  "excluded_from_the_model_set": {
+    "constant_mean": "reported as a floor reference only, never as a candidate",
+    "candidate_level_features": "the Primary candidate counts, the concentration index and the vote volume are excluded from the 2024 model set, because the ablation of 2016-2022 found no stable improvement and the features add a parsing burden; the exclusion is decided before the 2024 result is known",
+    "classification_models": "the classifier is evaluated with the frozen linear share as its single feature, and no new classifier is fitted"
+  },
+  "training": {
+    "rule": "re-fit the same model form on all 916 frozen cohort rows of 2016/2018/2020/2022; the 2024 rows are never used for fitting",
+    "refit_allowed": true,
+    "refit_rationale": "the model form and the hyperparameters are fixed, and the whole pre-2024 cohort is available; re-fitting is the same measurement as the frozen backtests, which refit on every year before the test year",
+    "hyperparameter_search": "none; the hyperparameters are fixed constants and no search, grid or inner validation is performed",
+    "standardization": "the polynomial and the spline designs are centred and scaled with the training mean and standard deviation only",
+    "prediction_clip": [0.0, 1.0]
+  },
+  "metrics": {
+    "primary": [
+      "mae_points",
+      "mae_difference_against_primary_carryover_points"
+    ],
+    "secondary": [
+      "rmse_points",
+      "p95_abs_error_points",
+      "mean_signed_points",
+      "two_party_lead_accuracy",
+      "brier_score",
+      "per_state_n",
+      "exclusion_rate"
+    ],
+    "metric_unit": "percentage points, that is the share multiplied by 100",
+    "paired_comparison": "the per-contest absolute error difference against the linear reference model and against the Primary carry-over, bootstrapped over states",
+    "bootstrap": {
+      "repetitions": 10000,
+      "seed": 20261025,
+      "unit": "state",
+      "interval": "percentile 95%",
+      "status": "exploratory; the districts are not a random sample",
+      "reason_for_state_unit": "the districts of one state share the electoral rules and the candidate pool, so they are not independent"
+    }
+  },
+  "exclusion_rules": {
+    "rule_set": "the rules of the frozen 2016-2022 cohort are applied unchanged",
+    "categories": [
+      "unopposed",
+      "write-in only",
+      "fusion or ambiguous party code",
+      "rank-choice or runoff rule",
+      "missing numeric votes",
+      "missing party subtotal",
+      "special election with no Primary counterpart"
+    ],
+    "blind_execution": "the category list is fixed before the 2024 data are read; only the assignment of a contest to an already declared category may be recorded afterwards, and no category may be added, renamed or removed afterwards",
+    "no_zero_filling": "a missing numeric value is never replaced by zero",
+    "no_subtotal_merging": "a party subtotal is never merged into the candidate votes",
+    "unknown_in_advance": "the number of 2024 contests that fall into each category is unknown in advance and is reported as unknown in the plan"
+  },
+  "reporting_rules": [
+    "the evaluation is executed from the frozen configuration only; the primary comparison is confirmatory for 2024 because the year was never inspected",
+    "every metric is reported for every model and for the whole 2024 cohort, including results that are worse than the reference model",
+    "the number of evaluated contests, the number of excluded contests and the reason of every exclusion are reported",
+    "the 2022 results and the 2024 results are shown in separate tables",
+    "a change to any rule of this configuration is a new protocol version and turns the 2024 result into an exploratory one",
+    "no value is produced when the source or a rule is unavailable; the reason is recorded instead"
+  ],
+  "forbidden_operations": [
+    "looking at any 2024 House vote total, winner or error before this configuration is committed",
+    "changing the model set, the hyperparameters, the preprocessing or the metric after the 2024 result is seen",
+    "searching hyperparameters on the 2024 rows or on any year after 2016",
+    "adding, removing or re-weighting a state or a district after the 2024 label is seen",
+    "re-deriving the write-in, fusion, unopposed or missing-value rules from the 2024 source",
+    "reporting the 2024 result as the performance of the whole United States; the evaluated set is a selected set of contests",
+    "reading a political causal effect out of a vote share"
+  ],
+  "planned_source": {
+    "expected_publication": "the biennial FEC Federal Elections compilation, the PDF and the Excel workbook of the 2024 edition",
+    "expected_url_pattern": "https://www.fec.gov/documents/<document-id>/federalelections2024.xlsx",
+    "expected_catalogue_page": "https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/federal-elections-2024/",
+    "document_id": "unknown; the identifier is assigned by the FEC when the edition is published",
+    "sha256": "unknown; the checksum is recorded at retrieval time, before any sheet is parsed",
+    "retrieval_order": [
+      "1. confirm the catalogue page exists and record its URL and the retrieval date",
+      "2. download the workbook and record the URL, the byte size and the SHA-256",
+      "3. record the sheet names and the column header row only",
+      "4. only then parse the vote tables",
+      "5. write the record into data/sources/fec2024_publication.json"
+    ],
+    "separation_from_the_frozen_catalog": "the 2024 record goes into a separate 2024 catalogue file; data/sources/fec_publications.json keeps the 2010-2022 entries unchanged"
+  },
+  "evaluation_commands": [
+    "python -m pip install -r requirements.txt",
+    "python -m pytest -q tests/test_frozen_2024_protocol.py",
+    "python scripts/frozen_2024_protocol.py --check",
+    "python scripts/download_fec_2024.py --output-dir data/raw",
+    "python scripts/normalize_fec_2024.py --writein-policy attribute",
+    "python scripts/evaluate_frozen_2024.py --assert-frozen-config"
+  ],
+  "freeze_commit_sha": "PENDING; replaced by the commit that introduces this file, and checked by the CI"
+}
