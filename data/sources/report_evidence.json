@@ -95,7 +95,7 @@
       "id": "EV-004",
       "rq": "RQ3",
       "label": "州×年度の採用率・MAEの地区/州等重み比較・二党票比率差",
-      "status": "verified_ci_unmerged_pr",
+      "status": "verified_main",
       "unit": "州、区年、percentage points",
       "n": 916,
       "year_scope": [
@@ -108,11 +108,12 @@
         "scripts/analyze_state_year.py"
       ],
       "source_docs": [
-        "docs/state-year-findings.md"
+        "docs/state-year-findings.md",
+        "docs/report-final-figure-selection.md"
       ],
       "ci": "https://github.com/SMRI2170/fec-election-analysis/actions/runs/39086627384",
       "pr": "https://github.com/SMRI2170/fec-election-analysis/pull/73",
-      "important_limit": "PR #73は未マージ。50州1,734報告グループから916採用、非投票権管轄22件は別枠。採用州等重みは全米全州重みではない。"
+      "important_limit": "採用0件の11州とn<5の州は州別ランキングに使わない。州等重みは採用州ごとの等重み平均であり人口重みでも全州等重みでもない。年度差の符号は因果説明に用いない。"
     },
     {
       "id": "EV-005",

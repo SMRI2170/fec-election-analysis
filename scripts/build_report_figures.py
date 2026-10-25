@@ -136,12 +136,12 @@ def run(registry: dict, frozen: dict, error_summary: dict,
     result={"source":"FEC official workbook SHA256 and previously validated error-structure JSON",
             "cohort_selected":916,"yearly_n":table.n_test.tolist(),
             "report_f1_status":"generated_from_validated_fec_error_summary",
-            "state_year_status":"not_supplied_unmerged_dependency",
+            "state_year_status":"not_supplied_missing_state_year_outputs",
             "prediction_time_operationally_verified":False}
     if state_summary is not None:
         state=validated_state_year_rows(state_summary,frozen)
         state.to_csv(output_dir/"report_t2_state_year_weights.csv",index=False)
-        result["state_year_status"]="validated_FEC_CI_PR73_source"
+        result["state_year_status"]="validated_FEC_main_state_year_pipeline"
         result["state_year_rows"]=len(state)
         if state_figure is not None:
             if not state_figure.exists() or state_figure.suffix.lower()!=".svg":
@@ -164,6 +164,14 @@ def main():
     p.add_argument("--state-figure",type=Path,default=None)
     p.add_argument("--output-dir",type=Path,default=Path("data/processed/report_figures"))
     a=p.parse_args()
+    # PR #73（#57）がmainへマージされたため、州×年度の出力は自動検出する。
+    # 出力が無い場合は「出典が存在しない図を作らない」ため未供給のまま扱う。
+    if a.state_summary is None:
+        default_summary=Path("data/processed/state_year/state_year_summary.json")
+        if default_summary.exists(): a.state_summary=default_summary
+    if a.state_figure is None:
+        default_figure=Path("data/processed/state_year/fig_state_coverage.svg")
+        if default_figure.exists(): a.state_figure=default_figure
     load=lambda path:json.loads(path.read_text(encoding="utf-8"))
     result=run(load(a.registry),load(a.pinned),load(a.error_summary),a.output_dir,
                state_summary=load(a.state_summary) if a.state_summary else None,

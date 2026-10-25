@@ -58,7 +58,11 @@ def test_registry_maps_all_3_questions_and_sources():
     pinned,reg=baseline()
     check_evidence_registry(reg,pinned)
     assert {entry["rq"] for entry in reg["evidence"]}>={"RQ1","RQ2","RQ3"}
-    assert sum(entry["status"]=="verified_ci_unmerged_pr" for entry in reg["evidence"])==1
+    # PR #73（#57 州×年度分析）がmainへマージされたため、未マージ依存は残っていない
+    assert sum(entry["status"]=="verified_ci_unmerged_pr" for entry in reg["evidence"])==0
+    assert sum(entry["status"]=="verified_main" for entry in reg["evidence"])==5
+    # 選挙前の運用可能性だけは部分検証のまま（実運用は未実証）
+    assert sum(entry["status"]=="partially_verified_main" for entry in reg["evidence"])==1
 
 
 def test_fec_original_sha_cannot_be_changed_silently():
@@ -109,10 +113,10 @@ def test_state_year_rejects_relabelled_sample():
         validated_state_year_rows(state,frozen)
 
 
-def test_builds_only_verified_mae_without_unmerged_state_data(tmp_path):
+def test_builds_only_verified_mae_without_state_year_outputs(tmp_path):
     frozen,registry=baseline()
     result=run(registry,frozen,synthetic_error_summary(),tmp_path)
-    assert result["state_year_status"]=="not_supplied_unmerged_dependency"
+    assert result["state_year_status"]=="not_supplied_missing_state_year_outputs"
     assert (tmp_path/"report_f1_yearly_mae.png").exists()
     assert (tmp_path/"report_f1_yearly_mae.svg").exists()
     assert (tmp_path/"report_t1_yearly_mae.csv").exists()
@@ -125,7 +129,7 @@ def test_state_tables_require_validated_state_figure_source(tmp_path):
     figure.write_text("<svg></svg>")
     result=run(registry,frozen,synthetic_error_summary(),tmp_path/"out",
                state_summary=synthetic_state_summary(),state_figure=figure)
-    assert result["state_year_status"]=="validated_FEC_CI_PR73_source"
+    assert result["state_year_status"]=="validated_FEC_main_state_year_pipeline"
     assert (tmp_path/"out"/"report_t2_state_year_weights.csv").exists()
     assert (tmp_path/"out"/"report_f2_state_coverage.svg").exists()
 
