@@ -129,11 +129,11 @@ python scripts/build_error_case_studies.py --top-n 5
 - [郡別→州全体の再集計とFEC正規化結果の照合](../scripts/verify_mi03_state_canvass.py)
 - [転記間違い・未知の郡・FECとの不一致を検出するテスト](../tests/test_mi03_state_canvass.py)
 
-\`\`\`bash
+```bash
 python scripts/download_fec.py --years 2022
 python scripts/normalize_fec.py --years 2022
 python scripts/verify_mi03_state_canvass.py
-\`\`\`
+```
 
 **検証範囲の明示:** 公式Michigan Manualの郡別表は人手で構造化JSONへ転記したもので、CIはその転記値の総和、刊行物の州合計、および別に取得したFECの正規化数値を突合する。**CIがMichigan州公式PDFを毎回再ダウンロード・パースしているわけではない**。候補者交代、支持者層、地域要因の因果効果はこの票の一致からは断定できない。
 

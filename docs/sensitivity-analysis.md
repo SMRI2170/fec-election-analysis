@@ -29,14 +29,14 @@ Issue #4では2016〜2022年の選別済み740レコードから高い正解率�
 
 ## 再現方法
 
-\`\`\`bash
+```bash
 python scripts/download_fec.py --years 2016 2018 2020 2022
 python scripts/normalize_fec.py --years 2016 2018 2020 2022
 python scripts/run_sensitivity.py --input data/processed/elections.csv --test-year 2022
 python scripts/error_cases.py --input data/processed/elections.csv --test-year 2022
-\`\`\`
+```
 
-\`data/processed/sensitivity_metrics.csv\` と \`data/processed/errors_2022.csv\` はGit管理対象外。Actions実行時には短期保存のArtifactsへ集計値のみ保存する。
+`data/processed/sensitivity_metrics.csv` と `data/processed/errors_2022.csv` はGit管理対象外。Actions実行時には短期保存のArtifactsへ集計値のみ保存する。
 
 **未完了:** 個別誤予測の原票照合、欠損値・特殊な選挙制度の選択条件の比較、州ごとの代表性の検討、信頼区間/統計的差の評価。
 
